@@ -1,6 +1,5 @@
 # Deploys the static site to GitHub Pages on every push to main.
-# TODO(DEC-14): becomes active once a GitHub remote exists and Pages is
-# enabled (Settings → Pages → Source: GitHub Actions).
+# Active since 2026-07-23 (DEC-14): remote XLabRD/XLB-TALI-WEBSITE.
 name: Deploy to GitHub Pages
 
 on:
