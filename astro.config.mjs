@@ -13,6 +13,8 @@ export default defineConfig({
   output: 'static',
   integrations: [
     sitemap({
+      // /hello is the device-QR onboarding page — public but unlisted (DEC-23).
+      filter: (page) => !new URL(page).pathname.startsWith('/hello'),
       i18n: {
         defaultLocale: 'en',
         locales: { en: 'en-US', es: 'es-MX' },

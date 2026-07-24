@@ -143,6 +143,8 @@ const site = defineCollection({
     formEndpoint: z.string(),
     // TODO(DEC-21): Stripe Payment Link pending; empty = plan CTA scrolls to contact.
     orderUrl: z.string().default(''),
+    // TODO(DEC-18): App Store link pending; empty = onboarding badge inert.
+    appStoreUrl: z.string().default(''),
     // TODO(DEC-16): real social URLs pending; empty = link hidden.
     instagram: z.string().default(''),
     x: z.string().default(''),
