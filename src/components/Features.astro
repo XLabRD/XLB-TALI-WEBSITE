@@ -1,0 +1,76 @@
+---
+interface Props {
+  locale: 'en' | 'es';
+  copy: Record<string, any>;
+  features: Array<{ icon: string; title: string; body: string }>;
+}
+const { copy, features } = Astro.props;
+
+const icons: Record<string, string> = {
+  temperature: 'M12 4a2 2 0 0 1 2 2v7.5a4 4 0 1 1-4 0V6a2 2 0 0 1 2-2Zm0 12a1.5 1.5 0 1 0 0 3 1.5 1.5 0 0 0 0-3Z',
+  humidity: 'M12 3.5c3.5 4.2 6 7.4 6 10.5a6 6 0 1 1-12 0c0-3.1 2.5-6.3 6-10.5Z',
+  vibration: 'M3 12h3l2-5 4 10 3-7 2 2h4',
+  light: 'M12 5V3m0 18v-2m7-7h2M3 12h2m11.3-4.3 1.4-1.4M6.3 17.7l-1.4 1.4m12.8 0-1.4-1.4M6.3 6.3 4.9 4.9M12 8a4 4 0 1 1 0 8 4 4 0 0 1 0-8Z',
+  epaper: 'M5 4h14a1 1 0 0 1 1 1v14a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1V5a1 1 0 0 1 1-1Zm3 4h8M8 12h8M8 16h5',
+  alerts: 'M12 4a6 6 0 0 1 6 6v3l1.8 3H4.2L6 13v-3a6 6 0 0 1 6-6Zm-2 14a2 2 0 0 0 4 0',
+  battery: 'M4 8h14a1 1 0 0 1 1 1v6a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V9a1 1 0 0 1 1-1Zm17 3v2M6 10.5v3m3-3v3',
+  wifi: 'M4 10a12 12 0 0 1 16 0M7 13.5a8 8 0 0 1 10 0m-7 3.2a3.5 3.5 0 0 1 4 0M12 19h.01',
+};
+---
+
+<section class="section" id="features">
+  <div class="wrap">
+    <div class="section__head">
+      <p class="kicker">{copy.featuresKicker}</p>
+      <h2 class="section__title">{copy.featuresTitle}</h2>
+    </div>
+    <div class="grid">
+      {
+        features.map((f) => (
+          <article class="card">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+              <path d={icons[f.icon] ?? icons.temperature} />
+            </svg>
+            <h3 class="card__title">{f.title}</h3>
+            <p class="card__body">{f.body}</p>
+          </article>
+        ))
+      }
+    </div>
+  </div>
+</section>
+
+<style>
+  .grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 1.25rem;
+  }
+  .card {
+    border: 1px solid var(--line);
+    border-radius: 14px;
+    padding: 1.75rem 1.5rem;
+    display: grid;
+    gap: 0.7rem;
+    align-content: start;
+    background: linear-gradient(170deg, var(--surface), transparent 70%);
+  }
+  .card svg {
+    width: 26px;
+    height: 26px;
+    color: var(--accent);
+    margin-bottom: 0.4rem;
+  }
+  .card__title {
+    font-size: 1.15rem;
+  }
+  .card__body {
+    color: var(--text-dim);
+    font-size: 0.92rem;
+  }
+  @media (max-width: 860px) {
+    .grid {
+      grid-template-columns: 1fr;
+    }
+  }
+</style>

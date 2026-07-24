@@ -1,0 +1,12 @@
+{
+  "order": 6,
+  "icon": "alerts",
+  "en": {
+    "title": "Alerts, the moment it matters",
+    "body": "Wi-Fi keeps Tali in touch with the cloud. If any place drifts out of range, your phone knows before your collection does. And if the power goes out or the connection drops, you're notified too."
+  },
+  "es": {
+    "title": "Alertas, en el momento justo",
+    "body": "El Wi-Fi mantiene a Tali en contacto con la nube. Si algún lugar se sale de rango, tu teléfono lo sabe antes que tu colección. Y si se va la luz o se pierde la conexión, también recibes un aviso."
+  }
+}

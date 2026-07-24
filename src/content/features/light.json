@@ -1,0 +1,12 @@
+{
+  "order": 4,
+  "icon": "light",
+  "en": {
+    "title": "Light, kept out",
+    "body": "Light strike ruins bottles silently. Tali measures every lumen that reaches your collection, so darkness stays provable."
+  },
+  "es": {
+    "title": "Luz, a raya",
+    "body": "El golpe de luz arruina botellas en silencio. Tali mide cada lumen que alcanza tu colección, para que la oscuridad quede comprobada."
+  }
+}

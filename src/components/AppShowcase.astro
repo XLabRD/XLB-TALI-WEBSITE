@@ -1,0 +1,72 @@
+---
+interface Props {
+  copy: Record<string, any>;
+}
+const { copy } = Astro.props;
+---
+
+<section class="section" id="app">
+  <div class="wrap">
+    <div class="section__head">
+      <p class="kicker">{copy.appKicker}</p>
+      <h2 class="section__title">{copy.appTitle}</h2>
+      <p class="intro">{copy.appIntro}</p>
+    </div>
+    <div class="screens">
+      {
+        copy.appScreens.map((screen: any) => (
+          <figure class="screen">
+            <div class="screen__frame">
+              <img src={screen.src} alt={screen.alt} width="598" height="1300" loading="lazy" />
+            </div>
+            <figcaption class="screen__caption">{screen.caption}</figcaption>
+          </figure>
+        ))
+      }
+    </div>
+  </div>
+</section>
+
+<style>
+  .intro {
+    color: var(--text-dim);
+  }
+  .screens {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: clamp(1.25rem, 3vw, 2.5rem);
+    max-width: 56rem;
+    margin-inline: auto;
+  }
+  .screen {
+    margin: 0;
+    display: grid;
+    gap: 0.9rem;
+    justify-items: center;
+  }
+  .screen__frame {
+    border: 1px solid var(--line);
+    border-radius: 30px;
+    padding: 0.5rem;
+    background: var(--surface);
+    box-shadow: 0 24px 48px -32px rgba(58, 42, 24, 0.4);
+  }
+  .screen__frame img {
+    width: 100%;
+    height: auto;
+    border-radius: 22px;
+  }
+  .screen__caption {
+    font-family: var(--mono);
+    font-size: 0.72rem;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--text-dim);
+  }
+  @media (max-width: 700px) {
+    .screens {
+      grid-template-columns: 1fr;
+      max-width: 18rem;
+    }
+  }
+</style>

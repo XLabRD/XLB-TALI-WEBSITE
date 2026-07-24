@@ -1,0 +1,108 @@
+---
+interface Props {
+  locale: 'en' | 'es';
+  ui: Record<string, string>;
+  altPath: string;
+  homePath: string;
+}
+const { ui, altPath, homePath } = Astro.props;
+const nav = [
+  { href: '#system', label: ui.navSystem },
+  { href: '#app', label: ui.navApp },
+  { href: '#features', label: ui.navFeatures },
+  { href: '#edition', label: ui.navPricing },
+  { href: '#contact', label: ui.navContact },
+];
+---
+
+<header class="header">
+  <div class="wrap header__in">
+    <a class="brand" href={homePath}>
+      <img src="/images/tali-logo.png" alt="Tali" height="30" />
+    </a>
+    <nav class="nav" aria-label="Main">
+      {nav.map((item) => <a href={item.href}>{item.label}</a>)}
+    </nav>
+    <div class="header__actions">
+      <a class="preorder" href="#edition">{ui.navPreorder}</a>
+      <a class="lang" href={altPath}>{ui.langSwitch}</a>
+    </div>
+  </div>
+</header>
+
+<style>
+  .header {
+    position: sticky;
+    top: 0;
+    z-index: 10;
+    height: var(--header-h);
+    background: color-mix(in srgb, var(--bg) 88%, transparent);
+    backdrop-filter: blur(12px);
+    border-bottom: 1px solid var(--line);
+  }
+  .header__in {
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1.5rem;
+  }
+  .brand {
+    display: flex;
+    align-items: center;
+  }
+  .brand img {
+    height: 30px;
+    width: auto;
+  }
+  .nav {
+    display: flex;
+    gap: 1.6rem;
+  }
+  .nav a {
+    font-size: 0.9rem;
+    color: var(--text-dim);
+    text-decoration: none;
+    transition: color 0.15s ease;
+  }
+  .nav a:hover {
+    color: var(--text);
+  }
+  .header__actions {
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+  }
+  .lang,
+  .preorder {
+    font-family: var(--mono);
+    font-size: 0.75rem;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    text-decoration: none;
+    border-radius: 999px;
+    padding: 0.35rem 0.85rem;
+  }
+  .lang {
+    color: var(--accent);
+    border: 1px solid var(--line);
+    transition: border-color 0.15s ease;
+  }
+  .lang:hover {
+    border-color: var(--accent);
+  }
+  .preorder {
+    color: var(--on-accent);
+    background: var(--accent);
+    border: 1px solid var(--accent);
+    transition: filter 0.15s ease;
+  }
+  .preorder:hover {
+    filter: brightness(1.12);
+  }
+  @media (max-width: 760px) {
+    .nav {
+      display: none;
+    }
+  }
+</style>

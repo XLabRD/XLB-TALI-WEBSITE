@@ -1,0 +1,126 @@
+---
+interface Props {
+  copy: Record<string, any>;
+  plans: Array<{
+    featured: boolean;
+    price: string;
+    name: string;
+    tagline: string;
+    includes: string[];
+    cta: string;
+  }>;
+  orderUrl?: string;
+}
+const { copy, plans, orderUrl } = Astro.props;
+// TODO(DEC-21): Stripe Payment Link pending; empty = CTA scrolls to contact.
+const ctaHref = orderUrl || '#contact';
+const ctaExternal = Boolean(orderUrl);
+---
+
+<section class="section" id="edition">
+  <div class="wrap">
+    <div class="section__head head--center">
+      <p class="kicker">{copy.pricingKicker}</p>
+      <h2 class="section__title">{copy.pricingTitle}</h2>
+      <p class="note">{copy.pricingNote}</p>
+    </div>
+    <div class="plans">
+      {
+        plans.map((plan) => (
+          <article class="plan">
+            <div class="plan__info">
+              <h3 class="plan__name">{plan.name}</h3>
+              <p class="plan__tagline">{plan.tagline}</p>
+              {/* TODO(DEC-17): placeholder pricing until figures are decided */}
+              <p class="plan__price">{plan.price}</p>
+              <a
+                class="btn"
+                href={ctaHref}
+                target={ctaExternal ? '_blank' : undefined}
+                rel={ctaExternal ? 'noopener' : undefined}
+              >
+                {plan.cta}
+              </a>
+            </div>
+            <ul class="plan__list">
+              {plan.includes.map((item) => (
+                <li>{item}</li>
+              ))}
+            </ul>
+          </article>
+        ))
+      }
+    </div>
+  </div>
+</section>
+
+<style>
+  .head--center {
+    margin-inline: auto;
+    text-align: center;
+    justify-items: center;
+  }
+  .note {
+    color: var(--text-dim);
+  }
+  .plans {
+    display: grid;
+    gap: 1.25rem;
+    max-width: 46rem;
+    margin-inline: auto;
+  }
+  .plan {
+    display: grid;
+    grid-template-columns: 1.15fr 1fr;
+    gap: 2rem;
+    border: 1px solid var(--accent-dim);
+    border-radius: 16px;
+    padding: clamp(1.75rem, 4vw, 2.75rem);
+    background: linear-gradient(170deg, var(--surface), var(--surface-2));
+    box-shadow: 0 24px 50px -36px rgba(58, 42, 24, 0.4);
+  }
+  .plan__info {
+    display: grid;
+    gap: 0.6rem;
+    align-content: start;
+    justify-items: start;
+  }
+  .plan__name {
+    font-size: 1.6rem;
+  }
+  .plan__tagline {
+    color: var(--text-dim);
+    font-size: 0.95rem;
+  }
+  .plan__price {
+    font-family: var(--display);
+    font-size: 2.1rem;
+    color: var(--accent);
+    margin-block: 0.4rem 0.9rem;
+  }
+  .plan__list {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: grid;
+    gap: 0.6rem;
+    align-content: center;
+  }
+  .plan__list li {
+    font-size: 0.92rem;
+    color: var(--text-dim);
+    padding-left: 1.2rem;
+    position: relative;
+  }
+  .plan__list li::before {
+    content: '—';
+    position: absolute;
+    left: 0;
+    color: var(--accent);
+  }
+  @media (max-width: 700px) {
+    .plan {
+      grid-template-columns: 1fr;
+    }
+  }
+</style>

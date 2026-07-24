@@ -1,0 +1,152 @@
+---
+interface Props {
+  copy: Record<string, any>;
+  ui: Record<string, string>;
+  settings: { contactEmail: string; formEndpoint: string };
+}
+const { copy, ui, settings } = Astro.props;
+// TODO(DEC-11): formEndpoint is empty until a Formspree (or Web3Forms) form
+// is created; the script below falls back to mailto when unset.
+const endpoint = settings.formEndpoint;
+---
+
+<section class="section" id="contact">
+  <div class="wrap contact">
+    <div class="section__head contact__head">
+      <p class="kicker">{copy.contactKicker}</p>
+      <h2 class="section__title">{copy.contactTitle}</h2>
+      <p class="contact__intro">{copy.contactIntro}</p>
+    </div>
+    <form
+      id="contact-form"
+      class="form"
+      action={endpoint || `mailto:${settings.contactEmail}`}
+      method="POST"
+      data-endpoint={endpoint}
+      data-mailto={settings.contactEmail}
+      novalidate
+    >
+      <input class="hp" type="text" name="_gotcha" tabindex="-1" autocomplete="off" aria-hidden="true" />
+      <label>
+        <span>{ui.formName}</span>
+        <input type="text" name="name" required autocomplete="name" />
+      </label>
+      <label>
+        <span>{ui.formEmail}</span>
+        <input type="email" name="email" required autocomplete="email" />
+      </label>
+      <label>
+        <span>{ui.formMessage}</span>
+        <textarea name="message" rows="5" required></textarea>
+      </label>
+      <button class="btn" type="submit" data-label={ui.formSend} data-sending={ui.formSending}>
+        {ui.formSend}
+      </button>
+      <p class="form__status form__status--ok" hidden>{ui.formSuccess}</p>
+      <p class="form__status form__status--err" hidden>
+        {ui.formError}
+        <a href={`mailto:${settings.contactEmail}`}>{ui.formMailto}</a>
+      </p>
+    </form>
+  </div>
+</section>
+
+<script>
+  const form = document.getElementById('contact-form') as HTMLFormElement;
+  const button = form.querySelector('button')!;
+  const ok = form.querySelector('.form__status--ok') as HTMLElement;
+  const err = form.querySelector('.form__status--err') as HTMLElement;
+  const endpoint = form.dataset.endpoint;
+
+  form.addEventListener('submit', async (event) => {
+    if (!endpoint) return; // no endpoint yet — let the mailto action handle it
+    event.preventDefault();
+    ok.hidden = true;
+    err.hidden = true;
+    button.disabled = true;
+    button.textContent = button.dataset.sending!;
+    try {
+      const res = await fetch(endpoint, {
+        method: 'POST',
+        body: new FormData(form),
+        headers: { Accept: 'application/json' },
+      });
+      if (!res.ok) throw new Error(String(res.status));
+      form.reset();
+      ok.hidden = false;
+    } catch {
+      err.hidden = false;
+    } finally {
+      button.disabled = false;
+      button.textContent = button.dataset.label!;
+    }
+  });
+</script>
+
+<style>
+  .contact {
+    display: grid;
+    grid-template-columns: 1fr 1.1fr;
+    gap: clamp(2.5rem, 6vw, 5rem);
+  }
+  .contact__head {
+    margin-bottom: 0;
+  }
+  .contact__intro {
+    color: var(--text-dim);
+  }
+  .form {
+    display: grid;
+    gap: 1.1rem;
+    justify-items: start;
+  }
+  label {
+    display: grid;
+    gap: 0.4rem;
+    width: 100%;
+  }
+  label span {
+    font-family: var(--mono);
+    font-size: 0.7rem;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--text-dim);
+  }
+  input,
+  textarea {
+    width: 100%;
+    background: var(--surface);
+    border: 1px solid var(--line);
+    border-radius: 8px;
+    color: var(--text);
+    font-family: var(--sans);
+    font-size: 1rem;
+    padding: 0.75rem 0.9rem;
+    transition: border-color 0.15s ease;
+  }
+  input:focus,
+  textarea:focus {
+    outline: none;
+    border-color: var(--accent);
+  }
+  textarea {
+    resize: vertical;
+  }
+  .form__status {
+    font-size: 0.92rem;
+  }
+  .form__status--ok {
+    color: var(--accent);
+  }
+  .form__status--err {
+    color: var(--text-dim);
+  }
+  .form__status--err a {
+    color: var(--accent);
+  }
+  @media (max-width: 860px) {
+    .contact {
+      grid-template-columns: 1fr;
+    }
+  }
+</style>

@@ -1,0 +1,181 @@
+/* ------------------------------------------------------------------ */
+/* Design tokens — the only place colors, fonts and layout live.       */
+/* A rebrand should touch :root and nothing else.                      */
+/* TODO(DEC-8): placeholder brand direction (light & warm, copper      */
+/* accent) — swap tokens when real brand assets arrive.                */
+/* ------------------------------------------------------------------ */
+:root {
+  /* surfaces — warm paper */
+  --bg: #f7f3ec;
+  --surface: #fffdf9;
+  --surface-2: #f0e9dc;
+  --line: #e3dccc;
+
+  /* type colors — warm ink */
+  --text: #262019;
+  --text-dim: #7a6f5d;
+
+  /* accent — verdigris teal, from the Tali app UI */
+  --accent: #2e7573;
+  --accent-dim: #a4c9c7;
+  --on-accent: #f4faf9;
+
+  /* e-paper — the one deliberately light surface, used by the device mock */
+  --epaper: #e9e7e0;
+  --epaper-ink: #23211c;
+
+  /* font stacks */
+  --display: 'Fraunces Variable', 'Georgia', serif;
+  --sans: 'Inter Variable', system-ui, sans-serif;
+  --mono: 'IBM Plex Mono', ui-monospace, monospace;
+
+  /* layout */
+  --gutter: clamp(1.25rem, 5vw, 3rem);
+  --maxw: 68rem;
+  --header-h: 4.25rem;
+}
+
+/* ------------------------------------------------------------------ */
+/* Base                                                                */
+/* ------------------------------------------------------------------ */
+* {
+  box-sizing: border-box;
+}
+
+html {
+  scroll-behavior: smooth;
+  scroll-padding-top: calc(var(--header-h) + 1rem);
+}
+
+body {
+  margin: 0;
+  background: var(--bg);
+  color: var(--text);
+  font-family: var(--sans);
+  font-size: 1.0625rem;
+  line-height: 1.65;
+  -webkit-font-smoothing: antialiased;
+}
+
+h1,
+h2,
+h3 {
+  font-family: var(--display);
+  font-weight: 560;
+  line-height: 1.12;
+  letter-spacing: -0.015em;
+  margin: 0;
+  text-wrap: balance;
+}
+
+p {
+  margin: 0;
+}
+
+a {
+  color: inherit;
+}
+
+img,
+svg {
+  display: block;
+  max-width: 100%;
+}
+
+::selection {
+  background: var(--accent);
+  color: var(--on-accent);
+}
+
+/* ------------------------------------------------------------------ */
+/* Shared utilities                                                    */
+/* ------------------------------------------------------------------ */
+.wrap {
+  max-width: var(--maxw);
+  margin-inline: auto;
+  padding-inline: var(--gutter);
+}
+
+.kicker {
+  font-family: var(--mono);
+  font-size: 0.75rem;
+  font-weight: 500;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--accent);
+}
+
+.section {
+  padding-block: clamp(4rem, 10vw, 7.5rem);
+  border-top: 1px solid var(--line);
+}
+
+.section__head {
+  display: grid;
+  gap: 0.9rem;
+  max-width: 34em;
+  margin-bottom: clamp(2.25rem, 5vw, 3.5rem);
+}
+
+.section__title {
+  font-size: clamp(1.9rem, 4vw, 2.8rem);
+}
+
+.btn {
+  display: inline-block;
+  padding: 0.8rem 1.6rem;
+  border: 1px solid var(--text);
+  border-radius: 999px;
+  background: var(--text);
+  color: var(--bg);
+  font-family: var(--sans);
+  font-size: 0.95rem;
+  font-weight: 600;
+  text-decoration: none;
+  cursor: pointer;
+  transition: background 0.15s ease, border-color 0.15s ease, color 0.15s ease;
+}
+
+.btn:hover {
+  background: var(--accent);
+  border-color: var(--accent);
+  color: var(--on-accent);
+}
+
+.btn--ghost {
+  background: transparent;
+  color: var(--text);
+  border-color: var(--line);
+}
+
+.btn--ghost:hover {
+  background: transparent;
+  color: var(--text);
+  border-color: var(--text);
+}
+
+.tag {
+  font-family: var(--mono);
+  font-size: 0.7rem;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--text-dim);
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  padding: 0.3rem 0.75rem;
+}
+
+/* honeypot field — visually gone, still submittable by bots */
+.hp {
+  position: absolute;
+  left: -9999px;
+  width: 1px;
+  height: 1px;
+  opacity: 0;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+}

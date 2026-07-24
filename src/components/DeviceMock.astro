@@ -1,0 +1,101 @@
+---
+// A CSS-drawn stand-in for product photography: the Tali e-paper display
+// showing two monitored places. TODO(DEC-19): replace with real product
+// imagery when available.
+interface Props {
+  locale: 'en' | 'es';
+}
+const { locale } = Astro.props;
+const places =
+  locale === 'en'
+    ? [
+        { name: 'CELLAR · NORTH', temp: '12.4°C', hum: '71%', state: 'STEADY' },
+        { name: 'HUMIDOR', temp: '18.1°C', hum: '68%', state: 'STEADY' },
+      ]
+    : [
+        { name: 'CAVA · NORTE', temp: '12.4°C', hum: '71%', state: 'ESTABLE' },
+        { name: 'HUMIDOR', temp: '18.1°C', hum: '68%', state: 'ESTABLE' },
+      ];
+---
+
+<div class="device" role="img" aria-label="Tali e-paper display">
+  <div class="device__screen">
+    <div class="device__top">
+      <span class="device__logo">tali</span>
+      <span class="device__time">21:47</span>
+    </div>
+    {
+      places.map((p) => (
+        <div class="place">
+          <div class="place__name">{p.name}</div>
+          <div class="place__row">
+            <span class="place__temp">{p.temp}</span>
+            <span class="place__hum">{p.hum} RH</span>
+            <span class="place__state">● {p.state}</span>
+          </div>
+        </div>
+      ))
+    }
+  </div>
+</div>
+
+<style>
+  .device {
+    background: linear-gradient(160deg, #26201a, #14100c);
+    border: 1px solid var(--line);
+    border-radius: 22px;
+    padding: clamp(1rem, 2.5vw, 1.6rem);
+    box-shadow:
+      0 30px 60px -28px rgba(58, 42, 24, 0.45),
+      inset 0 1px 0 rgba(255, 255, 255, 0.06);
+    max-width: 26rem;
+  }
+  .device__screen {
+    background: var(--epaper);
+    color: var(--epaper-ink);
+    border-radius: 8px;
+    padding: 1.2rem 1.3rem;
+    font-family: var(--mono);
+    display: grid;
+    gap: 1.1rem;
+    box-shadow: inset 0 0 0 1px rgba(0, 0, 0, 0.12);
+  }
+  .device__top {
+    display: flex;
+    justify-content: space-between;
+    font-size: 0.72rem;
+    letter-spacing: 0.14em;
+    border-bottom: 1px solid rgba(0, 0, 0, 0.18);
+    padding-bottom: 0.6rem;
+  }
+  .device__logo {
+    font-weight: 500;
+  }
+  .place {
+    display: grid;
+    gap: 0.25rem;
+  }
+  .place__name {
+    font-size: 0.66rem;
+    letter-spacing: 0.16em;
+    opacity: 0.65;
+  }
+  .place__row {
+    display: flex;
+    align-items: baseline;
+    gap: 0.9rem;
+  }
+  .place__temp {
+    font-size: 1.7rem;
+    font-weight: 500;
+    letter-spacing: -0.02em;
+  }
+  .place__hum {
+    font-size: 0.95rem;
+  }
+  .place__state {
+    margin-left: auto;
+    font-size: 0.62rem;
+    letter-spacing: 0.14em;
+  }
+</style>

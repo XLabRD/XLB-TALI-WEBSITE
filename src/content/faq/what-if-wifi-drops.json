@@ -1,0 +1,11 @@
+{
+  "order": 3,
+  "en": {
+    "question": "What happens if my Wi-Fi goes down?",
+    "answer": "Tali keeps measuring and displaying locally — the e-paper screen never depends on the cloud. When the connection returns, the full history syncs, gap-free."
+  },
+  "es": {
+    "question": "¿Qué pasa si se cae mi Wi-Fi?",
+    "answer": "Tali sigue midiendo y mostrando localmente — la pantalla de tinta electrónica nunca depende de la nube. Cuando vuelve la conexión, el historial completo se sincroniza sin huecos."
+  }
+}

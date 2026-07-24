@@ -1,0 +1,11 @@
+{
+  "order": 1,
+  "en": {
+    "question": "What is a “place”?",
+    "answer": "A place is anywhere you put a Puk sensor — a cellar, a humidor, a display cabinet, a safe. One Tali display can watch several places at once, each with its own readings and alert thresholds."
+  },
+  "es": {
+    "question": "¿Qué es un “lugar”?",
+    "answer": "Un lugar es cualquier sitio donde coloques un sensor Puk — una cava, un humidor, una vitrina, una caja fuerte. Una sola pantalla Tali puede vigilar varios lugares a la vez, cada uno con sus propias lecturas y umbrales de alerta."
+  }
+}

@@ -1,0 +1,67 @@
+---
+interface Props {
+  copy: Record<string, any>;
+  items: Array<{ question: string; answer: string }>;
+}
+const { copy, items } = Astro.props;
+---
+
+<section class="section" id="faq">
+  <div class="wrap">
+    <div class="section__head">
+      <p class="kicker">{copy.faqKicker}</p>
+      <h2 class="section__title">{copy.faqTitle}</h2>
+    </div>
+    <div class="list">
+      {
+        items.map((item) => (
+          <details class="item">
+            <summary>{item.question}</summary>
+            <p>{item.answer}</p>
+          </details>
+        ))
+      }
+    </div>
+  </div>
+</section>
+
+<style>
+  .list {
+    max-width: 46rem;
+    border-top: 1px solid var(--line);
+  }
+  .item {
+    border-bottom: 1px solid var(--line);
+  }
+  summary {
+    cursor: pointer;
+    list-style: none;
+    padding: 1.15rem 2.2rem 1.15rem 0;
+    font-family: var(--display);
+    font-size: 1.1rem;
+    position: relative;
+  }
+  summary::-webkit-details-marker {
+    display: none;
+  }
+  summary::after {
+    content: '+';
+    position: absolute;
+    right: 0.25rem;
+    top: 50%;
+    transform: translateY(-50%);
+    color: var(--accent);
+    font-family: var(--mono);
+    font-size: 1.1rem;
+    transition: transform 0.15s ease;
+  }
+  details[open] summary::after {
+    transform: translateY(-50%) rotate(45deg);
+  }
+  .item p {
+    color: var(--text-dim);
+    font-size: 0.95rem;
+    padding: 0 0 1.3rem;
+    max-width: 40em;
+  }
+</style>

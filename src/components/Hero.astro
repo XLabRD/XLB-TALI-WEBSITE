@@ -1,0 +1,97 @@
+---
+interface Props {
+  locale: 'en' | 'es';
+  copy: Record<string, any>;
+}
+const { copy } = Astro.props;
+---
+
+<section class="hero">
+  <div class="wrap hero__in">
+    <div class="hero__text">
+      <p class="kicker">{copy.heroKicker}</p>
+      <h1 class="hero__title">{copy.heroTitle}</h1>
+      <p class="hero__sub">{copy.heroSubtitle}</p>
+      <div class="hero__ctas">
+        <a class="btn" href="#edition">{copy.heroCtaPrimary}</a>
+        <a class="btn btn--ghost" href="#system">{copy.heroCtaSecondary}</a>
+      </div>
+    </div>
+    <div class="hero__visual">
+      <video
+        src="/videos/tali-hero.mp4"
+        poster="/images/tali-hero.jpg"
+        width="1280"
+        height="720"
+        autoplay
+        muted
+        loop
+        playsinline
+        preload="auto"
+        aria-label={copy.heroImageAlt}></video>
+    </div>
+  </div>
+</section>
+
+<script>
+  // Autoplaying loop is decorative — halt it for reduced-motion users.
+  const video = document.querySelector<HTMLVideoElement>('.hero__visual video');
+  if (video && matchMedia('(prefers-reduced-motion: reduce)').matches) {
+    video.removeAttribute('autoplay');
+    video.pause();
+  }
+</script>
+
+<style>
+  .hero {
+    padding-block: clamp(4rem, 10vw, 8rem);
+    background:
+      radial-gradient(60rem 30rem at 80% -10%, color-mix(in srgb, var(--accent) 10%, transparent), transparent 60%),
+      var(--bg);
+  }
+  .hero__in {
+    display: grid;
+    grid-template-columns: 1.25fr 1fr;
+    gap: clamp(2.5rem, 5vw, 4.5rem);
+    align-items: center;
+  }
+  .hero__text {
+    display: grid;
+    gap: 1.4rem;
+    justify-items: start;
+  }
+  .hero__title {
+    font-size: clamp(2.5rem, 5.5vw, 4rem);
+  }
+  .hero__sub {
+    color: var(--text-dim);
+    font-size: 1.15rem;
+    max-width: 30em;
+  }
+  .hero__ctas {
+    display: flex;
+    gap: 0.9rem;
+    flex-wrap: wrap;
+    margin-top: 0.5rem;
+  }
+  .hero__visual {
+    /* Video leads on wide screens; DOM keeps the h1 first for semantics. */
+    order: -1;
+    justify-self: stretch;
+  }
+  .hero__visual video {
+    width: 100%;
+    height: auto;
+    border-radius: 18px;
+    box-shadow: 0 30px 60px -28px rgba(58, 42, 24, 0.45);
+  }
+  @media (max-width: 860px) {
+    .hero__in {
+      grid-template-columns: 1fr;
+    }
+    /* Stacked: headline first, video below it. */
+    .hero__visual {
+      order: 1;
+    }
+  }
+</style>

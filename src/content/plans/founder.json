@@ -1,0 +1,29 @@
+{
+  "slug": "",
+  "order": 1,
+  "featured": true,
+  "price": "$142.00 USD",
+  "priceNote": "Founders pricing (30% off)",
+  "en": {
+    "name": "Founders Limited Edition",
+    "tagline": "A limited edition just for you.",
+    "includes": [
+      "1 Tali display + Hub (Founders metal edition)",
+      "1 Puk wireless sensor (Founders metal edition)",
+      "App and cloud history at no cost for 24 months",
+      "Priority technical support"
+    ],
+    "cta": "Pre-order now"
+  },
+  "es": {
+    "name": "Edición Limitada Founders",
+    "tagline": "Una edición limitada solo para ti.",
+    "includes": [
+      "1 pantalla Tali + Hub (edición Founders en metal)",
+      "1 sensor inalámbrico Puk (edición Founders en metal)",
+      "App e historial en la nube sin costo por 24 meses",
+      "Soporte técnico prioritario"
+    ],
+    "cta": "Pre-ordena ahora"
+  }
+}

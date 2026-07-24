@@ -1,0 +1,48 @@
+---
+import '@fontsource-variable/fraunces';
+import '@fontsource-variable/inter';
+import '@fontsource/ibm-plex-mono/400.css';
+import '@fontsource/ibm-plex-mono/500.css';
+import '../styles/global.css';
+
+interface Props {
+  locale: 'en' | 'es';
+  title: string;
+  description: string;
+  /** Path of this page in the other language, for hreflang + the switcher. */
+  altPath: string;
+}
+
+const { locale, title, description, altPath } = Astro.props;
+const site = Astro.site!;
+const canonical = new URL(Astro.url.pathname, site);
+const altUrl = new URL(altPath, site);
+const altLocale = locale === 'en' ? 'es' : 'en';
+const ogLocale = locale === 'en' ? 'en_US' : 'es_MX';
+---
+
+<!doctype html>
+<html lang={locale === 'en' ? 'en-US' : 'es-MX'}>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>{title}</title>
+    <meta name="description" content={description} />
+    <link rel="canonical" href={canonical} />
+    <link rel="alternate" hreflang={locale === 'en' ? 'en-US' : 'es-MX'} href={canonical} />
+    <link rel="alternate" hreflang={altLocale === 'en' ? 'en-US' : 'es-MX'} href={altUrl} />
+    <link rel="alternate" hreflang="x-default" href={new URL('/', site)} />
+    <link rel="icon" type="image/png" href="/favicon.png" />
+    <link rel="sitemap" href="/sitemap-index.xml" />
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content={title} />
+    <meta property="og:description" content={description} />
+    <meta property="og:url" content={canonical} />
+    <meta property="og:locale" content={ogLocale} />
+    <meta name="twitter:card" content="summary" />
+    <slot name="head" />
+  </head>
+  <body>
+    <slot />
+  </body>
+</html>

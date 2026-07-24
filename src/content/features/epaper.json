@@ -1,0 +1,12 @@
+{
+  "order": 5,
+  "icon": "epaper",
+  "en": {
+    "title": "E-paper, always on",
+    "body": "Readings you glance at like a fine instrument. The e-paper display emits no light, draws almost no power, and never needs waking."
+  },
+  "es": {
+    "title": "Tinta electrónica, siempre visible",
+    "body": "Lecturas que consultas como un instrumento fino. La pantalla de tinta electrónica no emite luz, casi no consume energía y nunca hay que despertarla."
+  }
+}

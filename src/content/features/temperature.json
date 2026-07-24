@@ -1,0 +1,12 @@
+{
+  "order": 1,
+  "icon": "temperature",
+  "en": {
+    "title": "Temperature, to the decimal",
+    "body": "Laboratory-grade sensing catches drift long before it becomes damage. Wine, cigars and medicinals each get the range they demand."
+  },
+  "es": {
+    "title": "Temperatura, al decimal",
+    "body": "Sensores de grado laboratorio detectan la desviación mucho antes de que se convierta en daño. Vinos, puros y medicinales, cada uno en el rango que exige."
+  }
+}

@@ -1,0 +1,140 @@
+{
+  "en": {
+    "heroKicker": "Environmental intelligence",
+    "heroTitle": "The keeper of everything you cherish.",
+    "heroSubtitle": "Tali monitors the environment around your wine, cigars and other delicate collections — precisely, around the clock and in realtime. Track and make sense of temperature, humidity, vibration and light.",
+    "heroCtaPrimary": "Pre-order now",
+    "heroCtaSecondary": "See how it works",
+    "heroImageAlt": "The Tali e-paper display standing on a marble table, showing 17.2°C and 67% humidity for a wine cellar",
+    "systemKicker": "The system",
+    "systemTitle": "One hub for unlimited zones.",
+    "systemIntro": "Discreet wireless sensors live with your collection. A glanceable e-paper display shows what they sense. And the app keeps the detailed log wherever you are — and lets you know when your attention is needed. Pair one sensor or many — and because the display senses the environment itself, it can live inside a monitored zone or stand as a zone of its own.",
+    "systemParts": [
+      {
+        "name": "Tali",
+        "role": "The display",
+        "body": "An always-on e-paper screen that sits wherever you are. It shows live readings from every place you monitor — no glow, no noise, just ink-like clarity that lasts.",
+        "image": "/images/tali-display.jpg",
+        "imageAlt": "The Tali e-paper display on a marble table, showing 18.0°C and 76% humidity for a wine cellar"
+      },
+      {
+        "name": "Puk",
+        "role": "The sensors",
+        "body": "Small wireless sensors you place inside the cellar, the humidor, the cabinet. Each Puk measures temperature, humidity, vibration and light exposure with laboratory-grade precision.",
+        "image": "/images/puk-sensor.jpg",
+        "imageAlt": "A Puk wireless sensor resting on a wooden wine rack between bottles"
+      }
+    ],
+    "explodeKicker": "Inside Tali",
+    "explodeTitle": "Precision, layer by layer.",
+    "explodeCaption": "Engineered with the utmost precision and craftsmanship. Lasting materials and a design that lives up to your collection — in beauty and in performance.",
+    "explodeCallouts": {
+      "lightSensor": "Light Sensor",
+      "ambientSensor": "Ambient Sensor",
+      "epaperScreen": "e-Paper Screen",
+      "battery": "Battery",
+      "accelerometer": "Accelerometer",
+      "usbC": "USB-C",
+      "accessoriesPort": "Accessories Port"
+    },
+    "appKicker": "The app",
+    "appTitle": "Your collection, in your pocket.",
+    "appIntro": "See what's happening in real time or dive into the detailed history. Get notified the moment something matters — readings outside your custom thresholds, power outages and more. Whether you keep one collection or many, everything lives in one organized place.",
+    "appScreens": [
+      {
+        "src": "/images/app-devices.jpg",
+        "alt": "The Tali app home screen showing live temperature, humidity and light gauges for two cellar sensors",
+        "caption": "Every place, live"
+      },
+      {
+        "src": "/images/app-history.jpg",
+        "alt": "The Tali app history screen with temperature and humidity charts by hour, day, week, month and year",
+        "caption": "History and trends"
+      },
+      {
+        "src": "/images/app-thresholds.jpg",
+        "alt": "The Tali app thresholds screen for a wine named Tinto Lobo, with temperature, humidity and light ranges",
+        "caption": "Custom thresholds for every collection"
+      }
+    ],
+    "featuresKicker": "What it watches",
+    "featuresTitle": "Every variable that matters, measured precisely.",
+    "pricingKicker": "The edition",
+    "pricingTitle": "Founders Series, our limited edition",
+    "pricingNote": "Pre-order yours now and be the first to own it. A numbered first release, shipping from September 2026.",
+    "faqKicker": "Questions",
+    "faqTitle": "Asked, answered.",
+    "contactKicker": "Contact",
+    "contactTitle": "Let's talk.",
+    "contactIntro": "Send us a message with your questions and we'll get back to you in less than 48 hours."
+  },
+  "es": {
+    "heroKicker": "Inteligencia ambiental",
+    "heroTitle": "El guardián de todo lo que atesoras.",
+    "heroSubtitle": "Tali vigila el entorno de tus vinos, puros y otras colecciones delicadas — con precisión, a toda hora y en tiempo real. Registra y da sentido a la temperatura, la humedad, la vibración y la luz.",
+    "heroCtaPrimary": "Pre-ordena ahora",
+    "heroCtaSecondary": "Cómo funciona",
+    "heroImageAlt": "La pantalla Tali de tinta electrónica sobre una mesa de mármol, mostrando 17.2°C y 67% de humedad de una cava",
+    "systemKicker": "El sistema",
+    "systemTitle": "Un hub para zonas ilimitadas.",
+    "systemIntro": "Sensores inalámbricos discretos viven con tu colección. Una pantalla de tinta electrónica muestra lo que perciben, de un vistazo. Y la app guarda el registro detallado estés donde estés — y te avisa cuando se necesita tu atención. Añade uno o muchos sensores — y como la pantalla también percibe su entorno, puede vivir dentro de una zona monitoreada o ser una zona por sí misma.",
+    "systemParts": [
+      {
+        "name": "Tali",
+        "role": "La pantalla",
+        "body": "Una pantalla de tinta electrónica siempre encendida que vive donde tú estés. Muestra lecturas en vivo de cada lugar que monitoreas — sin brillo, sin ruido, con la claridad de la tinta sobre papel.",
+        "image": "/images/tali-display.jpg",
+        "imageAlt": "La pantalla Tali de tinta electrónica sobre una mesa de mármol, mostrando 18.0°C y 76% de humedad de una cava"
+      },
+      {
+        "name": "Puk",
+        "role": "Los sensores",
+        "body": "Pequeños sensores inalámbricos que colocas dentro de la cava, el humidor, la vitrina. Cada Puk mide temperatura, humedad, vibración y exposición a la luz con precisión de laboratorio.",
+        "image": "/images/puk-sensor.jpg",
+        "imageAlt": "Un sensor inalámbrico Puk sobre un anaquel de madera, entre botellas de vino"
+      }
+    ],
+    "explodeKicker": "Tali por dentro",
+    "explodeTitle": "Precisión, capa por capa.",
+    "explodeCaption": "Fabricado con la máxima precisión y artesanía. Materiales que perduran y un diseño a la altura de tu colección — en belleza y en desempeño.",
+    "explodeCallouts": {
+      "lightSensor": "Sensor de luz",
+      "ambientSensor": "Sensor ambiental",
+      "epaperScreen": "Pantalla e-Paper",
+      "battery": "Batería",
+      "accelerometer": "Acelerómetro",
+      "usbC": "USB-C",
+      "accessoriesPort": "Puerto de accesorios"
+    },
+    "appKicker": "La app",
+    "appTitle": "Tu colección, en tu bolsillo.",
+    "appIntro": "Mira lo que sucede en tiempo real o consulta el historial detallado. Recibe un aviso en el momento en que algo importa — parámetros fuera de tus umbrales personalizados, cortes de energía y más. Ya sea que tengas una colección o muchas, todo vive en un solo lugar, ordenado.",
+    "appScreens": [
+      {
+        "src": "/images/app-devices.jpg",
+        "alt": "Pantalla principal de la app Tali con medidores en vivo de temperatura, humedad y luz de dos sensores de cava",
+        "caption": "Cada lugar, en vivo"
+      },
+      {
+        "src": "/images/app-history.jpg",
+        "alt": "Pantalla de historial de la app Tali con gráficas de temperatura y humedad por hora, día, semana, mes y año",
+        "caption": "Historial y tendencias"
+      },
+      {
+        "src": "/images/app-thresholds.jpg",
+        "alt": "Pantalla de umbrales de la app Tali para un vino llamado Tinto Lobo, con rangos de temperatura, humedad y luz",
+        "caption": "Umbrales a la medida de cada colección"
+      }
+    ],
+    "featuresKicker": "Lo que vigila",
+    "featuresTitle": "Cada variable que importa, medida con precisión.",
+    "pricingKicker": "La edición",
+    "pricingTitle": "Founders Series, nuestra edición limitada",
+    "pricingNote": "Pre-ordena la tuya ahora y sé de los primeros en tenerla. Una primera serie numerada, con envíos a partir de septiembre de 2026.",
+    "faqKicker": "Preguntas",
+    "faqTitle": "Preguntas frecuentes.",
+    "contactKicker": "Contacto",
+    "contactTitle": "Hablemos.",
+    "contactIntro": "Envíanos un mensaje con tus preguntas y te responderemos en menos de 48 horas."
+  }
+}

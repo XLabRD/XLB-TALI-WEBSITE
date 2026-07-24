@@ -1,0 +1,12 @@
+{
+  "order": 2,
+  "icon": "humidity",
+  "en": {
+    "title": "Humidity, held steady",
+    "body": "Corks stay supple, wrappers stay whole. Tali tracks relative humidity continuously and warns you before dryness or damp sets in."
+  },
+  "es": {
+    "title": "Humedad, bajo control",
+    "body": "Los corchos se mantienen elásticos, las capas intactas. Tali registra la humedad relativa de forma continua y te avisa antes de que la sequedad o la humedad hagan estragos."
+  }
+}

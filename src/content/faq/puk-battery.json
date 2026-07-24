@@ -1,0 +1,12 @@
+{
+  "slug": "",
+  "order": 99,
+  "en": {
+    "question": "How long does the Puk battery last?",
+    "answer": "About a year and a half and it is user replaceable. It uses a standard CR2032 of 220mah."
+  },
+  "es": {
+    "question": "¿Cuánto dura la pila del Puk?",
+    "answer": "Aproximadamente un año y medio, y el usuario puede reemplazarla. Utiliza una pila estándar CR2032 de 220 mAh."
+  }
+}

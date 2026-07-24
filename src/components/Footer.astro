@@ -1,0 +1,77 @@
+---
+interface Props {
+  ui: Record<string, string>;
+  settings: { siteName: string; contactEmail: string; instagram: string; x: string };
+}
+const { ui, settings } = Astro.props;
+const year = new Date().getFullYear();
+// TODO(DEC-16): social URLs pending — empty values render nothing.
+const socials = [
+  { label: 'Instagram', href: settings.instagram },
+  { label: 'X', href: settings.x },
+].filter((s) => s.href);
+---
+
+<footer class="footer">
+  <div class="wrap footer__in">
+    <div>
+      <img class="footer__brand" src="/images/tali-logo.png" alt="Tali" height="26" />
+      <p class="footer__tag">{ui.footerTagline}</p>
+    </div>
+    <div class="footer__links">
+      <a href={`mailto:${settings.contactEmail}`}>{settings.contactEmail}</a>
+      {socials.map((s) => <a href={s.href} rel="noopener">{s.label}</a>)}
+    </div>
+  </div>
+  <div class="wrap footer__legal">
+    <span>© {year} {settings.siteName}</span>
+    <span class="footer__domain">tali.my</span>
+  </div>
+</footer>
+
+<style>
+  .footer {
+    border-top: 1px solid var(--line);
+    padding-block: 3rem 2rem;
+    background: var(--surface);
+  }
+  .footer__in {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    gap: 2rem;
+    margin-bottom: 2.5rem;
+  }
+  .footer__brand {
+    height: 26px;
+    width: auto;
+  }
+  .footer__tag {
+    color: var(--text-dim);
+    font-size: 0.9rem;
+    max-width: 26em;
+    margin-top: 0.4rem;
+  }
+  .footer__links {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    align-items: flex-start;
+  }
+  .footer__links a {
+    color: var(--text-dim);
+    font-size: 0.9rem;
+    text-decoration: none;
+  }
+  .footer__links a:hover {
+    color: var(--accent);
+  }
+  .footer__legal {
+    display: flex;
+    justify-content: space-between;
+    font-family: var(--mono);
+    font-size: 0.72rem;
+    letter-spacing: 0.08em;
+    color: var(--text-dim);
+  }
+</style>

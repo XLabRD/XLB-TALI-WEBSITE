@@ -1,0 +1,60 @@
+---
+import { getCollection, getEntry } from 'astro:content';
+import Base from '../layouts/Base.astro';
+import Header from './Header.astro';
+import Hero from './Hero.astro';
+import System from './System.astro';
+import ExplodedView from './ExplodedView.astro';
+import AppShowcase from './AppShowcase.astro';
+import Features from './Features.astro';
+import Pricing from './Pricing.astro';
+import Contact from './Contact.astro';
+import Footer from './Footer.astro';
+
+interface Props {
+  locale: 'en' | 'es';
+}
+const { locale } = Astro.props;
+const homePath = locale === 'en' ? '/' : '/es/';
+const altPath = locale === 'en' ? '/es/' : '/';
+
+const settings = (await getEntry('site', 'settings'))!.data;
+const home = (await getEntry('home', 'home'))!.data[locale];
+const ui = (await getEntry('ui', 'ui'))!.data[locale];
+
+const byOrder = (a: { data: { order: number } }, b: { data: { order: number } }) =>
+  a.data.order - b.data.order;
+
+const features = (await getCollection('features'))
+  .sort(byOrder)
+  .map((f) => ({ icon: f.data.icon, ...f.data[locale] }));
+// FAQ content in src/content/faq/ is kept but not rendered while the site
+// stays landing-length — see DEC-6 in DECISIONS.md.
+const plans = (await getCollection('plans'))
+  .sort(byOrder)
+  .map((p) => ({ featured: p.data.featured, price: p.data.price, ...p.data[locale] }));
+
+const jsonLd = {
+  '@context': 'https://schema.org',
+  '@type': 'Product',
+  name: 'Tali',
+  description: ui.metaDescription,
+  brand: { '@type': 'Brand', name: settings.siteName },
+  url: new URL(homePath, Astro.site).href,
+};
+---
+
+<Base locale={locale} title={ui.metaTitle} description={ui.metaDescription} altPath={altPath}>
+  <script type="application/ld+json" set:html={JSON.stringify(jsonLd)} slot="head" />
+  <Header locale={locale} ui={ui} altPath={altPath} homePath={homePath} />
+  <main>
+    <Hero locale={locale} copy={home} />
+    <System copy={home} />
+    <ExplodedView copy={home} />
+    <AppShowcase copy={home} />
+    <Features locale={locale} copy={home} features={features} />
+    <Pricing copy={home} plans={plans} orderUrl={settings.orderUrl} />
+    <Contact copy={home} ui={ui} settings={settings} />
+  </main>
+  <Footer ui={ui} settings={settings} />
+</Base>
