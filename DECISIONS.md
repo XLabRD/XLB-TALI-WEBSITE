@@ -24,7 +24,7 @@ Statuses: **OPEN** (deferred, default in effect) · **DECIDED** ·
 | DEC-11 | Form provider endpoint & notification inbox? | OPEN | `formEndpoint` empty → form falls back to `mailto:hello@tali.my` (unverified placeholder inbox) | `src/content/site/settings.json`, `src/components/Contact.astro`, `src/content.config.ts` | Create a Formspree/Web3Forms form, paste the POST URL, set the real inbox |
 | DEC-12 | Newsletter signup? | OPEN | None built | — | Add via `/content-site` if wanted |
 | DEC-13 | Deploy target? | DECIDED | GitHub Pages via Actions | `.github/workflows/deploy.yml` | 2026-07-01: interview |
-| DEC-14 | Git remote? | OPEN | Local repo only, no remote | `.github/workflows/deploy.yml` | Workflow activates once pushed to GitHub with Pages enabled |
+| DEC-14 | Git remote? | DECIDED | `git@github.com:XLabRD/XLB-TALI-WEBSITE.git` (X-Lab org) | `.github/workflows/deploy.yml` | 2026-07-23: initial push to main. Pending owner actions: Pages Source = GitHub Actions, custom domain tali.my + Enforce HTTPS, DNS A records (185.199.108–111.153), org domain verification |
 | DEC-15 | Analytics? | OPEN | None (fastest, no consent banner) | — | If wanted: Plausible/Fathom/GoatCounter over GA4 |
 | DEC-16 | Social links? | OPEN | Empty values → links hidden in footer | `src/content/site/settings.json`, `src/components/Footer.astro` | |
 | DEC-17 | Pricing figures? | OPEN | Placeholder "—" on the Founder Limited Edition | `src/content/plans/founder.json` | Editable in Keystatic → Editions. 2026-07-01: three placeholder editions replaced by single Founder Limited Edition per author. 2026-07-02: pitch deck targets 2,000 MXN (sensor + hub) and 2,400 MXN/yr service — not published pending author confirmation |
