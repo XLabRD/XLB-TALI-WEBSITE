@@ -7,6 +7,7 @@ import System from './System.astro';
 import ExplodedView from './ExplodedView.astro';
 import AppShowcase from './AppShowcase.astro';
 import Features from './Features.astro';
+import Film from './Film.astro';
 import Pricing from './Pricing.astro';
 import Contact from './Contact.astro';
 import Footer from './Footer.astro';
@@ -53,6 +54,7 @@ const jsonLd = {
     <ExplodedView copy={home} />
     <AppShowcase copy={home} />
     <Features locale={locale} copy={home} features={features} />
+    <Film copy={home} />
     <Pricing copy={home} plans={plans} orderUrl={settings.orderUrl} />
     <Contact copy={home} ui={ui} settings={settings} />
   </main>

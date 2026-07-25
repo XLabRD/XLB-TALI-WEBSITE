@@ -29,6 +29,16 @@ const { copy } = Astro.props;
         playsinline
         preload="auto"
         aria-label={copy.heroImageAlt}></video>
+      {
+        copy.heroCtaFilm && (
+          <a class="btn btn--ghost hero__film-btn" href="#film">
+            <svg viewBox="0 0 12 12" width="11" height="11" aria-hidden="true">
+              <path d="M2 1.5v9l8-4.5z" fill="currentColor" />
+            </svg>
+            {copy.heroCtaFilm}
+          </a>
+        )
+      }
     </div>
   </div>
 </section>
@@ -78,6 +88,14 @@ const { copy } = Astro.props;
     /* Video leads on wide screens; DOM keeps the h1 first for semantics. */
     order: -1;
     justify-self: stretch;
+    display: grid;
+    justify-items: center;
+    gap: 1.1rem;
+  }
+  .hero__film-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.55rem;
   }
   .hero__visual video {
     width: 100%;

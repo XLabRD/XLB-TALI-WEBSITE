@@ -1,0 +1,46 @@
+---
+interface Props {
+  copy: Record<string, any>;
+}
+const { copy } = Astro.props;
+---
+
+<section class="section" id="film">
+  <div class="wrap">
+    <div class="section__head">
+      <p class="kicker">{copy.filmKicker}</p>
+      <h2 class="section__title">{copy.filmTitle}</h2>
+      <p class="intro">{copy.filmCaption}</p>
+    </div>
+    <div class="film__frame">
+      <!-- preload="none" keeps the ~12 MB film off the critical path; only the
+           poster image loads until the visitor presses play. -->
+      <video
+        src="/videos/tali-film.mp4"
+        poster="/images/tali-film-poster.jpg"
+        width="1280"
+        height="720"
+        controls
+        preload="none"
+        playsinline
+        aria-label={copy.filmTitle}></video>
+    </div>
+  </div>
+</section>
+
+<style>
+  .intro {
+    color: var(--text-dim);
+  }
+  .film__frame {
+    max-width: 56rem;
+    margin-inline: auto;
+  }
+  .film__frame video {
+    width: 100%;
+    height: auto;
+    border-radius: 18px;
+    background: var(--surface);
+    box-shadow: 0 30px 60px -28px rgba(58, 42, 24, 0.45);
+  }
+</style>
