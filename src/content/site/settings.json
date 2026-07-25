@@ -1,8 +1,8 @@
 {
   "siteName": "Tali",
   "contactEmail": "hello@tali.my",
-  "formEndpoint": "",
-  "orderUrl": "",
+  "formEndpoint": "https://formspree.io/f/xjgnpkjg",
+  "orderUrl": "https://buy.stripe.com/test_28E6oGcFkexS3fI4gfefC00",
   "appStoreUrl": "https://www.apple.com",
   "instagram": "",
   "x": ""

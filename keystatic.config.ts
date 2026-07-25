@@ -135,7 +135,7 @@ export default config({
         contactEmail: fields.text({ label: 'Contact email (TODO DEC-11)' }),
         formEndpoint: fields.text({
           label: 'Form endpoint (TODO DEC-11)',
-          description: 'Formspree/Web3Forms POST URL. Empty = form falls back to mailto.',
+          description: 'Web3Forms access key (recommended — enables hCaptcha) or a Formspree-style POST URL. Empty = form falls back to mailto.',
         }),
         orderUrl: fields.text({
           label: 'Order URL (TODO DEC-21)',

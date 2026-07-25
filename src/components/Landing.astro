@@ -57,4 +57,22 @@ const jsonLd = {
     <Contact copy={home} ui={ui} settings={settings} />
   </main>
   <Footer ui={ui} settings={settings} />
+  <script>
+    // Long-distance anchor clicks jump instantly instead of smooth-scrolling
+    // through the tall exploded-view track (where the glide is slow and any
+    // wheel input cancels it, stranding the user mid-animation). Short hops
+    // keep the global smooth behavior. #contact is excluded — it opens the
+    // contact dialog.
+    document.querySelectorAll<HTMLAnchorElement>('a[href^="#"]:not([href="#contact"])').forEach((a) =>
+      a.addEventListener('click', (e) => {
+        const target = document.getElementById(a.getAttribute('href')!.slice(1));
+        if (!target) return;
+        if (Math.abs(target.getBoundingClientRect().top) > window.innerHeight * 2.5) {
+          e.preventDefault();
+          target.scrollIntoView({ behavior: 'instant', block: 'start' });
+          history.pushState(null, '', a.getAttribute('href'));
+        }
+      })
+    );
+  </script>
 </Base>

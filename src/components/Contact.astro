@@ -5,9 +5,15 @@ interface Props {
   settings: { contactEmail: string; formEndpoint: string };
 }
 const { copy, ui, settings } = Astro.props;
-// TODO(DEC-11): formEndpoint is empty until a Formspree (or Web3Forms) form
-// is created; the script below falls back to mailto when unset.
-const endpoint = settings.formEndpoint;
+// TODO(DEC-11): formEndpoint is empty until the form backend is created.
+// Two accepted formats:
+//   - a full POST URL (Formspree-style) — posted to as-is, no captcha widget
+//   - a bare Web3Forms access key — posts to api.web3forms.com with their
+//     built-in hCaptcha (verified server-side by Web3Forms)
+// Empty → the form falls back to mailto.
+const raw = settings.formEndpoint;
+const isW3F = Boolean(raw) && !raw.startsWith('http');
+const endpoint = isW3F ? 'https://api.web3forms.com/submit' : raw;
 ---
 
 <section class="section" id="contact">
@@ -16,47 +22,93 @@ const endpoint = settings.formEndpoint;
       <p class="kicker">{copy.contactKicker}</p>
       <h2 class="section__title">{copy.contactTitle}</h2>
       <p class="contact__intro">{copy.contactIntro}</p>
+      <button class="btn contact__open" type="button">{ui.formSend}</button>
+      <noscript>
+        <p class="contact__intro">
+          <a href={`mailto:${settings.contactEmail}`}>{ui.formMailto}</a>
+        </p>
+      </noscript>
     </div>
-    <form
-      id="contact-form"
-      class="form"
-      action={endpoint || `mailto:${settings.contactEmail}`}
-      method="POST"
-      data-endpoint={endpoint}
-      data-mailto={settings.contactEmail}
-      novalidate
-    >
-      <input class="hp" type="text" name="_gotcha" tabindex="-1" autocomplete="off" aria-hidden="true" />
-      <label>
-        <span>{ui.formName}</span>
-        <input type="text" name="name" required autocomplete="name" />
-      </label>
-      <label>
-        <span>{ui.formEmail}</span>
-        <input type="email" name="email" required autocomplete="email" />
-      </label>
-      <label>
-        <span>{ui.formMessage}</span>
-        <textarea name="message" rows="5" required></textarea>
-      </label>
-      <button class="btn" type="submit" data-label={ui.formSend} data-sending={ui.formSending}>
-        {ui.formSend}
-      </button>
-      <p class="form__status form__status--ok" hidden>{ui.formSuccess}</p>
-      <p class="form__status form__status--err" hidden>
-        {ui.formError}
-        <a href={`mailto:${settings.contactEmail}`}>{ui.formMailto}</a>
-      </p>
-    </form>
   </div>
 </section>
 
+<dialog class="contact-dialog" aria-labelledby="contact-dialog-title">
+  <button class="contact-dialog__close" type="button" aria-label="Close">✕</button>
+  <h2 class="contact-dialog__title" id="contact-dialog-title">{copy.contactTitle}</h2>
+  <p class="contact-dialog__intro">{copy.contactIntro}</p>
+  <form
+    id="contact-form"
+    class="form"
+    action={endpoint || `mailto:${settings.contactEmail}`}
+    method="POST"
+    data-endpoint={endpoint}
+    data-captcha={isW3F ? 'true' : undefined}
+    novalidate
+  >
+    {isW3F && <input type="hidden" name="access_key" value={raw} />}
+    {/* Web3Forms' native honeypot — their server drops submissions that fill it */}
+    {isW3F && <input class="hp" type="checkbox" name="botcheck" tabindex="-1" aria-hidden="true" />}
+    <input class="hp" type="text" name="_gotcha" tabindex="-1" autocomplete="off" aria-hidden="true" />
+    <label>
+      <span>{ui.formName}</span>
+      <input type="text" name="name" required autocomplete="name" />
+    </label>
+    <label>
+      <span>{ui.formEmail}</span>
+      <input type="email" name="email" required autocomplete="email" />
+    </label>
+    <label>
+      <span>{ui.formMessage}</span>
+      <textarea name="message" rows="5" required></textarea>
+    </label>
+    {isW3F && <div class="h-captcha" data-captcha="true"></div>}
+    <button class="btn" type="submit" data-label={ui.formSend} data-sending={ui.formSending}>
+      {ui.formSend}
+    </button>
+    <p class="form__status form__status--ok" hidden>{ui.formSuccess}</p>
+    <p class="form__status form__status--err" hidden>
+      {ui.formError}
+      <a href={`mailto:${settings.contactEmail}`}>{ui.formMailto}</a>
+    </p>
+  </form>
+</dialog>
+
 <script>
+  const dialog = document.querySelector('.contact-dialog') as HTMLDialogElement;
   const form = document.getElementById('contact-form') as HTMLFormElement;
-  const button = form.querySelector('button')!;
+  const button = form.querySelector('button[type="submit"]') as HTMLButtonElement;
   const ok = form.querySelector('.form__status--ok') as HTMLElement;
   const err = form.querySelector('.form__status--err') as HTMLElement;
   const endpoint = form.dataset.endpoint;
+  const wantsCaptcha = form.dataset.captcha === 'true';
+  let captchaLoaded = false;
+
+  const open = () => {
+    dialog.showModal();
+    // load the captcha script only when someone actually opens the form
+    if (wantsCaptcha && !captchaLoaded) {
+      captchaLoaded = true;
+      const s = document.createElement('script');
+      s.src = 'https://web3forms.com/client/script.js';
+      s.async = true;
+      s.defer = true;
+      document.head.appendChild(s);
+    }
+  };
+
+  // any link pointing at #contact opens the dialog instead of scrolling
+  document.querySelectorAll<HTMLAnchorElement>('a[href="#contact"]').forEach((a) =>
+    a.addEventListener('click', (e) => {
+      e.preventDefault();
+      open();
+    })
+  );
+  document.querySelector('.contact__open')?.addEventListener('click', open);
+  dialog.querySelector('.contact-dialog__close')?.addEventListener('click', () => dialog.close());
+  // click on the backdrop closes
+  dialog.addEventListener('click', (e) => {
+    if (e.target === dialog) dialog.close();
+  });
 
   form.addEventListener('submit', async (event) => {
     if (!endpoint) return; // no endpoint yet — let the mailto action handle it
@@ -73,6 +125,7 @@ const endpoint = settings.formEndpoint;
       });
       if (!res.ok) throw new Error(String(res.status));
       form.reset();
+      (window as any).hcaptcha?.reset();
       ok.hidden = false;
     } catch {
       err.hidden = false;
@@ -86,8 +139,6 @@ const endpoint = settings.formEndpoint;
 <style>
   .contact {
     display: grid;
-    grid-template-columns: 1fr 1.1fr;
-    gap: clamp(2.5rem, 6vw, 5rem);
   }
   .contact__head {
     margin-bottom: 0;
@@ -95,6 +146,49 @@ const endpoint = settings.formEndpoint;
   .contact__intro {
     color: var(--text-dim);
   }
+  .contact__open {
+    margin-top: 1.4rem;
+  }
+
+  .contact-dialog {
+    width: min(28rem, calc(100vw - 2.5rem));
+    border: 1px solid var(--line);
+    border-radius: 16px;
+    background: var(--surface);
+    color: var(--text);
+    padding: clamp(1.5rem, 4vw, 2.25rem);
+    box-shadow: 0 30px 70px -30px rgba(58, 42, 24, 0.45);
+  }
+  .contact-dialog::backdrop {
+    background: color-mix(in srgb, var(--text) 35%, transparent);
+    backdrop-filter: blur(3px);
+  }
+  .contact-dialog__close {
+    position: absolute;
+    top: 0.9rem;
+    right: 0.9rem;
+    background: none;
+    border: none;
+    color: var(--text-dim);
+    font-size: 1rem;
+    cursor: pointer;
+    padding: 0.35rem;
+    line-height: 1;
+  }
+  .contact-dialog__close:hover {
+    color: var(--text);
+  }
+  .contact-dialog__title {
+    font-family: var(--display);
+    font-size: 1.7rem;
+    margin-bottom: 0.4rem;
+  }
+  .contact-dialog__intro {
+    color: var(--text-dim);
+    font-size: 0.92rem;
+    margin-bottom: 1.4rem;
+  }
+
   .form {
     display: grid;
     gap: 1.1rem;
@@ -115,7 +209,7 @@ const endpoint = settings.formEndpoint;
   input,
   textarea {
     width: 100%;
-    background: var(--surface);
+    background: var(--bg);
     border: 1px solid var(--line);
     border-radius: 8px;
     color: var(--text);
@@ -143,10 +237,5 @@ const endpoint = settings.formEndpoint;
   }
   .form__status--err a {
     color: var(--accent);
-  }
-  @media (max-width: 860px) {
-    .contact {
-      grid-template-columns: 1fr;
-    }
   }
 </style>
