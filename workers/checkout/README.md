@@ -29,6 +29,18 @@ Cards in the embedded form (test mode): `4242 4242 4242 4242`, any future
 expiry/CVC. OXXO appears when the session currency is MXN and the payment
 method is enabled in the dashboard.
 
+## Order status for customers
+
+The buyer's `/thanks/?session_id=…` page doubles as a live order-status
+page. To update an order: Stripe dashboard → Payments → open the payment →
+**Metadata** → add:
+
+- `order_status` = `shipped` (anything else, or absent, shows as "received")
+- `tracking_url` = carrier tracking link (optional — shows a "Track your
+  shipment" button)
+
+The customer's page reflects the change on next load; no deploy needed.
+
 ## Going live
 
 Switch `STRIPE_PRICE_ID` to the live price, re-run `npx wrangler deploy`,

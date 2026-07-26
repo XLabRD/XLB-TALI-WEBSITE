@@ -29,6 +29,20 @@ const endpoint = (settings.checkoutEndpoint || '').replace(/\/+$/, '');
     <p class="thanks__text" data-state="pending" hidden>{ui.thanksPending}</p>
     <p class="thanks__text" data-state="open" hidden>{ui.thanksIncomplete}</p>
     <a class="thanks__retry" href={`${homePath}#edition`} hidden>{ui.thanksRetry}</a>
+    <div
+      class="thanks__status"
+      data-received={ui.thanksStatusReceived}
+      data-shipped={ui.thanksStatusShipped}
+      hidden
+    >
+      <span class="thanks__status-label">{ui.thanksStatusLabel}</span>
+      <span class="thanks__status-value"></span>
+    </div>
+    <div class="thanks__links">
+      <a class="thanks__track" href="#" target="_blank" rel="noopener" hidden>{ui.thanksTrack}</a>
+      <a class="thanks__receipt" href="#" target="_blank" rel="noopener" hidden>{ui.thanksReceipt}</a>
+    </div>
+    <p class="thanks__bookmark" hidden>{ui.thanksBookmark}</p>
     <a class="thanks__site" href={homePath}>tali.my</a>
   </main>
 </Base>
@@ -50,6 +64,25 @@ const endpoint = (settings.checkoutEndpoint || '').replace(/\/+$/, '');
         if (s.status === 'open') show('open');
         else if (s.status === 'complete' && s.payment_status !== 'paid') show('pending');
         // complete + paid keeps the default paid message
+        if (s.receipt_url) {
+          const receipt = main.querySelector<HTMLAnchorElement>('.thanks__receipt')!;
+          receipt.href = s.receipt_url;
+          receipt.hidden = false;
+        }
+        // Order status from payment metadata (set by hand in the Stripe
+        // dashboard). Only meaningful once the payment is settled.
+        if (s.status === 'complete' && s.payment_status === 'paid') {
+          const box = main.querySelector<HTMLElement>('.thanks__status')!;
+          box.querySelector('.thanks__status-value')!.textContent =
+            s.order_status === 'shipped' ? box.dataset.shipped! : box.dataset.received!;
+          box.hidden = false;
+          main.querySelector<HTMLElement>('.thanks__bookmark')!.hidden = false;
+          if (s.tracking_url) {
+            const track = main.querySelector<HTMLAnchorElement>('.thanks__track')!;
+            track.href = s.tracking_url;
+            track.hidden = false;
+          }
+        }
       })
       .catch(() => {}); // worker unreachable — keep the generic paid message
   }
@@ -87,7 +120,40 @@ const endpoint = (settings.checkoutEndpoint || '').replace(/\/+$/, '');
     font-size: 1.05rem;
     line-height: 1.6;
   }
-  .thanks__retry {
+  .thanks__status {
+    display: grid;
+    gap: 0.35rem;
+    justify-items: center;
+    border: 1px solid var(--line);
+    border-radius: 12px;
+    padding: 0.9rem 1.6rem;
+    background: var(--surface);
+  }
+  .thanks__status-label {
+    font-family: var(--mono);
+    font-size: 0.68rem;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--text-dim);
+  }
+  .thanks__status-value {
+    color: var(--text);
+    font-size: 0.98rem;
+  }
+  .thanks__links {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 0.7rem;
+  }
+  .thanks__bookmark {
+    font-size: 0.8rem;
+    color: var(--text-dim);
+    max-width: 24rem;
+  }
+  .thanks__retry,
+  .thanks__track,
+  .thanks__receipt {
     font-family: var(--mono);
     font-size: 0.8rem;
     letter-spacing: 0.08em;
@@ -99,7 +165,9 @@ const endpoint = (settings.checkoutEndpoint || '').replace(/\/+$/, '');
     padding: 0.55rem 1.3rem;
     transition: border-color 0.15s ease;
   }
-  .thanks__retry:hover {
+  .thanks__retry:hover,
+  .thanks__track:hover,
+  .thanks__receipt:hover {
     border-color: var(--accent);
   }
   .thanks__site {

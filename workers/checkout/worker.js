@@ -4,7 +4,7 @@
 // consumed by Pricing.astro and ThankYou.astro:
 //
 //   POST /create-checkout-session  { locale: "en" | "es" } → { clientSecret }
-//   GET  /session-status?session_id=cs_… → { status, payment_status, customer_email }
+//   GET  /session-status?session_id=cs_… → { status, payment_status, customer_email, receipt_url }
 //   GET  /price → { unit_amount, currency }   (live price so the site never shows a stale figure)
 //
 // Deploy: see README.md in this directory. No npm dependencies — talks to the
@@ -80,12 +80,23 @@ async function sessionStatus(url, env, cors) {
   if (!/^cs_[A-Za-z0-9_]+$/.test(id)) {
     return json({ error: 'invalid session_id' }, 400, cors);
   }
-  const session = await stripeRequest(env, 'GET', `/checkout/sessions/${id}`);
+  const session = await stripeRequest(
+    env,
+    'GET',
+    `/checkout/sessions/${id}?expand[]=payment_intent.latest_charge`
+  );
   return json(
     {
       status: session.status,
       payment_status: session.payment_status,
       customer_email: session.customer_details?.email ?? null,
+      // Stripe-hosted receipt page — the customer's permanent payment record.
+      receipt_url: session.payment_intent?.latest_charge?.receipt_url ?? null,
+      // Fulfillment status, maintained by hand in the Stripe dashboard:
+      // open the payment → Metadata → set order_status ("shipped") and
+      // optionally tracking_url. The thanks page shows both live.
+      order_status: session.payment_intent?.metadata?.order_status ?? null,
+      tracking_url: session.payment_intent?.metadata?.tracking_url ?? null,
     },
     200,
     cors
