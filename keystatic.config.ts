@@ -133,6 +133,7 @@ const uiLocale = (label: string) =>
       thanksStatusLabel: fields.text({ label: 'Thanks page: order status label', defaultValue: '' }),
       thanksStatusReceived: fields.text({ label: 'Thanks page: status "received"', defaultValue: '' }),
       thanksStatusShipped: fields.text({ label: 'Thanks page: status "shipped"', defaultValue: '' }),
+      thanksStatusCanceled: fields.text({ label: 'Thanks page: status "canceled"', defaultValue: '' }),
       thanksTrack: fields.text({ label: 'Thanks page: tracking link label', defaultValue: '' }),
       thanksBookmark: fields.text({ label: 'Thanks page: bookmark hint', defaultValue: '' }),
       footerTagline: fields.text({ label: 'Footer tagline' }),

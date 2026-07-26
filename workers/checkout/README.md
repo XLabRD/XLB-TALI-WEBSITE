@@ -35,7 +35,8 @@ The buyer's `/thanks/?session_id=…` page doubles as a live order-status
 page. To update an order: Stripe dashboard → Payments → open the payment →
 **Metadata** → add:
 
-- `order_status` = `shipped` (anything else, or absent, shows as "received")
+- `order_status` = `shipped` or `canceled` (anything else, or absent, shows
+  as "received")
 - `tracking_url` = carrier tracking link (optional — shows a "Track your
   shipment" button)
 

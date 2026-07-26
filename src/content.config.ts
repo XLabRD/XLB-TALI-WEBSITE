@@ -143,6 +143,7 @@ const localeUi = z.object({
   thanksStatusLabel: z.string().default(''),
   thanksStatusReceived: z.string().default(''),
   thanksStatusShipped: z.string().default(''),
+  thanksStatusCanceled: z.string().default(''),
   thanksTrack: z.string().default(''),
   thanksBookmark: z.string().default(''),
   footerTagline: z.string(),

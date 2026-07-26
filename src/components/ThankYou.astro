@@ -33,6 +33,7 @@ const endpoint = (settings.checkoutEndpoint || '').replace(/\/+$/, '');
       class="thanks__status"
       data-received={ui.thanksStatusReceived}
       data-shipped={ui.thanksStatusShipped}
+      data-canceled={ui.thanksStatusCanceled}
       hidden
     >
       <span class="thanks__status-label">{ui.thanksStatusLabel}</span>
@@ -73,8 +74,14 @@ const endpoint = (settings.checkoutEndpoint || '').replace(/\/+$/, '');
         // dashboard). Only meaningful once the payment is settled.
         if (s.status === 'complete' && s.payment_status === 'paid') {
           const box = main.querySelector<HTMLElement>('.thanks__status')!;
-          box.querySelector('.thanks__status-value')!.textContent =
-            s.order_status === 'shipped' ? box.dataset.shipped! : box.dataset.received!;
+          // Tolerate both spellings of canceled; anything unknown reads as
+          // received so a metadata typo never shows a broken status.
+          const state = /^cancell?ed$/.test(s.order_status ?? '')
+            ? box.dataset.canceled!
+            : s.order_status === 'shipped'
+              ? box.dataset.shipped!
+              : box.dataset.received!;
+          box.querySelector('.thanks__status-value')!.textContent = state;
           box.hidden = false;
           main.querySelector<HTMLElement>('.thanks__bookmark')!.hidden = false;
           if (s.tracking_url) {
