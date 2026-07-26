@@ -45,6 +45,14 @@ in code with `TODO(DEC-n)`; find them with `grep -rn "TODO(DEC-" src/ public/ *.
 - **Forms**: plain POST + honeypot + fetch enhancement in `Contact.astro`.
   While `settings.formEndpoint` is empty (DEC-11) the form falls back to
   `mailto:`.
+- **Checkout** (DEC-21): embedded Stripe Checkout in a modal on the pricing
+  section. Sessions come from a Cloudflare Worker in `workers/checkout/`
+  (deployed separately with wrangler — the only server-side piece, holds the
+  secret key; see its README). Activated by `settings.checkoutEndpoint` +
+  `settings.stripePublishableKey`; while empty the CTA falls back to the
+  Payment Link (`orderUrl`), then `#contact`. Post-payment return pages at
+  `/thanks/` + `/es/thanks/` (noindex, sitemap-excluded) query the worker's
+  `/session-status` to distinguish paid / OXXO-voucher-pending / incomplete.
 
 ## Gotchas
 

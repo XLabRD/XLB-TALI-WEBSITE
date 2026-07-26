@@ -13,7 +13,8 @@ const { copy } = Astro.props;
       <h1 class="hero__title">{copy.heroTitle}</h1>
       <p class="hero__sub">{copy.heroSubtitle}</p>
       <div class="hero__ctas">
-        <a class="btn" href="#edition">{copy.heroCtaPrimary}</a>
+        {/* data-preorder: opens the embedded checkout when configured (Pricing.astro) */}
+        <a class="btn" href="#edition" data-preorder>{copy.heroCtaPrimary}</a>
         <a class="btn btn--ghost" href="#system">{copy.heroCtaSecondary}</a>
       </div>
     </div>

@@ -1,6 +1,8 @@
 ---
 interface Props {
+  locale: 'en' | 'es';
   copy: Record<string, any>;
+  ui: Record<string, string>;
   plans: Array<{
     featured: boolean;
     price: string;
@@ -9,12 +11,19 @@ interface Props {
     includes: string[];
     cta: string;
   }>;
-  orderUrl?: string;
+  settings: {
+    orderUrl?: string;
+    checkoutEndpoint?: string;
+    stripePublishableKey?: string;
+  };
 }
-const { copy, plans, orderUrl } = Astro.props;
-// TODO(DEC-21): Stripe Payment Link pending; empty = CTA scrolls to contact.
-const ctaHref = orderUrl || '#contact';
-const ctaExternal = Boolean(orderUrl);
+const { locale, copy, ui, plans, settings } = Astro.props;
+// TODO(DEC-21): embedded checkout activates once checkoutEndpoint (deployed
+// workers/checkout URL) and stripePublishableKey are set in Keystatic.
+// Fallback chain: embedded modal → Payment Link (orderUrl) → contact dialog.
+const embedded = Boolean(settings.checkoutEndpoint && settings.stripePublishableKey);
+const ctaHref = settings.orderUrl || '#contact';
+const ctaExternal = Boolean(settings.orderUrl);
 ---
 
 <section class="section" id="edition">
@@ -33,14 +42,37 @@ const ctaExternal = Boolean(orderUrl);
               <p class="plan__tagline">{plan.tagline}</p>
               {/* TODO(DEC-17): placeholder pricing until figures are decided */}
               <p class="plan__price">{plan.price}</p>
-              <a
-                class="btn"
-                href={ctaHref}
-                target={ctaExternal ? '_blank' : undefined}
-                rel={ctaExternal ? 'noopener' : undefined}
-              >
-                {plan.cta}
-              </a>
+              {embedded ? (
+                <>
+                  <button class="btn plan__buy" type="button">
+                    {plan.cta}
+                  </button>
+                  <noscript>
+                    <style is:inline>
+                      .plan__buy {
+                        display: none;
+                      }
+                    </style>
+                    <a
+                      class="btn"
+                      href={ctaHref}
+                      target={ctaExternal ? '_blank' : undefined}
+                      rel={ctaExternal ? 'noopener' : undefined}
+                    >
+                      {plan.cta}
+                    </a>
+                  </noscript>
+                </>
+              ) : (
+                <a
+                  class="btn"
+                  href={ctaHref}
+                  target={ctaExternal ? '_blank' : undefined}
+                  rel={ctaExternal ? 'noopener' : undefined}
+                >
+                  {plan.cta}
+                </a>
+              )}
             </div>
             <ul class="plan__list">
               {plan.includes.map((item) => (
@@ -53,6 +85,120 @@ const ctaExternal = Boolean(orderUrl);
     </div>
   </div>
 </section>
+
+{
+  embedded && (
+    <dialog
+      class="checkout-dialog"
+      aria-label={copy.pricingTitle}
+      data-endpoint={settings.checkoutEndpoint!.replace(/\/+$/, '')}
+      data-pk={settings.stripePublishableKey}
+      data-locale={locale}
+    >
+      <button class="checkout-dialog__close" type="button" aria-label="Close">
+        ✕
+      </button>
+      <p class="checkout-dialog__status" data-status="loading">
+        {ui.checkoutLoading}
+      </p>
+      <p class="checkout-dialog__status" data-status="error" hidden>
+        {ui.checkoutError}{' '}
+        {settings.orderUrl && (
+          <a href={settings.orderUrl} target="_blank" rel="noopener">
+            {ui.checkoutFallback}
+          </a>
+        )}
+      </p>
+      <div class="checkout-dialog__mount" />
+    </dialog>
+  )
+}
+
+<script>
+  // Embedded Stripe Checkout (DEC-21). Stripe.js loads only when someone
+  // actually opens the checkout, keeping the page free of third-party JS
+  // until then. The dialog only exists when the endpoint + key are set.
+  const dialog = document.querySelector<HTMLDialogElement>('.checkout-dialog');
+  if (dialog) {
+    const { endpoint, pk, locale } = dialog.dataset;
+    const mount = dialog.querySelector<HTMLElement>('.checkout-dialog__mount')!;
+    const loading = dialog.querySelector<HTMLElement>('[data-status="loading"]')!;
+    const error = dialog.querySelector<HTMLElement>('[data-status="error"]')!;
+    let stripePromise: Promise<any> | null = null;
+    let checkout: { destroy(): void } | null = null;
+
+    const loadStripe = () =>
+      (stripePromise ??= new Promise((resolve, reject) => {
+        const s = document.createElement('script');
+        s.src = 'https://js.stripe.com/dahlia/stripe.js';
+        s.onload = () => resolve((window as any).Stripe(pk));
+        s.onerror = reject;
+        document.head.appendChild(s);
+      }));
+
+    const fetchClientSecret = async () => {
+      const res = await fetch(`${endpoint}/create-checkout-session`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ locale }),
+      });
+      if (!res.ok) throw new Error(String(res.status));
+      return (await res.json()).clientSecret;
+    };
+
+    const open = async () => {
+      dialog.showModal();
+      loading.hidden = false;
+      error.hidden = true;
+      try {
+        const stripe = await loadStripe();
+        // createEmbeddedCheckoutPage in current Stripe.js ("dahlia");
+        // initEmbeddedCheckout is the pre-rename spelling.
+        const create = stripe.createEmbeddedCheckoutPage ?? stripe.initEmbeddedCheckout;
+        checkout = await create.call(stripe, { fetchClientSecret });
+        loading.hidden = true;
+        checkout!.mount(mount);
+      } catch {
+        loading.hidden = true;
+        error.hidden = false;
+      }
+    };
+
+    // fires on ✕, backdrop click and Escape alike
+    dialog.addEventListener('close', () => {
+      checkout?.destroy();
+      checkout = null;
+      mount.innerHTML = '';
+    });
+
+    // Triggers: the plan card button plus every element marked data-preorder
+    // (hero CTA, nav pill). The anchors keep their #edition scroll as no-JS
+    // fallback; with the modal open the scroll just settles behind it.
+    document
+      .querySelectorAll('.plan__buy, [data-preorder]')
+      .forEach((b) => b.addEventListener('click', open));
+    dialog
+      .querySelector('.checkout-dialog__close')
+      ?.addEventListener('click', () => dialog.close());
+    dialog.addEventListener('click', (e) => {
+      if (e.target === dialog) dialog.close();
+    });
+
+    // Live price from Stripe (via the worker) so the page never shows a
+    // stale figure; the static content price stays as the no-JS/offline
+    // fallback. Both launch currencies (USD/MXN) use the $ sign, so the
+    // "$X.XX CUR" format matches the static copy in either locale.
+    fetch(`${endpoint}/price`)
+      .then((r) => (r.ok ? r.json() : Promise.reject()))
+      .then(({ unit_amount, currency }) => {
+        const label = `$${(unit_amount / 100).toFixed(2)} ${currency.toUpperCase()}`;
+        document
+          .querySelectorAll('.plan__price')
+          .forEach((el) => (el.textContent = label));
+      })
+      .catch(() => {});
+  }
+</script>
 
 <style>
   .head--center {
@@ -122,5 +268,49 @@ const ctaExternal = Boolean(orderUrl);
     .plan {
       grid-template-columns: 1fr;
     }
+  }
+
+  .checkout-dialog {
+    width: min(30rem, calc(100vw - 2rem));
+    max-height: min(46rem, calc(100vh - 2rem));
+    border: 1px solid var(--line);
+    border-radius: 16px;
+    background: var(--surface);
+    color: var(--text);
+    padding: clamp(1.25rem, 3vw, 1.75rem);
+    padding-top: 2.6rem;
+    box-shadow: 0 30px 70px -30px rgba(58, 42, 24, 0.45);
+  }
+  .checkout-dialog::backdrop {
+    background: color-mix(in srgb, var(--text) 35%, transparent);
+    backdrop-filter: blur(3px);
+  }
+  .checkout-dialog__close {
+    position: absolute;
+    top: 0.9rem;
+    right: 0.9rem;
+    background: none;
+    border: none;
+    color: var(--text-dim);
+    font-size: 1rem;
+    cursor: pointer;
+    padding: 0.35rem;
+    line-height: 1;
+  }
+  .checkout-dialog__close:hover {
+    color: var(--text);
+  }
+  .checkout-dialog__status {
+    color: var(--text-dim);
+    font-size: 0.92rem;
+    text-align: center;
+    padding-block: 1rem;
+  }
+  .checkout-dialog__status a {
+    color: var(--accent);
+  }
+  .checkout-dialog__mount {
+    overflow-y: auto;
+    max-height: calc(min(46rem, 100vh - 2rem) - 5rem);
   }
 </style>

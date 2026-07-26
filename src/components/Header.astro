@@ -24,7 +24,8 @@ const nav = [
       {nav.map((item) => <a href={item.href}>{item.label}</a>)}
     </nav>
     <div class="header__actions">
-      <a class="preorder" href="#edition">{ui.navPreorder}</a>
+      {/* data-preorder: opens the embedded checkout when configured (Pricing.astro) */}
+      <a class="preorder" href="#edition" data-preorder>{ui.navPreorder}</a>
       <a class="lang" href={altPath}>{ui.langSwitch}</a>
     </div>
   </div>

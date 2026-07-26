@@ -1,0 +1,117 @@
+---
+// Post-checkout return page (DEC-21). Stripe's embedded checkout redirects
+// here with ?session_id=…; the page asks the checkout worker for the
+// session's status and shows paid / voucher-pending / incomplete copy.
+// Without a session_id (or if the worker is unreachable) it stays on the
+// generic paid message rather than alarming a buyer whose payment went fine.
+import { getEntry } from 'astro:content';
+import Base from '../layouts/Base.astro';
+
+interface Props {
+  locale: 'en' | 'es';
+}
+const { locale } = Astro.props;
+const settings = (await getEntry('site', 'settings'))!.data;
+const ui = (await getEntry('ui', 'ui'))!.data[locale];
+const homePath = locale === 'en' ? '/' : '/es/';
+const altPath = locale === 'en' ? '/es/thanks/' : '/thanks/';
+const endpoint = (settings.checkoutEndpoint || '').replace(/\/+$/, '');
+---
+
+<Base locale={locale} title={`${ui.thanksTitle} — Tali`} description={ui.thanksPaid} altPath={altPath}>
+  <meta name="robots" content="noindex" slot="head" />
+  <main class="thanks" data-endpoint={endpoint}>
+    <a href={homePath}>
+      <img class="thanks__logo" src="/images/tali-logo.png" alt="Tali" height="34" />
+    </a>
+    <h1 class="thanks__title">{ui.thanksTitle}</h1>
+    <p class="thanks__text" data-state="paid">{ui.thanksPaid}</p>
+    <p class="thanks__text" data-state="pending" hidden>{ui.thanksPending}</p>
+    <p class="thanks__text" data-state="open" hidden>{ui.thanksIncomplete}</p>
+    <a class="thanks__retry" href={`${homePath}#edition`} hidden>{ui.thanksRetry}</a>
+    <a class="thanks__site" href={homePath}>tali.my</a>
+  </main>
+</Base>
+
+<script>
+  const main = document.querySelector<HTMLElement>('.thanks')!;
+  const endpoint = main.dataset.endpoint;
+  const sessionId = new URLSearchParams(location.search).get('session_id');
+  const show = (state: string) => {
+    main.querySelectorAll<HTMLElement>('[data-state]').forEach((el) => {
+      el.hidden = el.dataset.state !== state;
+    });
+    main.querySelector<HTMLElement>('.thanks__retry')!.hidden = state !== 'open';
+  };
+  if (endpoint && sessionId) {
+    fetch(`${endpoint}/session-status?session_id=${encodeURIComponent(sessionId)}`)
+      .then((r) => (r.ok ? r.json() : Promise.reject()))
+      .then((s) => {
+        if (s.status === 'open') show('open');
+        else if (s.status === 'complete' && s.payment_status !== 'paid') show('pending');
+        // complete + paid keeps the default paid message
+      })
+      .catch(() => {}); // worker unreachable — keep the generic paid message
+  }
+</script>
+
+<style>
+  .thanks {
+    min-height: 100svh;
+    display: grid;
+    align-content: center;
+    justify-items: center;
+    text-align: center;
+    gap: 1.1rem;
+    padding: 2rem 1.5rem 3rem;
+    background: radial-gradient(
+      50rem 30rem at 50% -10%,
+      color-mix(in srgb, var(--accent) 10%, var(--bg)),
+      var(--bg)
+    );
+  }
+  .thanks__logo {
+    height: 34px;
+    width: auto;
+    margin-bottom: 1.2rem;
+  }
+  .thanks__title {
+    font-family: var(--display);
+    font-size: clamp(3.2rem, 12vw, 6rem);
+    line-height: 1;
+    color: var(--text);
+  }
+  .thanks__text {
+    max-width: 28rem;
+    color: var(--text-dim);
+    font-size: 1.05rem;
+    line-height: 1.6;
+  }
+  .thanks__retry {
+    font-family: var(--mono);
+    font-size: 0.8rem;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--accent);
+    text-decoration: none;
+    border: 1px solid var(--line);
+    border-radius: 999px;
+    padding: 0.55rem 1.3rem;
+    transition: border-color 0.15s ease;
+  }
+  .thanks__retry:hover {
+    border-color: var(--accent);
+  }
+  .thanks__site {
+    margin-top: 2.2rem;
+    font-family: var(--mono);
+    font-size: 0.75rem;
+    letter-spacing: 0.12em;
+    color: var(--text-dim);
+    text-decoration: none;
+    transition: color 0.15s ease;
+  }
+  .thanks__site:hover {
+    color: var(--accent);
+  }
+</style>

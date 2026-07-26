@@ -1,0 +1,19 @@
+# Cloudflare Worker config for the Tali checkout backend (DEC-21).
+# Deploy from this directory: npx wrangler deploy
+name = "tali-checkout"
+main = "worker.js"
+compatibility_date = "2026-07-01"
+
+[vars]
+# TODO(DEC-21): test-mode Founder Edition price (prod_UwhXYNGJTgEnOM) —
+# swap to the live-mode price ID at launch.
+STRIPE_PRICE_ID = "price_1Two7xCxifEa1k4SfVoZHGyw"
+SITE = "https://tali.my"
+# Origins allowed to call this worker (CORS). Localhost is for `npm run dev`.
+ALLOWED_ORIGINS = "https://tali.my,http://localhost:4321"
+# Countries the shipping-address form accepts (ISO 3166-1 alpha-2).
+SHIP_COUNTRIES = "MX,US"
+
+# The secret key is NOT set here — never commit it. After deploying once, run:
+#   npx wrangler secret put STRIPE_SECRET_KEY
+# and paste the sk_test_… (later sk_live_…) key when prompted.

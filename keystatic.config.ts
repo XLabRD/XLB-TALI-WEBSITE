@@ -121,6 +121,14 @@ const uiLocale = (label: string) =>
       formSuccess: fields.text({ label: 'Form: success message' }),
       formError: fields.text({ label: 'Form: error message' }),
       formMailto: fields.text({ label: 'Form: mailto link label' }),
+      checkoutLoading: fields.text({ label: 'Checkout: loading state', defaultValue: '' }),
+      checkoutError: fields.text({ label: 'Checkout: error message', defaultValue: '' }),
+      checkoutFallback: fields.text({ label: 'Checkout: fallback link label', defaultValue: '' }),
+      thanksTitle: fields.text({ label: 'Thanks page: title', defaultValue: '' }),
+      thanksPaid: fields.text({ label: 'Thanks page: paid message', defaultValue: '' }),
+      thanksPending: fields.text({ label: 'Thanks page: voucher-pending message', defaultValue: '' }),
+      thanksIncomplete: fields.text({ label: 'Thanks page: incomplete message', defaultValue: '' }),
+      thanksRetry: fields.text({ label: 'Thanks page: retry link label', defaultValue: '' }),
       footerTagline: fields.text({ label: 'Footer tagline' }),
       langSwitch: fields.text({ label: 'Language switch label' }),
       navPreorder: fields.text({ label: 'Nav: pre-order button' }),
@@ -148,7 +156,17 @@ export default config({
         orderUrl: fields.text({
           label: 'Order URL (TODO DEC-21)',
           description:
-            'Stripe Payment Link for the Founder edition. Empty = "Pre-order now" scrolls to the contact form.',
+            'Stripe Payment Link for the Founder edition — the fallback when embedded checkout is not configured. Empty = "Pre-order now" scrolls to the contact form.',
+        }),
+        checkoutEndpoint: fields.text({
+          label: 'Checkout endpoint (TODO DEC-21)',
+          description:
+            'URL of the deployed checkout worker (workers/checkout), e.g. https://tali-checkout.<account>.workers.dev. Empty = fall back to the Order URL.',
+        }),
+        stripePublishableKey: fields.text({
+          label: 'Stripe publishable key (TODO DEC-21)',
+          description:
+            'pk_test_… or pk_live_… key matching the worker’s secret key. Required together with the checkout endpoint.',
         }),
         appStoreUrl: fields.text({
           label: 'App Store URL (TODO DEC-18)',

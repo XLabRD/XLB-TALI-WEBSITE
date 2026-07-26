@@ -131,6 +131,14 @@ const localeUi = z.object({
   formSuccess: z.string(),
   formError: z.string(),
   formMailto: z.string(),
+  checkoutLoading: z.string().default(''),
+  checkoutError: z.string().default(''),
+  checkoutFallback: z.string().default(''),
+  thanksTitle: z.string().default(''),
+  thanksPaid: z.string().default(''),
+  thanksPending: z.string().default(''),
+  thanksIncomplete: z.string().default(''),
+  thanksRetry: z.string().default(''),
   footerTagline: z.string(),
   langSwitch: z.string(),
   navPreorder: z.string().default('Pre-order'),
@@ -145,8 +153,12 @@ const site = defineCollection({
     // TODO(DEC-11): notification inbox + form endpoint pending.
     contactEmail: z.string(),
     formEndpoint: z.string(),
-    // TODO(DEC-21): Stripe Payment Link pending; empty = plan CTA scrolls to contact.
+    // TODO(DEC-21): Stripe Payment Link fallback; empty = plan CTA scrolls to contact.
     orderUrl: z.string().default(''),
+    // TODO(DEC-21): embedded checkout goes live when both are set (worker URL
+    // from workers/checkout + pk_… key); empty = fall back to orderUrl.
+    checkoutEndpoint: z.string().default(''),
+    stripePublishableKey: z.string().default(''),
     // TODO(DEC-18): App Store link pending; empty = onboarding badge inert.
     appStoreUrl: z.string().default(''),
     // TODO(DEC-16): real social URLs pending; empty = link hidden.
