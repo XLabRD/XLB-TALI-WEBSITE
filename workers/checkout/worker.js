@@ -62,6 +62,9 @@ async function createSession(request, env, cors) {
     // Shipping address + phone, needed to fulfill the physical Founder
     // Edition; countries come from SHIP_COUNTRIES in wrangler.toml.
     'phone_number_collection[enabled]': 'true',
+    // Seed the fulfillment status on the payment so the dashboard shows an
+    // editable order_status value from day one (change it to "shipped").
+    'payment_intent_data[metadata][order_status]': 'received',
     // return_url (not redirect_on_completion:never) so voucher methods like
     // OXXO stay available; buyer lands on the localized thanks page.
     return_url: `${site}${es ? '/es' : ''}/thanks/?session_id={CHECKOUT_SESSION_ID}`,
