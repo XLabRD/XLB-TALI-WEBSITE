@@ -196,6 +196,7 @@ async function handleStripeWebhook(request, env, cors) {
       receiptUrl: pi.latest_charge?.receipt_url ?? null,
       paidAt: new Date(event.created * 1000).toISOString(),
       tracking: '',
+      labelUrl: `${new URL(request.url).origin}/label?session_id=${session.id}&key=${env.NOTION_WEBHOOK_KEY}`,
     };
     await createOrderPage(env, order);
     // Email is best-effort: the row must survive even if Resend is down or
@@ -238,6 +239,7 @@ async function handleStripeWebhook(request, env, cors) {
       paymentIntent: session.payment_intent ?? '',
       receiptUrl: null,
       paidAt: null,
+      labelUrl: `${new URL(request.url).origin}/label?session_id=${session.id}&key=${env.NOTION_WEBHOOK_KEY}`,
     });
     return json({ abandoned: true }, 200, cors);
   }
@@ -252,6 +254,57 @@ async function handleStripeWebhook(request, env, cors) {
   }
 
   return json({ ignored: event.type }, 200, cors);
+}
+
+// --- Shipping label (DEC-25 level 1) ---------------------------------------
+// Print-ready page: Tali logo + recipient name/address, sized to be cut from
+// a letter sheet and glued on the box. Staff-only via the shared key; the
+// link is auto-filled in each Notion row's Label column.
+
+function labelPage(order) {
+  // Stored address is one comma-joined line; break it into label lines and
+  // keep city/state/zip/country grouped at the end.
+  const parts = order.address.split(',').map((s) => s.trim()).filter(Boolean);
+  const tail = parts.length > 2 ? parts.splice(-3).join(', ') : '';
+  const lines = [...parts, tail].filter(Boolean);
+  const ref = order.sessionId.slice(-6).toUpperCase();
+  return `<!doctype html><html><head><meta charset="utf-8"><title>Label — ${order.name}</title>
+<style>
+@font-face{font-family:'Fraunces';font-weight:100 900;src:url('https://tali.my/fonts/fraunces.woff2') format('woff2');}
+@font-face{font-family:'Inter';font-weight:100 900;src:url('https://tali.my/fonts/inter.woff2') format('woff2');}
+@font-face{font-family:'IBM Plex Mono';font-weight:400;src:url('https://tali.my/fonts/ibm-plex-mono.woff2') format('woff2');}
+@page{size:letter;margin:0.75in;}
+body{margin:0;padding:2rem;display:grid;justify-content:center;background:#f7f3ec;font-family:'Inter',system-ui,sans-serif;color:#262019;}
+.label{width:4in;padding:0.3in 0.35in;background:#fff;border:1.5px solid #262019;border-radius:2px;}
+.label img{height:0.32in;display:block;margin-bottom:0.22in;}
+.name{font-family:'Fraunces',Georgia,serif;font-size:17pt;font-weight:600;margin:0 0 0.12in;}
+.addr{font-size:11.5pt;line-height:1.5;margin:0;}
+.ref{font-family:'IBM Plex Mono',monospace;font-size:7.5pt;letter-spacing:0.12em;color:#7a6f5d;margin-top:0.2in;}
+.hint{font-size:9pt;color:#7a6f5d;margin-top:1rem;text-align:center;}
+@media print{body{background:#fff;padding:0;}.hint{display:none;}}
+</style></head><body>
+<div>
+<div class="label">
+  <img src="https://tali.my/images/tali-logo.png" alt="Tali">
+  <p class="name">${order.name}</p>
+  <p class="addr">${lines.join('<br>')}</p>
+  <p class="ref">PEDIDO ${ref}</p>
+</div>
+<p class="hint">⌘P to print — cut along the border.</p>
+</div>
+</body></html>`;
+}
+
+async function handleLabel(url, env, cors) {
+  if (url.searchParams.get('key') !== env.NOTION_WEBHOOK_KEY) {
+    return json({ error: 'unauthorized' }, 401, cors);
+  }
+  const sessionId = url.searchParams.get('session_id') || '';
+  const page = sessionId && (await findPageBySessionId(env, sessionId));
+  if (!page) return json({ error: 'order not found' }, 404, cors);
+  return new Response(labelPage(readOrder(page)), {
+    headers: { 'Content-Type': 'text/html; charset=utf-8', ...cors },
+  });
 }
 
 // --- Notion automation webhook --------------------------------------------
@@ -315,6 +368,12 @@ export default {
           return json({ error: 'order pipeline not configured' }, 503, cors);
         }
         return await handleStripeWebhook(request, env, cors);
+      }
+      if (request.method === 'GET' && url.pathname === '/label') {
+        if (!env.NOTION_WEBHOOK_KEY || !env.NOTION_TOKEN || !env.NOTION_DATABASE_ID) {
+          return json({ error: 'order pipeline not configured' }, 503, cors);
+        }
+        return await handleLabel(url, env, cors);
       }
       if (request.method === 'POST' && url.pathname === '/notion-webhook') {
         if (!env.NOTION_WEBHOOK_KEY || !env.NOTION_TOKEN || !env.RESEND_API_KEY) {

@@ -59,6 +59,7 @@ Notion → customer gets the shipped/canceled email; Stripe refunds/disputes
 | `Payment Intent` | Text | set by the worker (refund matching) |
 | `Receipt` | URL | set by the worker |
 | `Paid at` | Date | set by the worker |
+| `Label` | URL | set by the worker — print-ready shipping label (`/label` route, key-gated) |
 
 Property names/types must match exactly — `notion.js` addresses them by name.
 

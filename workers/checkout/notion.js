@@ -35,6 +35,7 @@ export function createOrderPage(env, o) {
       'Session ID': text(o.sessionId),
       'Payment Intent': text(o.paymentIntent),
       Receipt: { url: o.receiptUrl || null },
+      Label: { url: o.labelUrl || null },
       // Abandoned checkouts never paid — omit the date instead of nulling it.
       ...(o.paidAt ? { 'Paid at': { date: { start: o.paidAt } } } : {}),
     },
@@ -74,6 +75,7 @@ export function readOrder(page) {
   return {
     name: (p.Order?.title ?? []).map((t) => t.plain_text).join(''),
     email: p.Email?.email ?? '',
+    address: plain(p.Address),
     status: p.Status?.select?.name ?? '',
     tracking: p['Tracking URL']?.url ?? '',
     locale: p.Locale?.select?.name === 'es' ? 'es' : 'en',
