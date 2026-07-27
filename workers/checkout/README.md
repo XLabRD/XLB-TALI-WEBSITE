@@ -52,7 +52,7 @@ Notion → customer gets the shipped/canceled email; Stripe refunds/disputes
 | `Phone` | Phone | |
 | `Address` | Text | shipping address, one line |
 | `Amount` | Text | e.g. `$148.00 USD` |
-| `Status` | Select | options exactly: `Received`, `Shipped`, `Canceled` |
+| `Status` | Select | options exactly: `Received`, `Shipped`, `Canceled`, `Abandoned` |
 | `Tracking URL` | URL | paste carrier link before/when marking Shipped |
 | `Locale` | Select | options: `en`, `es` (set by the worker) |
 | `Session ID` | Text | set by the worker |
@@ -74,7 +74,13 @@ Property names/types must match exactly — `notion.js` addresses them by name.
 3. **Stripe**: Developers → Webhooks → Add endpoint →
    `https://tali-checkout.tali-my.workers.dev/stripe-webhook`, events:
    `checkout.session.completed`, `checkout.session.async_payment_succeeded`,
-   `charge.refunded`, `charge.dispute.created`. Copy the signing secret.
+   `checkout.session.expired`, `charge.refunded`, `charge.dispute.created`.
+   Copy the signing secret.
+
+Abandoned checkouts: when a session expires (~24 h) with an email typed in,
+a row is created with Status `Abandoned` — a follow-up lead, never emailed
+automatically. Terminal by design: an expired session can't later complete,
+so these never collide with a paid order (a retry is a new session).
 4. **Secrets**: `npx wrangler secret put` for `STRIPE_WEBHOOK_SECRET`,
    `NOTION_TOKEN`, `RESEND_API_KEY` (NOTION_WEBHOOK_KEY is already set).
 5. **Notion automation** on the orders database: When **Status** is edited →

@@ -212,6 +212,36 @@ async function handleStripeWebhook(request, env, cors) {
     return json({ created: true, emailError }, 200, cors);
   }
 
+  if (event.type === 'checkout.session.expired') {
+    // Abandoned checkout (DEC-25): the session died without payment — a
+    // terminal state, so this row can never become a duplicate of a paid
+    // order. Only worth recording if the buyer left an email to contact.
+    // Deliberately no customer email: they may simply buy again.
+    const session = event.data.object;
+    const email = session.customer_details?.email;
+    if (!email) return json({ ignored: 'no email' }, 200, cors);
+    if (await findPageBySessionId(env, session.id)) {
+      return json({ ignored: 'duplicate' }, 200, cors);
+    }
+    const shipping = session.collected_information?.shipping_details ?? session.shipping_details;
+    await createOrderPage(env, {
+      status: 'Abandoned',
+      name: session.customer_details?.name ?? '',
+      email,
+      phone: session.customer_details?.phone ?? '',
+      address: formatAddress(shipping),
+      amount: session.amount_total
+        ? `$${(session.amount_total / 100).toFixed(2)} ${session.currency.toUpperCase()}`
+        : '',
+      locale: session.locale?.startsWith('es') ? 'es' : 'en',
+      sessionId: session.id,
+      paymentIntent: session.payment_intent ?? '',
+      receiptUrl: null,
+      paidAt: null,
+    });
+    return json({ abandoned: true }, 200, cors);
+  }
+
   if (event.type === 'charge.refunded' || event.type === 'charge.dispute.created') {
     const paymentIntent = event.data.object.payment_intent;
     const page = paymentIntent && (await findPageByPaymentIntent(env, paymentIntent));

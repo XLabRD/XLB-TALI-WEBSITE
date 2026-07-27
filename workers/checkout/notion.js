@@ -30,12 +30,13 @@ export function createOrderPage(env, o) {
       Phone: { phone_number: o.phone || null },
       Address: text(o.address),
       Amount: text(o.amount),
-      Status: { select: { name: 'Received' } },
+      Status: { select: { name: o.status || 'Received' } },
       Locale: { select: { name: o.locale } },
       'Session ID': text(o.sessionId),
       'Payment Intent': text(o.paymentIntent),
       Receipt: { url: o.receiptUrl || null },
-      'Paid at': { date: { start: o.paidAt } },
+      // Abandoned checkouts never paid — omit the date instead of nulling it.
+      ...(o.paidAt ? { 'Paid at': { date: { start: o.paidAt } } } : {}),
     },
   });
 }
