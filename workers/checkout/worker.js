@@ -160,7 +160,33 @@ function formatAddress(details) {
     .join(', ');
 }
 
-async function handleStripeWebhook(request, env, cors) {
+// Stripe mints the receipt number only when the receipt is first sent or
+// viewed — usually moments AFTER checkout.session.completed. This runs after
+// the webhook response (ctx.waitUntil): "view" the receipt to force minting,
+// then poll briefly and write the number to the Notion row.
+async function backfillOrderNumber(env, pageId, paymentIntent, receiptUrl) {
+  try {
+    if (receiptUrl) await fetch(receiptUrl);
+    for (const delay of [2000, 5000, 10000]) {
+      await new Promise((resolve) => setTimeout(resolve, delay));
+      const pi = await stripeRequest(
+        env,
+        'GET',
+        `/payment_intents/${paymentIntent}?expand[]=latest_charge`
+      );
+      const n = pi.latest_charge?.receipt_number;
+      if (n) {
+        await setOrderNumber(env, pageId, n);
+        return;
+      }
+    }
+    console.error('order number backfill: not minted after retries', paymentIntent);
+  } catch (err) {
+    console.error('order number backfill failed:', err.message);
+  }
+}
+
+async function handleStripeWebhook(request, env, cors, ctx) {
   const payload = await request.text();
   const signature = request.headers.get('Stripe-Signature') || '';
   if (!(await verifyStripeSignature(payload, signature, env.STRIPE_WEBHOOK_SECRET))) {
@@ -202,6 +228,11 @@ async function handleStripeWebhook(request, env, cors) {
     };
     order.orderNumber = order.receiptNumber;
     const page = await createOrderPage(env, order);
+    if (!order.receiptNumber) {
+      ctx.waitUntil(
+        backfillOrderNumber(env, page.id, session.payment_intent, pi.latest_charge?.receipt_url)
+      );
+    }
     // Emails are best-effort: the row must survive even if Resend is down or
     // not configured yet, and Stripe's retry would dedupe on the row anyway.
     let emailError = null;
@@ -326,11 +357,21 @@ async function handleLabel(url, env, cors) {
   // caught the row before it existed, backfill it at print time.
   if (!order.orderNumber && order.paymentIntent && env.STRIPE_SECRET_KEY) {
     try {
-      const pi = await stripeRequest(
+      let pi = await stripeRequest(
         env,
         'GET',
         `/payment_intents/${order.paymentIntent}?expand[]=latest_charge`
       );
+      if (!pi.latest_charge?.receipt_number && pi.latest_charge?.receipt_url) {
+        // Viewing the receipt mints the number; refetch after a beat.
+        await fetch(pi.latest_charge.receipt_url);
+        await new Promise((resolve) => setTimeout(resolve, 1500));
+        pi = await stripeRequest(
+          env,
+          'GET',
+          `/payment_intents/${order.paymentIntent}?expand[]=latest_charge`
+        );
+      }
       if (pi.latest_charge?.receipt_number) {
         order.orderNumber = pi.latest_charge.receipt_number;
         await setOrderNumber(env, page.id, order.orderNumber);
@@ -381,7 +422,7 @@ async function price(env, cors) {
 }
 
 export default {
-  async fetch(request, env) {
+  async fetch(request, env, ctx) {
     const cors = corsHeaders(request, env);
     if (request.method === 'OPTIONS') {
       return new Response(null, { status: 204, headers: cors });
@@ -404,7 +445,7 @@ export default {
         if (!env.STRIPE_WEBHOOK_SECRET || !env.NOTION_TOKEN || !env.NOTION_DATABASE_ID) {
           return json({ error: 'order pipeline not configured' }, 503, cors);
         }
-        return await handleStripeWebhook(request, env, cors);
+        return await handleStripeWebhook(request, env, cors, ctx);
       }
       if (request.method === 'GET' && url.pathname === '/label') {
         if (!env.NOTION_WEBHOOK_KEY || !env.NOTION_TOKEN || !env.NOTION_DATABASE_ID) {
