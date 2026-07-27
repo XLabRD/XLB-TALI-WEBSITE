@@ -90,7 +90,7 @@ const COPY = {
 
 const TAGLINE = {
   en: 'Precision environmental monitoring for collections that matter.',
-  es: 'Monitoreo ambiental de precisión para colecciones que importan.',
+  es: 'Monitor ambiental de precisión para colecciones que importan.',
 };
 
 const button = (href, label, primary) =>
