@@ -274,7 +274,7 @@ function labelPage(order) {
 @font-face{font-family:'Inter';font-weight:100 900;src:url('https://tali.my/fonts/inter.woff2') format('woff2');}
 @font-face{font-family:'IBM Plex Mono';font-weight:400;src:url('https://tali.my/fonts/ibm-plex-mono.woff2') format('woff2');}
 @page{size:letter;margin:0.75in;}
-body{margin:0;padding:2rem;display:grid;justify-content:center;background:#f7f3ec;font-family:'Inter',system-ui,sans-serif;color:#262019;}
+body{margin:0;padding:2rem;display:grid;justify-content:center;background:#fff;font-family:'Inter',system-ui,sans-serif;color:#262019;}
 .label{width:4in;padding:0.3in 0.35in;background:#fff;border:1.5px solid #262019;border-radius:2px;}
 .label img{height:0.32in;display:block;margin-bottom:0.22in;}
 .name{font-family:'Fraunces',Georgia,serif;font-size:17pt;font-weight:600;margin:0 0 0.12in;}
