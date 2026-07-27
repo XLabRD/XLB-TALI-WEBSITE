@@ -4,11 +4,11 @@
 // the site's :root tokens in src/styles/global.css — keep them in sync on
 // a rebrand (DEC-8).
 
-// One address for everything (author's call): send + replies both live on
-// hello@tali.my. The sender name is localized per order.
-const REPLY_TO = 'hello@tali.my';
+// Order emails live on orders@tali.my (Porkbun-forwarded, 2026-07-27);
+// hello@tali.my stays the site's general contact. Sender name is localized.
+const REPLY_TO = 'orders@tali.my';
 const FROM = (locale) =>
-  locale === 'es' ? 'Dany de Tali <hello@tali.my>' : 'Dany from Tali <hello@tali.my>';
+  locale === 'es' ? 'Dany de Tali <orders@tali.my>' : 'Dany from Tali <orders@tali.my>';
 
 const C = {
   bg: '#f7f3ec',
