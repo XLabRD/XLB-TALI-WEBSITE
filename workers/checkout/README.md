@@ -60,10 +60,11 @@ Notion → customer gets the shipped/canceled email; Stripe refunds/disputes
 | `Receipt` | URL | set by the worker |
 | `Paid at` | Date | set by the worker |
 | `Label` | URL | set by the worker — print-ready shipping label (`/label` route, key-gated) |
+| `Order #` | Text | Stripe's receipt number (e.g. `1911-2504`) — the human order number, captured at creation or backfilled when the label is first opened |
 
-The **Payment Intent** is the canonical order number (author's call, 2026-07-27):
-it's the ID Stripe's dashboard uses for the payment, it's printed on the
-shipping label, and searching it in Stripe finds the charge/refunds/disputes.
+Order identity comes from Stripe (author's call, 2026-07-27): `Order #` holds
+the human receipt number shown on Stripe receipts and printed on the label;
+`Payment Intent` is the canonical machine ID searchable in the dashboard.
 
 Property names/types must match exactly — `notion.js` addresses them by name.
 

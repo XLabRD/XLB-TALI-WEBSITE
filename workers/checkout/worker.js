@@ -20,6 +20,7 @@ import {
   findPageByPaymentIntent,
   findPageBySessionId,
   setStatus,
+  setOrderNumber,
   getPage,
   readOrder,
 } from './notion.js';
@@ -194,6 +195,7 @@ async function handleStripeWebhook(request, env, cors) {
       sessionId: session.id,
       paymentIntent: session.payment_intent,
       receiptUrl: pi.latest_charge?.receipt_url ?? null,
+      receiptNumber: pi.latest_charge?.receipt_number ?? '',
       paidAt: new Date(event.created * 1000).toISOString(),
       tracking: '',
       labelUrl: `${new URL(request.url).origin}/label?session_id=${session.id}&key=${env.NOTION_WEBHOOK_KEY}`,
@@ -267,7 +269,7 @@ function labelPage(order) {
   const parts = order.address.split(',').map((s) => s.trim()).filter(Boolean);
   const tail = parts.length > 2 ? parts.splice(-3).join(', ') : '';
   const lines = [...parts, tail].filter(Boolean);
-  const ref = order.paymentIntent || order.sessionId.slice(-6).toUpperCase();
+  const ref = order.orderNumber || order.paymentIntent || order.sessionId.slice(-6).toUpperCase();
   return `<!doctype html><html><head><meta charset="utf-8"><title>Label — ${order.name}</title>
 <style>
 @font-face{font-family:'Fraunces';font-weight:100 900;src:url('https://tali.my/fonts/fraunces.woff2') format('woff2');}
@@ -302,7 +304,25 @@ async function handleLabel(url, env, cors) {
   const sessionId = url.searchParams.get('session_id') || '';
   const page = sessionId && (await findPageBySessionId(env, sessionId));
   if (!page) return json({ error: 'order not found' }, 404, cors);
-  return new Response(labelPage(readOrder(page)), {
+  const order = readOrder(page);
+  // Stripe assigns the receipt number moments after payment; if the webhook
+  // caught the row before it existed, backfill it at print time.
+  if (!order.orderNumber && order.paymentIntent && env.STRIPE_SECRET_KEY) {
+    try {
+      const pi = await stripeRequest(
+        env,
+        'GET',
+        `/payment_intents/${order.paymentIntent}?expand[]=latest_charge`
+      );
+      if (pi.latest_charge?.receipt_number) {
+        order.orderNumber = pi.latest_charge.receipt_number;
+        await setOrderNumber(env, page.id, order.orderNumber);
+      }
+    } catch (err) {
+      console.error('receipt number backfill failed:', err.message);
+    }
+  }
+  return new Response(labelPage(order), {
     headers: { 'Content-Type': 'text/html; charset=utf-8', ...cors },
   });
 }

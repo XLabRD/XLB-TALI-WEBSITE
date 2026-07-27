@@ -30,6 +30,8 @@ export function createOrderPage(env, o) {
       Phone: { phone_number: o.phone || null },
       Address: text(o.address),
       Amount: text(o.amount),
+      // Stripe's receipt number (e.g. 1911-2504) — the human order number.
+      'Order #': text(o.receiptNumber),
       Status: { select: { name: o.status || 'Received' } },
       Locale: { select: { name: o.locale } },
       'Session ID': text(o.sessionId),
@@ -64,6 +66,12 @@ export function setStatus(env, pageId, status) {
   });
 }
 
+export function setOrderNumber(env, pageId, receiptNumber) {
+  return notionRequest(env, 'PATCH', `/pages/${pageId}`, {
+    properties: { 'Order #': text(receiptNumber) },
+  });
+}
+
 export function getPage(env, pageId) {
   return notionRequest(env, 'GET', `/pages/${pageId}`);
 }
@@ -76,8 +84,9 @@ export function readOrder(page) {
     name: (p.Order?.title ?? []).map((t) => t.plain_text).join(''),
     email: p.Email?.email ?? '',
     address: plain(p.Address),
-    // The Stripe PaymentIntent is the canonical order id (author's call) —
-    // printed on the label and searchable verbatim in the Stripe dashboard.
+    // Stripe identifiers: receipt number (human order number, printed on the
+    // label) and PaymentIntent (canonical id, dashboard-searchable).
+    orderNumber: plain(p['Order #']),
     paymentIntent: plain(p['Payment Intent']),
     status: p.Status?.select?.name ?? '',
     tracking: p['Tracking URL']?.url ?? '',
