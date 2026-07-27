@@ -267,7 +267,7 @@ function labelPage(order) {
   const parts = order.address.split(',').map((s) => s.trim()).filter(Boolean);
   const tail = parts.length > 2 ? parts.splice(-3).join(', ') : '';
   const lines = [...parts, tail].filter(Boolean);
-  const ref = order.orderNumber || order.sessionId.slice(-6).toUpperCase();
+  const ref = order.paymentIntent || order.sessionId.slice(-6).toUpperCase();
   return `<!doctype html><html><head><meta charset="utf-8"><title>Label — ${order.name}</title>
 <style>
 @font-face{font-family:'Fraunces';font-weight:100 900;src:url('https://tali.my/fonts/fraunces.woff2') format('woff2');}
