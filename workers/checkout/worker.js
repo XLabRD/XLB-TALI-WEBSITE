@@ -24,7 +24,7 @@ import {
   getPage,
   readOrder,
 } from './notion.js';
-import { sendOrderEmail } from './emails.js';
+import { sendOrderEmail, sendStaffEmail } from './emails.js';
 
 const STRIPE_API = 'https://api.stripe.com/v1';
 
@@ -200,8 +200,9 @@ async function handleStripeWebhook(request, env, cors) {
       tracking: '',
       labelUrl: `${new URL(request.url).origin}/label?session_id=${session.id}&key=${env.NOTION_WEBHOOK_KEY}`,
     };
-    await createOrderPage(env, order);
-    // Email is best-effort: the row must survive even if Resend is down or
+    order.orderNumber = order.receiptNumber;
+    const page = await createOrderPage(env, order);
+    // Emails are best-effort: the row must survive even if Resend is down or
     // not configured yet, and Stripe's retry would dedupe on the row anyway.
     let emailError = null;
     if (order.email && env.RESEND_API_KEY) {
@@ -210,6 +211,13 @@ async function handleStripeWebhook(request, env, cors) {
       } catch (err) {
         emailError = err.message;
         console.error('welcome email failed:', err.message);
+      }
+    }
+    if (env.STAFF_EMAIL && env.RESEND_API_KEY) {
+      try {
+        await sendStaffEmail(env, 'new-order', order, page.url);
+      } catch (err) {
+        console.error('staff email failed:', err.message);
       }
     }
     return json({ created: true, emailError }, 200, cors);
@@ -227,7 +235,7 @@ async function handleStripeWebhook(request, env, cors) {
       return json({ ignored: 'duplicate' }, 200, cors);
     }
     const shipping = session.collected_information?.shipping_details ?? session.shipping_details;
-    await createOrderPage(env, {
+    const abandonedOrder = {
       status: 'Abandoned',
       name: session.customer_details?.name ?? '',
       email,
@@ -242,7 +250,16 @@ async function handleStripeWebhook(request, env, cors) {
       receiptUrl: null,
       paidAt: null,
       labelUrl: `${new URL(request.url).origin}/label?session_id=${session.id}&key=${env.NOTION_WEBHOOK_KEY}`,
-    });
+    };
+    const page = await createOrderPage(env, abandonedOrder);
+    // Staff heads-up only — the customer is never emailed about abandonment.
+    if (env.STAFF_EMAIL && env.RESEND_API_KEY) {
+      try {
+        await sendStaffEmail(env, 'abandoned', abandonedOrder, page.url);
+      } catch (err) {
+        console.error('staff email failed:', err.message);
+      }
+    }
     return json({ abandoned: true }, 200, cors);
   }
 

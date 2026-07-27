@@ -17,6 +17,8 @@ SHIP_COUNTRIES = "MX,US"
 NOTION_DATABASE_ID = "3aa573dfb66a8042b266e6d6e64d211b"
 # Sender for order emails; the domain must be verified in Resend.
 EMAIL_FROM = "Tali <orders@tali.my>"
+# Internal notifications (new order / abandoned cart). Empty = no staff emails.
+STAFF_EMAIL = "xlab@protexa.mx"
 
 # Duplicate-email guard for /notion-webhook.
 [[kv_namespaces]]

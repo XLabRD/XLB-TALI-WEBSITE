@@ -164,6 +164,51 @@ const SUBJECTS = {
   canceled: { en: 'About your Tali order', es: 'Sobre tu pedido Tali' },
 };
 
+/**
+ * Internal staff notification (DEC-25): new paid order or abandoned cart.
+ * Spanish on purpose — it goes to the ops team, not customers. notionUrl
+ * links straight to the order's row.
+ */
+export async function sendStaffEmail(env, kind, order, notionUrl) {
+  const isOrder = kind === 'new-order';
+  const subject = isOrder
+    ? `Nuevo pedido ${order.orderNumber || ''} — ${order.name || order.email} (${order.amount})`
+    : `Carrito abandonado — ${order.email} (${order.amount})`;
+  const intro = isOrder
+    ? `Entró un pedido pagado. Procesarlo en Notion (etiqueta, envío, estado):`
+    : `Alguien dejó el checkout a medias con su correo capturado — posible venta si le damos seguimiento:`;
+  const rows = [
+    order.orderNumber && `Pedido: ${order.orderNumber}`,
+    order.name && `Cliente: ${order.name}`,
+    `Correo: ${order.email}`,
+    order.phone && `Tel: ${order.phone}`,
+    order.address && `Dirección: ${order.address}`,
+    `Monto: ${order.amount}`,
+  ].filter(Boolean);
+  const html = `<div style="font-family:${SANS};font-size:15px;line-height:1.6;color:${C.text};max-width:520px;margin:0 auto;padding:24px;">
+<p style="margin:0 0 14px;">${intro}</p>
+<p style="margin:0 0 18px;color:${C.dim};">${rows.join('<br>')}</p>
+${btnStaff(notionUrl, isOrder ? 'Abrir pedido en Notion' : 'Ver en Notion')}
+</div>`;
+  const res = await fetch('https://api.resend.com/emails', {
+    method: 'POST',
+    headers: {
+      Authorization: `Bearer ${env.RESEND_API_KEY}`,
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify({
+      from: env.EMAIL_FROM || 'Tali <orders@tali.my>',
+      to: [env.STAFF_EMAIL],
+      subject,
+      html,
+    }),
+  });
+  if (!res.ok) throw new Error(`Resend ${res.status}: ${await res.text()}`);
+}
+
+const btnStaff = (href, label) =>
+  `<a href="${href}" style="display:inline-block;background:${C.accent};color:${C.onAccent};text-decoration:none;border-radius:8px;padding:11px 20px;font-family:${SANS};font-size:14px;font-weight:600;">${label}</a>`;
+
 /** Send one of the order emails. Throws on failure so callers can react. */
 export async function sendOrderEmail(env, kind, order) {
   const { subject, html } = render(kind, order);
