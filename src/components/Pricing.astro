@@ -180,8 +180,13 @@ const ctaExternal = Boolean(settings.orderUrl);
     dialog
       .querySelector('.checkout-dialog__close')
       ?.addEventListener('click', () => dialog.close());
+    // Backdrop click closes — but clicks on the dialog's own padding also
+    // report the dialog as target, so test coordinates, not the target.
     dialog.addEventListener('click', (e) => {
-      if (e.target === dialog) dialog.close();
+      const r = dialog.getBoundingClientRect();
+      const inside =
+        e.clientX >= r.left && e.clientX <= r.right && e.clientY >= r.top && e.clientY <= r.bottom;
+      if (e.target === dialog && !inside) dialog.close();
     });
 
     // Live price from Stripe (via the worker) so the page never shows a

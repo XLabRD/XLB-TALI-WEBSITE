@@ -105,9 +105,13 @@ const endpoint = isW3F ? 'https://api.web3forms.com/submit' : raw;
   );
   document.querySelector('.contact__open')?.addEventListener('click', open);
   dialog.querySelector('.contact-dialog__close')?.addEventListener('click', () => dialog.close());
-  // click on the backdrop closes
+  // click on the backdrop closes — coordinate check so clicks on the
+  // dialog's own padding don't count as backdrop (they share the target)
   dialog.addEventListener('click', (e) => {
-    if (e.target === dialog) dialog.close();
+    const r = dialog.getBoundingClientRect();
+    const inside =
+      e.clientX >= r.left && e.clientX <= r.right && e.clientY >= r.top && e.clientY <= r.bottom;
+    if (e.target === dialog && !inside) dialog.close();
   });
 
   form.addEventListener('submit', async (event) => {
