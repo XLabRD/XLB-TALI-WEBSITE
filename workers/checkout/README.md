@@ -32,15 +32,58 @@ method is enabled in the dashboard.
 ## Order status for customers
 
 The buyer's `/thanks/?session_id=…` page doubles as a live order-status
-page. To update an order: Stripe dashboard → Payments → open the payment →
-**Metadata** → add:
+page. It reads the **Notion orders row** (Status + Tracking URL), so the
+Notion workflow below is the only place staff touch an order. Stripe
+payment metadata is consulted only as a legacy fallback for orders that
+predate the Notion pipeline.
 
-- `order_status` = `shipped` or `canceled` (anything else, or absent, shows
-  as "received")
-- `tracking_url` = carrier tracking link (optional — shows a "Track your
-  shipment" button)
+## Order pipeline: Notion + Resend (DEC-25)
 
-The customer's page reflects the change on next load; no deploy needed.
+Paid checkout → Notion row + welcome email; a human flips **Status** in
+Notion → customer gets the shipped/canceled email; Stripe refunds/disputes
+→ Status flips to Canceled automatically (which emails the customer too).
+
+### Notion orders database — exact property spec
+
+| Property | Type | Notes |
+| --- | --- | --- |
+| `Order` | Title | customer name (set by the worker) |
+| `Email` | Email | |
+| `Phone` | Phone | |
+| `Address` | Text | shipping address, one line |
+| `Amount` | Text | e.g. `$148.00 USD` |
+| `Status` | Select | options exactly: `Received`, `Shipped`, `Canceled` |
+| `Tracking URL` | URL | paste carrier link before/when marking Shipped |
+| `Locale` | Select | options: `en`, `es` (set by the worker) |
+| `Session ID` | Text | set by the worker |
+| `Payment Intent` | Text | set by the worker (refund matching) |
+| `Receipt` | URL | set by the worker |
+| `Paid at` | Date | set by the worker |
+
+Property names/types must match exactly — `notion.js` addresses them by name.
+
+### One-time setup
+
+1. **Notion**: Settings → Connections → Develop or manage integrations →
+   New internal integration (read + insert + update content). Copy the
+   `ntn_…` token. Share the orders database with the integration (⋯ →
+   Connections). Copy the database ID (32-hex segment of its URL) into
+   `NOTION_DATABASE_ID` in `wrangler.toml`, then `npx wrangler deploy`.
+2. **Resend**: create account → verify domain `tali.my` (add the DNS
+   records it shows at Porkbun) → create API key.
+3. **Stripe**: Developers → Webhooks → Add endpoint →
+   `https://tali-checkout.tali-my.workers.dev/stripe-webhook`, events:
+   `checkout.session.completed`, `checkout.session.async_payment_succeeded`,
+   `charge.refunded`, `charge.dispute.created`. Copy the signing secret.
+4. **Secrets**: `npx wrangler secret put` for `STRIPE_WEBHOOK_SECRET`,
+   `NOTION_TOKEN`, `RESEND_API_KEY` (NOTION_WEBHOOK_KEY is already set).
+5. **Notion automation** on the orders database: When **Status** is edited →
+   Send webhook → URL
+   `https://tali-checkout.tali-my.workers.dev/notion-webhook?key=<NOTION_WEBHOOK_KEY>`.
+
+Duplicate-email protection: the worker remembers the last emailed status per
+order in KV — repeat saves or status flip-flops never re-send. Editing only
+`Tracking URL` never emails; set it before flipping Status to Shipped.
 
 ## Going live
 

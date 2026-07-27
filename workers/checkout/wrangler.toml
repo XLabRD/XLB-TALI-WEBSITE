@@ -13,6 +13,21 @@ SITE = "https://tali.my"
 ALLOWED_ORIGINS = "https://tali.my,http://localhost:4321"
 # Countries the shipping-address form accepts (ISO 3166-1 alpha-2).
 SHIP_COUNTRIES = "MX,US"
+# "Pedidos" database on the author's workspace.
+NOTION_DATABASE_ID = "3aa573dfb66a8042b266e6d6e64d211b"
+# Sender for order emails; the domain must be verified in Resend.
+EMAIL_FROM = "Tali <orders@tali.my>"
+
+# Duplicate-email guard for /notion-webhook.
+[[kv_namespaces]]
+binding = "ORDERS"
+id = "b075e56a1deb413daba059fdc523fef6"
+
+# Additional secrets for the order pipeline (wrangler secret put …):
+#   STRIPE_WEBHOOK_SECRET — whsec_… from the Stripe webhook endpoint
+#   NOTION_TOKEN          — ntn_/secret_… internal-integration token
+#   RESEND_API_KEY        — re_… from Resend
+#   NOTION_WEBHOOK_KEY    — shared key in the Notion automation's webhook URL
 
 # The secret key is NOT set here — never commit it. After deploying once, run:
 #   npx wrangler secret put STRIPE_SECRET_KEY
