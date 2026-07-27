@@ -76,6 +76,10 @@ export function readOrder(page) {
     name: (p.Order?.title ?? []).map((t) => t.plain_text).join(''),
     email: p.Email?.email ?? '',
     address: plain(p.Address),
+    // Notion's auto-increment ID property — the human order number (PED-n).
+    orderNumber: p['Order #']?.unique_id
+      ? `${p['Order #'].unique_id.prefix ?? ''}-${p['Order #'].unique_id.number}`
+      : '',
     status: p.Status?.select?.name ?? '',
     tracking: p['Tracking URL']?.url ?? '',
     locale: p.Locale?.select?.name === 'es' ? 'es' : 'en',
