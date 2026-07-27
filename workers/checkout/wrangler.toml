@@ -15,8 +15,7 @@ ALLOWED_ORIGINS = "https://tali.my,http://localhost:4321"
 SHIP_COUNTRIES = "MX,US"
 # "Pedidos" database on the author's workspace.
 NOTION_DATABASE_ID = "3aa573dfb66a8042b266e6d6e64d211b"
-# Sender for order emails; the domain must be verified in Resend.
-EMAIL_FROM = "Tali <orders@tali.my>"
+# Sender identity lives in emails.js (FROM): "Dany from/de Tali <hello@tali.my>".
 # Internal notifications (new order / abandoned cart). Empty = no staff emails.
 STAFF_EMAIL = "xlab@protexa.mx"
 

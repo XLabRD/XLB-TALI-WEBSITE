@@ -4,7 +4,11 @@
 // the site's :root tokens in src/styles/global.css — keep them in sync on
 // a rebrand (DEC-8).
 
+// One address for everything (author's call): send + replies both live on
+// hello@tali.my. The sender name is localized per order.
 const REPLY_TO = 'hello@tali.my';
+const FROM = (locale) =>
+  locale === 'es' ? 'Dany de Tali <hello@tali.my>' : 'Dany from Tali <hello@tali.my>';
 
 const C = {
   bg: '#f7f3ec',
@@ -197,7 +201,7 @@ ${btnStaff(notionUrl, isOrder ? 'Abrir pedido en Notion' : 'Ver en Notion')}
       'Content-Type': 'application/json',
     },
     body: JSON.stringify({
-      from: env.EMAIL_FROM || 'Tali <orders@tali.my>',
+      from: FROM('es'),
       to: [env.STAFF_EMAIL],
       subject,
       html,
@@ -219,7 +223,7 @@ export async function sendOrderEmail(env, kind, order) {
       'Content-Type': 'application/json',
     },
     body: JSON.stringify({
-      from: env.EMAIL_FROM || 'Tali <orders@tali.my>',
+      from: FROM(order.locale),
       to: [order.email],
       reply_to: REPLY_TO,
       subject,
