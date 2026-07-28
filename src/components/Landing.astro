@@ -10,6 +10,7 @@ import Features from './Features.astro';
 import Film from './Film.astro';
 import Pricing from './Pricing.astro';
 import ShipSchedule from './ShipSchedule.astro';
+import Faq from './Faq.astro';
 import Contact from './Contact.astro';
 import Footer from './Footer.astro';
 
@@ -30,8 +31,7 @@ const byOrder = (a: { data: { order: number } }, b: { data: { order: number } })
 const features = (await getCollection('features'))
   .sort(byOrder)
   .map((f) => ({ icon: f.data.icon, comingSoon: f.data.comingSoon, ...f.data[locale] }));
-// FAQ content in src/content/faq/ is kept but not rendered while the site
-// stays landing-length — see DEC-6 in DECISIONS.md.
+const faqs = (await getCollection('faq')).sort(byOrder).map((f) => f.data[locale]);
 const plans = (await getCollection('plans'))
   .sort(byOrder)
   .map((p) => ({ featured: p.data.featured, price: p.data.price, ...p.data[locale] }));
@@ -58,6 +58,7 @@ const jsonLd = {
     <Film copy={home} />
     <Pricing locale={locale} copy={home} ui={ui} plans={plans} settings={settings} />
     <ShipSchedule copy={home} />
+    <Faq copy={home} items={faqs} />
     <Contact copy={home} ui={ui} settings={settings} />
   </main>
   <Footer ui={ui} settings={settings} />

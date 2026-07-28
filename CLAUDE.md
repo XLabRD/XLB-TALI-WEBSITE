@@ -34,10 +34,9 @@ in code with `TODO(DEC-n)`; find them with `grep -rn "TODO(DEC-" src/ public/ *.
   Zod strips unknown keys, so a Keystatic-added `slug` key in JSON is harmless.
 - **Pages**: `src/pages/index.astro` (en) and `src/pages/es/index.astro` (es)
   both render `src/components/Landing.astro` with a `locale` prop; Landing
-  loads content and composes Hero → System → AppShowcase → Features →
-  Pricing (single Founder Limited Edition) → Contact inside
-  `layouts/Base.astro` (meta, OG, hreflang alternates). FAQ content/component exist but are unrendered
-  (DEC-6) — re-add in Landing.astro when the page grows past landing length.
+  loads content and composes Hero → System → ExplodedView → AppShowcase →
+  Features → Film → Pricing (single Founder Limited Edition) → ShipSchedule →
+  Faq → Contact inside `layouts/Base.astro` (meta, OG, hreflang alternates).
 - **Design tokens**: all colors/fonts/layout in `:root` of
   `src/styles/global.css`. Components use scoped `<style>` consuming tokens
   only — never hard-code a color outside `:root`. A rebrand touches `:root`
