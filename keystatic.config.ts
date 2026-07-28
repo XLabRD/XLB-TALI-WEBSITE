@@ -137,8 +137,10 @@ const homeLocale = (label: string) =>
           window: fields.text({ label: 'Ship window' }),
           edition: fields.text({ label: 'Edition' }),
           price: fields.text({ label: 'Price', defaultValue: '' }),
+          linkText: fields.text({ label: 'Link text (optional)', defaultValue: '' }),
+          linkHref: fields.text({ label: 'Link target', defaultValue: '' }),
         }),
-        { label: 'Ship batches', itemLabel: (props) => props.fields.batch.value ?? 'Batch' }
+        { label: 'Editions (rows)', itemLabel: (props) => props.fields.batch.value ?? 'Edition' }
       ),
       faqKicker: fields.text({ label: 'FAQ kicker' }),
       faqTitle: fields.text({ label: 'FAQ title' }),

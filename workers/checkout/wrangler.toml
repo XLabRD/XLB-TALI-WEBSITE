@@ -7,7 +7,7 @@ compatibility_date = "2026-07-01"
 [vars]
 # TODO(DEC-21): test-mode Founder Edition price (prod_UwhXYNGJTgEnOM) —
 # swap to the live-mode price ID at launch.
-STRIPE_PRICE_ID = "price_1TyIFHCxifEa1k4SgcVWMfKE"
+STRIPE_PRICE_ID = "price_1TyJIWCxifEa1k4SpmScJtK0"
 SITE = "https://tali.my"
 # Origins allowed to call this worker (CORS). Localhost is for `npm run dev`.
 ALLOWED_ORIGINS = "https://tali.my,http://localhost:4321"

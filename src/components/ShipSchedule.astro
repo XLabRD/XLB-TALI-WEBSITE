@@ -3,8 +3,14 @@ interface Props {
   copy: Record<string, any>;
 }
 const { copy } = Astro.props;
-const batches: Array<{ batch: string; window: string; edition: string; price?: string }> =
-  copy.shipBatches ?? [];
+const batches: Array<{
+  batch: string;
+  window: string;
+  edition: string;
+  price?: string;
+  linkText?: string;
+  linkHref?: string;
+}> = copy.shipBatches ?? [];
 ---
 
 {
@@ -19,7 +25,17 @@ const batches: Array<{ batch: string; window: string; edition: string; price?: s
           {batches.map((b, i) => (
             <div class:list={['row', { 'row--current': i === 0 }]}>
               <span class="row__batch">{b.batch}</span>
-              <span class="row__window">{b.window}</span>
+              <span class="row__window">
+                {b.window}
+                {b.linkText && b.linkHref && (
+                  <>
+                    {' — '}
+                    <a class="row__link" href={b.linkHref}>
+                      {b.linkText}
+                    </a>
+                  </>
+                )}
+              </span>
               <span class="row__edition">{b.edition}</span>
               <span class="row__price">{b.price}</span>
             </div>
@@ -70,6 +86,11 @@ const batches: Array<{ batch: string; window: string; edition: string; price?: s
   .row__window {
     font-size: 0.95rem;
     color: var(--text-dim);
+  }
+  .row__link {
+    color: var(--accent);
+    text-decoration: underline;
+    text-underline-offset: 2px;
   }
   .row__edition {
     font-size: 0.98rem;

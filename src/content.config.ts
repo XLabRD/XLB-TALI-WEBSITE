@@ -146,12 +146,18 @@ const localeHome = z.object({
   shipBatches: z
     .array(
       z.object({
+        // Semantics per the 2026-07-28 editions update: batch = edition name,
+        // window = availability + relative ship order (no dates — none are
+        // committed), edition = included Cloud Pro period.
         batch: z.string(),
         window: z.string(),
         edition: z.string(),
         // Deliberate literal figure (2026-07-28: derived/multiplier pricing
         // removed per author — every edition price is hardcoded).
         price: z.string().default(''),
+        // Optional link under the availability cell (e.g. Signature waitlist).
+        linkText: z.string().default(''),
+        linkHref: z.string().default(''),
       })
     )
     .default([]),

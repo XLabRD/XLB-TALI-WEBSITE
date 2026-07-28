@@ -1,5 +1,5 @@
 {
-  "order": 15,
+  "order": 17,
   "en": {
     "question": "What happens to my history if I don't renew Cloud Pro?",
     "answer": "Your data isn't deleted the moment Cloud Pro ends. We keep your full history stored for a 60-day grace period — if you renew within that window, everything is restored exactly as you left it, with nothing missing.\n\nWe'll also notify you a couple of times before anything is removed, so a lapsed renewal never takes you by surprise. If you don't renew by the end of the grace period, your stored history is permanently deleted.\n\nThroughout all of this, your device keeps working normally on Cloud Basic — realtime viewing never stops."
