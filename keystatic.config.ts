@@ -121,6 +121,7 @@ const uiLocale = (label: string) =>
       formSuccess: fields.text({ label: 'Form: success message' }),
       formError: fields.text({ label: 'Form: error message' }),
       formMailto: fields.text({ label: 'Form: mailto link label' }),
+      featureSoon: fields.text({ label: 'Features: coming-soon badge', defaultValue: '' }),
       checkoutLoading: fields.text({ label: 'Checkout: loading state', defaultValue: '' }),
       checkoutError: fields.text({ label: 'Checkout: error message', defaultValue: '' }),
       checkoutFallback: fields.text({ label: 'Checkout: fallback link label', defaultValue: '' }),
@@ -211,6 +212,11 @@ export default config({
       schema: {
         slug: fields.slug({ name: { label: 'Slug' } }),
         order: fields.number({ label: 'Order', defaultValue: 99 }),
+        comingSoon: fields.checkbox({
+          label: 'Coming soon',
+          description: 'Shows a "Coming soon / Próximamente" badge on the card.',
+          defaultValue: false,
+        }),
         icon: fields.select({
           label: 'Icon',
           options: [

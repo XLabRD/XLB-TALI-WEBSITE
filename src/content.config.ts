@@ -14,6 +14,9 @@ const features = defineCollection({
   loader: glob({ pattern: '**/*.json', base: './src/content/features' }),
   schema: z.object({
     order: z.number().default(99),
+    // Feature advertised but not yet enabled in firmware — shows a
+    // "Coming soon / Próximamente" badge (ui.featureSoon).
+    comingSoon: z.boolean().default(false),
     icon: z.enum([
       'temperature',
       'humidity',
@@ -131,6 +134,7 @@ const localeUi = z.object({
   formSuccess: z.string(),
   formError: z.string(),
   formMailto: z.string(),
+  featureSoon: z.string().default(''),
   checkoutLoading: z.string().default(''),
   checkoutError: z.string().default(''),
   checkoutFallback: z.string().default(''),
