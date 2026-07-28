@@ -47,6 +47,8 @@ const { copy } = Astro.props;
 <style>
   .intro {
     color: var(--text-dim);
+    /* blank lines in the copy become paragraph breaks */
+    white-space: pre-line;
   }
   .parts {
     display: grid;

@@ -9,7 +9,7 @@
     "heroImageAlt": "The Tali e-paper display standing on a marble table, showing 17.2°C and 67% humidity for a wine cellar",
     "systemKicker": "The system",
     "systemTitle": "One hub for unlimited zones.",
-    "systemIntro": "Discreet wireless sensors live with your collection. A glanceable e-paper display shows what they sense. And the app keeps the detailed log wherever you are — and lets you know when your attention is needed. Pair one sensor or many — and because the display senses the environment itself, it can live inside a monitored zone or stand as a zone of its own.",
+    "systemIntro": "Discreet wireless sensors live with your collection. A glanceable e-paper display shows what they sense. The app keeps the detailed log wherever you are, and tells you when something needs your attention.\n\nPair one Puk or many. The display reads its own surroundings too, so it can watch the room while your Puks watch inside — and the gap between them is often the first sign something is changing. Or let it stand as a zone of its own.",
     "systemParts": [
       {
         "name": "Tali",
@@ -107,7 +107,7 @@
     "heroImageAlt": "La pantalla Tali de tinta electrónica sobre una mesa de mármol, mostrando 17.2°C y 67% de humedad de una cava",
     "systemKicker": "El sistema",
     "systemTitle": "Un hub para zonas ilimitadas.",
-    "systemIntro": "Sensores inalámbricos discretos viven con tu colección. Una pantalla de tinta electrónica muestra lo que perciben, de un vistazo. Y la app guarda el registro detallado estés donde estés — y te avisa cuando se necesita tu atención. Añade uno o muchos sensores — y como la pantalla también percibe su entorno, puede vivir dentro de una zona monitoreada o ser una zona por sí misma.",
+    "systemIntro": "Sensores inalámbricos discretos viven con tu colección. Una pantalla de tinta electrónica muestra lo que perciben, de un vistazo. La app guarda el registro detallado estés donde estés, y te avisa cuando algo necesita tu atención.\n\nEmpareja un Puk o varios. La pantalla también lee su propio entorno, así que puede vigilar la habitación mientras tus Puks vigilan el interior — y la diferencia entre ambos suele ser la primera señal de que algo está cambiando. O déjala funcionar como una zona por sí misma.",
     "systemParts": [
       {
         "name": "Tali",
