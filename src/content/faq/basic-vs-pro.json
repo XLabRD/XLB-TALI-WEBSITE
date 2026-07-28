@@ -8,17 +8,17 @@
         "name": "Tali Basic",
         "tagline": "Included with every device, for life:",
         "items": [
-          "Realtime readings on your Tali screen and Puks",
-          "Local alerts"
+          "Realtime remote visualization from the app",
+          "Local alerts on the Tali screen"
         ]
       },
       {
         "name": "Tali Pro",
         "tagline": "Everything in Basic, plus:",
         "items": [
-          "Unlimited history and trend analysis",
-          "Remote viewing from anywhere",
-          "Push alerts to your phone"
+          "Unlimited history",
+          "Remote alerts",
+          "Trend analysis and reports"
         ]
       }
     ]
@@ -31,17 +31,17 @@
         "name": "Tali Basic",
         "tagline": "Incluido con cada dispositivo, de por vida:",
         "items": [
-          "Lecturas en tiempo real en tu pantalla Tali y tus Puks",
-          "Alertas locales"
+          "Visualización remota en tiempo real desde la app",
+          "Alertas locales en la pantalla Tali"
         ]
       },
       {
         "name": "Tali Pro",
         "tagline": "Todo lo de Basic, más:",
         "items": [
-          "Historial ilimitado y análisis de tendencias",
-          "Visualización remota desde donde estés",
-          "Alertas push a tu teléfono"
+          "Historial ilimitado",
+          "Alertas remotas",
+          "Análisis de tendencias y reportes"
         ]
       }
     ]
