@@ -2,6 +2,7 @@
 interface Props {
   copy: Record<string, any>;
   items: Array<{
+    slug?: string;
     question: string;
     answer: string;
     tiers?: Array<{ name: string; tagline: string; items: string[] }>;
@@ -24,7 +25,7 @@ const { copy, items, ctaLabel } = Astro.props;
     <div class="list">
       {
         items.map((item) => (
-          <details class="item">
+          <details class="item" id={item.slug ? `faq-${item.slug}` : undefined}>
             <summary>{item.question}</summary>
             {item.answer && <p>{item.answer}</p>}
             {(item.tiers?.length ?? 0) > 0 && (
@@ -62,6 +63,21 @@ const { copy, items, ctaLabel } = Astro.props;
     </div>
   </div>
 </section>
+
+<script>
+  // Links targeting #faq-<slug> (from anywhere on the page) open that
+  // accordion entry so the reader lands on the answer, not a closed row.
+  const open = (hash: string) => {
+    if (!hash.startsWith('#faq-')) return;
+    const el = document.getElementById(hash.slice(1)) as HTMLDetailsElement | null;
+    if (el) el.open = true;
+  };
+  open(location.hash);
+  window.addEventListener('hashchange', () => open(location.hash));
+  document
+    .querySelectorAll<HTMLAnchorElement>('a[href^="#faq-"]')
+    .forEach((a) => a.addEventListener('click', () => open(a.getAttribute('href')!)));
+</script>
 
 <style>
   .list {

@@ -24,6 +24,23 @@ const { locale, copy, ui, plans, settings } = Astro.props;
 const embedded = Boolean(settings.checkoutEndpoint && settings.stripePublishableKey);
 const ctaHref = settings.orderUrl || '#contact';
 const ctaExternal = Boolean(settings.orderUrl);
+
+// Include items support one inline [label](#anchor) link, e.g.
+// "[Cloud Pro](#faq-basic-vs-pro) included for 24 months".
+type Part = { text: string } | { label: string; href: string };
+const parseInclude = (item: string): Part[] => {
+  const parts: Part[] = [];
+  let rest = item;
+  const re = /\[([^\]]+)\]\(([^)]+)\)/;
+  let m;
+  while ((m = re.exec(rest))) {
+    if (m.index > 0) parts.push({ text: rest.slice(0, m.index) });
+    parts.push({ label: m[1], href: m[2] });
+    rest = rest.slice(m.index + m[0].length);
+  }
+  if (rest) parts.push({ text: rest });
+  return parts;
+};
 ---
 
 <section class="section" id="edition">
@@ -76,7 +93,11 @@ const ctaExternal = Boolean(settings.orderUrl);
             </div>
             <ul class="plan__list">
               {plan.includes.map((item) => (
-                <li>{item}</li>
+                <li>
+                  {parseInclude(item).map((p) =>
+                    'href' in p ? <a href={p.href}>{p.label}</a> : p.text
+                  )}
+                </li>
               ))}
             </ul>
           </article>
@@ -268,6 +289,11 @@ const ctaExternal = Boolean(settings.orderUrl);
     position: absolute;
     left: 0;
     color: var(--accent);
+  }
+  .plan__list a {
+    color: var(--accent);
+    text-decoration: underline;
+    text-underline-offset: 2px;
   }
   @media (max-width: 700px) {
     .plan {
