@@ -1,0 +1,11 @@
+{
+  "order": 6,
+  "en": {
+    "question": "What is Tali Pro?",
+    "answer": "Tali Pro is our cloud service. It stores your complete measurement history, powers alerts to your phone, and lets you check on your places from anywhere. Every Founders Edition includes Tali Pro at no cost for 24 months. Without Pro, Tali keeps monitoring and showing current conditions as always — the cloud history and remote features are what Pro adds."
+  },
+  "es": {
+    "question": "¿Qué es Tali Pro?",
+    "answer": "Tali Pro es nuestro servicio en la nube. Guarda tu historial completo de mediciones, envía alertas a tu teléfono y te permite revisar tus espacios desde donde estés. Toda Edición Founders incluye Tali Pro sin costo por 24 meses. Sin Pro, Tali sigue monitoreando y mostrando las condiciones actuales como siempre — el historial en la nube y las funciones remotas son lo que Pro agrega."
+  }
+}

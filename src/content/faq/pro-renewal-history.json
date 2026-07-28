@@ -1,5 +1,5 @@
 {
-  "order": 6,
+  "order": 7,
   "en": {
     "question": "What happens to my history if I don't renew Tali Pro?",
     "answer": "Your data isn't deleted the moment Pro ends. We keep your full history stored for a 60-day grace period — if you renew within that window, everything is restored exactly as you left it, with nothing missing.\n\nIf you don't renew, your stored history is permanently deleted at the end of the grace period. Your device keeps working normally on Basic throughout, and you can export your complete history at any time before the grace period ends."
