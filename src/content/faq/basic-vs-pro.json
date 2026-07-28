@@ -1,11 +1,11 @@
 {
   "order": 10,
   "en": {
-    "question": "What's the difference between Basic and Pro?",
+    "question": "What's the difference between Cloud Basic and Cloud Pro?",
     "answer": "",
     "tiers": [
       {
-        "name": "Tali Basic",
+        "name": "Cloud Basic",
         "tagline": "Included with every device, for life:",
         "items": [
           "Realtime remote visualization from the app",
@@ -13,8 +13,8 @@
         ]
       },
       {
-        "name": "Tali Pro",
-        "tagline": "Everything in Basic, plus:",
+        "name": "Cloud Pro",
+        "tagline": "Everything in Cloud Basic, plus:",
         "items": [
           "Unlimited history",
           "Remote alerts",
@@ -24,11 +24,11 @@
     ]
   },
   "es": {
-    "question": "¿Cuál es la diferencia entre Basic y Pro?",
+    "question": "¿Cuál es la diferencia entre Cloud Basic y Cloud Pro?",
     "answer": "",
     "tiers": [
       {
-        "name": "Tali Basic",
+        "name": "Cloud Basic",
         "tagline": "Incluido con cada dispositivo, de por vida:",
         "items": [
           "Visualización remota en tiempo real desde la app",
@@ -36,8 +36,8 @@
         ]
       },
       {
-        "name": "Tali Pro",
-        "tagline": "Todo lo de Basic, más:",
+        "name": "Cloud Pro",
+        "tagline": "Todo lo de Cloud Basic, más:",
         "items": [
           "Historial ilimitado",
           "Alertas remotas",
