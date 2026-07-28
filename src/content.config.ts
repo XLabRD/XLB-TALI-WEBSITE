@@ -141,16 +141,17 @@ const localeHome = z.object({
   // Footnote under the batch table, linking (e.g.) to the availability FAQ.
   shipNote: z.string().default(''),
   shipNoteHref: z.string().default(''),
+  // Plain fine-print line under the table (e.g. the IVA-inclusive notice).
+  shipFinePrint: z.string().default(''),
   shipBatches: z
     .array(
       z.object({
         batch: z.string(),
         window: z.string(),
         edition: z.string(),
-        // Static fallback; when multiplier > 0 the shown price is computed
-        // live as Stripe base price × multiplier (see Pricing.astro script).
+        // Deliberate literal figure (2026-07-28: derived/multiplier pricing
+        // removed per author — every edition price is hardcoded).
         price: z.string().default(''),
-        multiplier: z.number().default(0),
       })
     )
     .default([]),

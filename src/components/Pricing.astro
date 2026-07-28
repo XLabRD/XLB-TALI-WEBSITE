@@ -210,25 +210,17 @@ const parseInclude = (item: string): Part[] => {
       if (e.target === dialog && !inside) dialog.close();
     });
 
-    // Live price from Stripe (via the worker) so the page never shows a
-    // stale figure; the static content prices stay as the no-JS/offline
-    // fallback. Both launch currencies (USD/MXN) use the $ sign, so the
-    // "$X.XX CUR" format matches the static copy in either locale.
-    // Ship-table rows carrying data-multiplier derive their price from the
-    // same base (1 = base, 1.25 = +25%, …) so every figure tracks Stripe.
+    // The Founder card shows Stripe's live price (the amount checkout will
+    // actually charge); the static content price is the no-JS fallback.
+    // All other prices on the site are deliberate hardcoded figures
+    // (2026-07-28: derived pricing removed per author).
     fetch(`${endpoint}/price`)
       .then((r) => (r.ok ? r.json() : Promise.reject()))
       .then(({ unit_amount, currency }) => {
-        const format = (cents: number) =>
-          `$${(cents / 100).toFixed(2)} ${currency.toUpperCase()}`;
+        const label = `$${(unit_amount / 100).toFixed(2)} ${currency.toUpperCase()}`;
         document
           .querySelectorAll('.plan__price')
-          .forEach((el) => (el.textContent = format(unit_amount)));
-        document
-          .querySelectorAll<HTMLElement>('.row__price[data-multiplier]')
-          .forEach((el) => {
-            el.textContent = format(Math.round(unit_amount * Number(el.dataset.multiplier)));
-          });
+          .forEach((el) => (el.textContent = label));
       })
       .catch(() => {});
   }

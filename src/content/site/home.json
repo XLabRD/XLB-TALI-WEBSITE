@@ -65,7 +65,7 @@
     "filmCaption": "See why sommeliers and enthusiasts trust Tali with the collections they cherish.",
     "pricingKicker": "The edition",
     "pricingTitle": "Founders Series, our limited edition",
-    "pricingNote": "Pre-order yours now and be the first to own it. A numbered first release, shipping from September 2026.",
+    "pricingNote": "Pre-order yours now and be the first to own it. A numbered first release, shipping from September 2026. The price includes 16% IVA and shipping within Mexico.",
     "shipKicker": "Production",
     "shipTitle": "Shipping dates + pricing",
     "shipBatches": [
@@ -73,22 +73,19 @@
         "batch": "Batch One",
         "window": "Aug – Sep 26",
         "edition": "Founders Limited Edition",
-        "price": "$155.00 USD",
-        "multiplier": 1
+        "price": "$155.00 USD"
       },
       {
         "batch": "Batch Two",
         "window": "Dec 26 – Feb 27",
         "edition": "Limited Edition",
-        "price": "$193.75 USD",
-        "multiplier": 1.25
+        "price": "$185.00 USD"
       },
       {
         "batch": "Batch Three",
         "window": "Apr 27 – ongoing",
         "edition": "Standard Edition",
-        "price": "$209.25 USD",
-        "multiplier": 1.35
+        "price": "$198.00 USD"
       }
     ],
     "faqKicker": "Questions",
@@ -97,7 +94,8 @@
     "contactTitle": "Let's talk.",
     "contactIntro": "Send us a message with your questions and we'll get back to you in less than 48 hours.",
     "shipNote": "Where is it available?",
-    "shipNoteHref": "#faq-where-available"
+    "shipNoteHref": "#faq-where-available",
+    "shipFinePrint": "All prices include 16% IVA and shipping within Mexico."
   },
   "es": {
     "heroKicker": "Inteligencia ambiental",
@@ -165,7 +163,7 @@
     "filmCaption": "Descubre por qué sommeliers y aficionados le confían a Tali las colecciones que atesoran.",
     "pricingKicker": "La edición",
     "pricingTitle": "Founders Series, nuestra edición limitada",
-    "pricingNote": "Pre-ordena la tuya ahora y sé de los primeros en tenerla. Una primera serie numerada, con envíos a partir de septiembre de 2026.",
+    "pricingNote": "Pre-ordena la tuya ahora y sé de los primeros en tenerla. Una primera serie numerada, con envíos a partir de septiembre de 2026. El precio incluye 16% de IVA y envío dentro de México.",
     "shipKicker": "Producción",
     "shipTitle": "Fechas de envío + precios",
     "shipBatches": [
@@ -173,22 +171,19 @@
         "batch": "Lote Uno",
         "window": "Ago – Sep 26",
         "edition": "Edición Limitada Founders",
-        "price": "$155.00 USD",
-        "multiplier": 1
+        "price": "$155.00 USD"
       },
       {
         "batch": "Lote Dos",
         "window": "Dic 26 – Feb 27",
         "edition": "Edición Limitada",
-        "price": "$193.75 USD",
-        "multiplier": 1.25
+        "price": "$185.00 USD"
       },
       {
         "batch": "Lote Tres",
         "window": "Abr 27 – en adelante",
         "edition": "Edición Estándar",
-        "price": "$209.25 USD",
-        "multiplier": 1.35
+        "price": "$198.00 USD"
       }
     ],
     "faqKicker": "Preguntas",
@@ -197,6 +192,7 @@
     "contactTitle": "Hablemos.",
     "contactIntro": "Envíanos un mensaje con tus preguntas y te responderemos en menos de 48 horas.",
     "shipNote": "¿Dónde está disponible?",
-    "shipNoteHref": "#faq-where-available"
+    "shipNoteHref": "#faq-where-available",
+    "shipFinePrint": "Todos los precios incluyen 16% de IVA y envío dentro de México."
   }
 }

@@ -126,21 +126,17 @@ const homeLocale = (label: string) =>
         description: 'e.g. #faq-where-available',
         defaultValue: '',
       }),
+      shipFinePrint: fields.text({
+        label: 'Shipping fine print',
+        description: 'Plain line under the table, e.g. the IVA-inclusive notice.',
+        defaultValue: '',
+      }),
       shipBatches: fields.array(
         fields.object({
           batch: fields.text({ label: 'Batch name' }),
           window: fields.text({ label: 'Ship window' }),
           edition: fields.text({ label: 'Edition' }),
-          price: fields.text({
-            label: 'Price (fallback)',
-            description: 'Shown until the live price loads (or if the multiplier is 0).',
-            defaultValue: '',
-          }),
-          multiplier: fields.number({
-            label: 'Live price multiplier',
-            description: 'Price auto-computes as Stripe base × this (1 = base, 1.25 = +25%). 0 = static.',
-            defaultValue: 0,
-          }),
+          price: fields.text({ label: 'Price', defaultValue: '' }),
         }),
         { label: 'Ship batches', itemLabel: (props) => props.fields.batch.value ?? 'Batch' }
       ),

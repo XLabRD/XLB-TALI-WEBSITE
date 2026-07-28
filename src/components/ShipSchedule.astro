@@ -3,13 +3,8 @@ interface Props {
   copy: Record<string, any>;
 }
 const { copy } = Astro.props;
-const batches: Array<{
-  batch: string;
-  window: string;
-  edition: string;
-  price?: string;
-  multiplier?: number;
-}> = copy.shipBatches ?? [];
+const batches: Array<{ batch: string; window: string; edition: string; price?: string }> =
+  copy.shipBatches ?? [];
 ---
 
 {
@@ -26,9 +21,7 @@ const batches: Array<{
               <span class="row__batch">{b.batch}</span>
               <span class="row__window">{b.window}</span>
               <span class="row__edition">{b.edition}</span>
-              <span class="row__price" data-multiplier={b.multiplier || undefined}>
-                {b.price}
-              </span>
+              <span class="row__price">{b.price}</span>
             </div>
           ))}
         </div>
@@ -37,6 +30,7 @@ const batches: Array<{
             <a href={copy.shipNoteHref}>{copy.shipNote}</a>
           </p>
         )}
+        {copy.shipFinePrint && <p class="batches__fine">{copy.shipFinePrint}</p>}
       </div>
     </section>
   )
@@ -110,6 +104,13 @@ const batches: Array<{
   }
   .batches__note a:hover {
     color: var(--accent);
+  }
+  .batches__fine {
+    max-width: 46rem;
+    margin: 0.5rem auto 0;
+    text-align: center;
+    font-size: 0.78rem;
+    color: var(--text-dim);
   }
   @media (max-width: 640px) {
     .row {
