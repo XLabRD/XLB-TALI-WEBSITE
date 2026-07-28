@@ -116,6 +116,7 @@ const homeLocale = (label: string) =>
           batch: fields.text({ label: 'Batch name' }),
           window: fields.text({ label: 'Ship window' }),
           edition: fields.text({ label: 'Edition' }),
+          price: fields.text({ label: 'Price', defaultValue: '' }),
         }),
         { label: 'Ship batches', itemLabel: (props) => props.fields.batch.value ?? 'Batch' }
       ),

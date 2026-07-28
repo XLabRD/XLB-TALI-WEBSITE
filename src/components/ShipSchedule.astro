@@ -3,7 +3,8 @@ interface Props {
   copy: Record<string, any>;
 }
 const { copy } = Astro.props;
-const batches: Array<{ batch: string; window: string; edition: string }> = copy.shipBatches ?? [];
+const batches: Array<{ batch: string; window: string; edition: string; price?: string }> =
+  copy.shipBatches ?? [];
 ---
 
 {
@@ -20,6 +21,7 @@ const batches: Array<{ batch: string; window: string; edition: string }> = copy.
               <span class="row__batch">{b.batch}</span>
               <span class="row__window">{b.window}</span>
               <span class="row__edition">{b.edition}</span>
+              <span class="row__price">{b.price}</span>
             </div>
           ))}
         </div>
@@ -44,7 +46,7 @@ const batches: Array<{ batch: string; window: string; edition: string }> = copy.
   }
   .row {
     display: grid;
-    grid-template-columns: 1fr 1.4fr 1.4fr;
+    grid-template-columns: 0.9fr 1.4fr 1.3fr 0.8fr;
     gap: 1rem;
     align-items: baseline;
     padding: 1.1rem 1.5rem;
@@ -66,13 +68,21 @@ const batches: Array<{ batch: string; window: string; edition: string }> = copy.
   .row__edition {
     font-size: 0.98rem;
     color: var(--text);
+  }
+  .row__price {
+    font-family: var(--mono);
+    font-size: 0.9rem;
+    color: var(--text);
     text-align: right;
+    white-space: nowrap;
   }
   .row--current .row__batch,
-  .row--current .row__window {
+  .row--current .row__window,
+  .row--current .row__price {
     color: var(--accent);
   }
-  .row--current .row__edition {
+  .row--current .row__edition,
+  .row--current .row__price {
     font-weight: 600;
   }
   @media (max-width: 640px) {
@@ -80,7 +90,7 @@ const batches: Array<{ batch: string; window: string; edition: string }> = copy.
       grid-template-columns: 1fr;
       gap: 0.2rem;
     }
-    .row__edition {
+    .row__price {
       text-align: left;
     }
   }

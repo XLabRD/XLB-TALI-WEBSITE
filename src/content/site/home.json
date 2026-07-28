@@ -67,11 +67,26 @@
     "pricingTitle": "Founders Series, our limited edition",
     "pricingNote": "Pre-order yours now and be the first to own it. A numbered first release, shipping from September 2026.",
     "shipKicker": "Production",
-    "shipTitle": "When will it ship?",
+    "shipTitle": "Shipping dates + pricing",
     "shipBatches": [
-      { "batch": "Batch One", "window": "August – September 2026", "edition": "Founders Limited Edition" },
-      { "batch": "Batch Two", "window": "December 2026 – February 2027", "edition": "Limited Edition" },
-      { "batch": "Batch Three", "window": "April 2027 – ongoing", "edition": "Standard Edition" }
+      {
+        "batch": "Batch One",
+        "window": "August – September 2026",
+        "edition": "Founders Limited Edition",
+        "price": "$148.00 USD"
+      },
+      {
+        "batch": "Batch Two",
+        "window": "December 2026 – February 2027",
+        "edition": "Limited Edition",
+        "price": "$185.00 USD"
+      },
+      {
+        "batch": "Batch Three",
+        "window": "April 2027 – ongoing",
+        "edition": "Standard Edition",
+        "price": "$199.80 USD"
+      }
     ],
     "faqKicker": "Questions",
     "faqTitle": "Asked, answered.",
@@ -147,11 +162,26 @@
     "pricingTitle": "Founders Series, nuestra edición limitada",
     "pricingNote": "Pre-ordena la tuya ahora y sé de los primeros en tenerla. Una primera serie numerada, con envíos a partir de septiembre de 2026.",
     "shipKicker": "Producción",
-    "shipTitle": "¿Cuándo se envía?",
+    "shipTitle": "Fechas de envío + precios",
     "shipBatches": [
-      { "batch": "Lote Uno", "window": "Agosto – Septiembre 2026", "edition": "Edición Limitada Founders" },
-      { "batch": "Lote Dos", "window": "Diciembre 2026 – Febrero 2027", "edition": "Edición Limitada" },
-      { "batch": "Lote Tres", "window": "Abril 2027 – en adelante", "edition": "Edición Estándar" }
+      {
+        "batch": "Lote Uno",
+        "window": "Agosto – Septiembre 2026",
+        "edition": "Edición Limitada Founders",
+        "price": "$148.00 USD"
+      },
+      {
+        "batch": "Lote Dos",
+        "window": "Diciembre 2026 – Febrero 2027",
+        "edition": "Edición Limitada",
+        "price": "$185.00 USD"
+      },
+      {
+        "batch": "Lote Tres",
+        "window": "Abril 2027 – en adelante",
+        "edition": "Edición Estándar",
+        "price": "$199.80 USD"
+      }
     ],
     "faqKicker": "Preguntas",
     "faqTitle": "Preguntas frecuentes.",
