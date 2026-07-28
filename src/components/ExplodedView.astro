@@ -162,6 +162,8 @@ const callouts = copy.explodeCallouts
   .caption {
     color: var(--text-dim);
     max-width: 38rem;
+    /* blank lines in the copy become paragraph breaks */
+    white-space: pre-line;
   }
   .explode__stage {
     position: relative;
