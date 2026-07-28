@@ -131,7 +131,16 @@ const homeLocale = (label: string) =>
           batch: fields.text({ label: 'Batch name' }),
           window: fields.text({ label: 'Ship window' }),
           edition: fields.text({ label: 'Edition' }),
-          price: fields.text({ label: 'Price', defaultValue: '' }),
+          price: fields.text({
+            label: 'Price (fallback)',
+            description: 'Shown until the live price loads (or if the multiplier is 0).',
+            defaultValue: '',
+          }),
+          multiplier: fields.number({
+            label: 'Live price multiplier',
+            description: 'Price auto-computes as Stripe base × this (1 = base, 1.25 = +25%). 0 = static.',
+            defaultValue: 0,
+          }),
         }),
         { label: 'Ship batches', itemLabel: (props) => props.fields.batch.value ?? 'Batch' }
       ),

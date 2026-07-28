@@ -73,19 +73,22 @@
         "batch": "Batch One",
         "window": "Aug – Sep 26",
         "edition": "Founders Limited Edition",
-        "price": "$148.00 USD"
+        "price": "$148.00 USD",
+        "multiplier": 1
       },
       {
         "batch": "Batch Two",
         "window": "Dec 26 – Feb 27",
         "edition": "Limited Edition",
-        "price": "$185.00 USD"
+        "price": "$185.00 USD",
+        "multiplier": 1.25
       },
       {
         "batch": "Batch Three",
         "window": "Apr 27 – ongoing",
         "edition": "Standard Edition",
-        "price": "$199.80 USD"
+        "price": "$199.80 USD",
+        "multiplier": 1.35
       }
     ],
     "faqKicker": "Questions",
@@ -170,19 +173,22 @@
         "batch": "Lote Uno",
         "window": "Ago – Sep 26",
         "edition": "Edición Limitada Founders",
-        "price": "$148.00 USD"
+        "price": "$148.00 USD",
+        "multiplier": 1
       },
       {
         "batch": "Lote Dos",
         "window": "Dic 26 – Feb 27",
         "edition": "Edición Limitada",
-        "price": "$185.00 USD"
+        "price": "$185.00 USD",
+        "multiplier": 1.25
       },
       {
         "batch": "Lote Tres",
         "window": "Abr 27 – en adelante",
         "edition": "Edición Estándar",
-        "price": "$199.80 USD"
+        "price": "$199.80 USD",
+        "multiplier": 1.35
       }
     ],
     "faqKicker": "Preguntas",

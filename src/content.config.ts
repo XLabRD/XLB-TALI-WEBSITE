@@ -147,7 +147,10 @@ const localeHome = z.object({
         batch: z.string(),
         window: z.string(),
         edition: z.string(),
+        // Static fallback; when multiplier > 0 the shown price is computed
+        // live as Stripe base price × multiplier (see Pricing.astro script).
         price: z.string().default(''),
+        multiplier: z.number().default(0),
       })
     )
     .default([]),

@@ -211,16 +211,24 @@ const parseInclude = (item: string): Part[] => {
     });
 
     // Live price from Stripe (via the worker) so the page never shows a
-    // stale figure; the static content price stays as the no-JS/offline
+    // stale figure; the static content prices stay as the no-JS/offline
     // fallback. Both launch currencies (USD/MXN) use the $ sign, so the
     // "$X.XX CUR" format matches the static copy in either locale.
+    // Ship-table rows carrying data-multiplier derive their price from the
+    // same base (1 = base, 1.25 = +25%, …) so every figure tracks Stripe.
     fetch(`${endpoint}/price`)
       .then((r) => (r.ok ? r.json() : Promise.reject()))
       .then(({ unit_amount, currency }) => {
-        const label = `$${(unit_amount / 100).toFixed(2)} ${currency.toUpperCase()}`;
+        const format = (cents: number) =>
+          `$${(cents / 100).toFixed(2)} ${currency.toUpperCase()}`;
         document
           .querySelectorAll('.plan__price')
-          .forEach((el) => (el.textContent = label));
+          .forEach((el) => (el.textContent = format(unit_amount)));
+        document
+          .querySelectorAll<HTMLElement>('.row__price[data-multiplier]')
+          .forEach((el) => {
+            el.textContent = format(Math.round(unit_amount * Number(el.dataset.multiplier)));
+          });
       })
       .catch(() => {});
   }

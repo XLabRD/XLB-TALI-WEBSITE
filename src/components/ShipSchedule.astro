@@ -3,8 +3,13 @@ interface Props {
   copy: Record<string, any>;
 }
 const { copy } = Astro.props;
-const batches: Array<{ batch: string; window: string; edition: string; price?: string }> =
-  copy.shipBatches ?? [];
+const batches: Array<{
+  batch: string;
+  window: string;
+  edition: string;
+  price?: string;
+  multiplier?: number;
+}> = copy.shipBatches ?? [];
 ---
 
 {
@@ -21,7 +26,9 @@ const batches: Array<{ batch: string; window: string; edition: string; price?: s
               <span class="row__batch">{b.batch}</span>
               <span class="row__window">{b.window}</span>
               <span class="row__edition">{b.edition}</span>
-              <span class="row__price">{b.price}</span>
+              <span class="row__price" data-multiplier={b.multiplier || undefined}>
+                {b.price}
+              </span>
             </div>
           ))}
         </div>
