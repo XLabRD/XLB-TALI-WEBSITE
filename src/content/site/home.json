@@ -103,7 +103,7 @@
     "heroSubtitle": "Tali vigila el entorno de tus vinos, puros y otras colecciones delicadas — con precisión, a toda hora y en tiempo real. Registra y da sentido a la temperatura, la humedad, la vibración y la luz.",
     "heroCtaPrimary": "Pre-ordena ahora",
     "heroCtaSecondary": "Cómo funciona",
-    "heroCtaFilm": "Mira el video",
+    "heroCtaFilm": "Ve el video",
     "heroImageAlt": "La pantalla Tali de tinta electrónica sobre una mesa de mármol, mostrando 17.2°C y 67% de humedad de una cava",
     "systemKicker": "El sistema",
     "systemTitle": "Un hub para zonas ilimitadas.",
@@ -138,7 +138,7 @@
     },
     "appKicker": "La app",
     "appTitle": "Tu colección, en tu bolsillo.",
-    "appIntro": "Mira lo que sucede en tiempo real o consulta el historial detallado. Recibe un aviso en el momento en que algo importa — parámetros fuera de tus umbrales personalizados, cortes de energía y más. Ya sea que tengas una colección o muchas, todo vive en un solo lugar, ordenado.",
+    "appIntro": "Observa lo que sucede en tiempo real o consulta el historial detallado. Recibe un aviso en el momento en que algo importa — parámetros fuera de tus umbrales personalizados, cortes de energía y más. Ya sea que tengas una colección o muchas, todo vive en un solo lugar, ordenado.",
     "appScreens": [
       {
         "src": "/images/app-devices.jpg",
