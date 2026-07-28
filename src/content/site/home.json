@@ -92,7 +92,9 @@
     "faqTitle": "Asked, answered.",
     "contactKicker": "Contact",
     "contactTitle": "Let's talk.",
-    "contactIntro": "Send us a message with your questions and we'll get back to you in less than 48 hours."
+    "contactIntro": "Send us a message with your questions and we'll get back to you in less than 48 hours.",
+    "shipNote": "Where is it available?",
+    "shipNoteHref": "#faq-where-available"
   },
   "es": {
     "heroKicker": "Inteligencia ambiental",
@@ -187,6 +189,8 @@
     "faqTitle": "Preguntas frecuentes.",
     "contactKicker": "Contacto",
     "contactTitle": "Hablemos.",
-    "contactIntro": "Envíanos un mensaje con tus preguntas y te responderemos en menos de 48 horas."
+    "contactIntro": "Envíanos un mensaje con tus preguntas y te responderemos en menos de 48 horas.",
+    "shipNote": "¿Dónde está disponible?",
+    "shipNoteHref": "#faq-where-available"
   }
 }

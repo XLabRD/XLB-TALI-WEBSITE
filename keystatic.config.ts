@@ -116,6 +116,16 @@ const homeLocale = (label: string) =>
       pricingNote: fields.text({ label: 'Pricing note', multiline: true }),
       shipKicker: fields.text({ label: 'Shipping kicker', defaultValue: '' }),
       shipTitle: fields.text({ label: 'Shipping title', defaultValue: '' }),
+      shipNote: fields.text({
+        label: 'Shipping footnote text',
+        description: 'Shown under the batch table as a link (target below). Empty = hidden.',
+        defaultValue: '',
+      }),
+      shipNoteHref: fields.text({
+        label: 'Shipping footnote target',
+        description: 'e.g. #faq-where-available',
+        defaultValue: '',
+      }),
       shipBatches: fields.array(
         fields.object({
           batch: fields.text({ label: 'Batch name' }),

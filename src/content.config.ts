@@ -138,6 +138,9 @@ const localeHome = z.object({
   shipTitle: z.string().default(''),
   // Production batches: window ("August – September 2026") per edition.
   // Empty array = section hidden.
+  // Footnote under the batch table, linking (e.g.) to the availability FAQ.
+  shipNote: z.string().default(''),
+  shipNoteHref: z.string().default(''),
   shipBatches: z
     .array(
       z.object({

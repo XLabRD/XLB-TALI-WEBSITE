@@ -25,6 +25,11 @@ const batches: Array<{ batch: string; window: string; edition: string; price?: s
             </div>
           ))}
         </div>
+        {copy.shipNote && copy.shipNoteHref && (
+          <p class="batches__note">
+            <a href={copy.shipNoteHref}>{copy.shipNote}</a>
+          </p>
+        )}
       </div>
     </section>
   )
@@ -84,6 +89,20 @@ const batches: Array<{ batch: string; window: string; edition: string; price?: s
   .row--current .row__edition,
   .row--current .row__price {
     font-weight: 600;
+  }
+  .batches__note {
+    max-width: 46rem;
+    margin: 0.8rem auto 0;
+    text-align: center;
+    font-size: 0.85rem;
+  }
+  .batches__note a {
+    color: var(--text-dim);
+    text-decoration: underline;
+    text-underline-offset: 2px;
+  }
+  .batches__note a:hover {
+    color: var(--accent);
   }
   @media (max-width: 640px) {
     .row {
