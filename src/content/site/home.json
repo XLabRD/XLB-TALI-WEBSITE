@@ -71,7 +71,7 @@
     "shipBatches": [
       {
         "batch": "Founders Limited Edition",
-        "window": "Pre-order open — ships first (Aug – Sep 26)",
+        "window": "Pre-order now — ships Aug – Sep 26",
         "edition": "24 months of Cloud Pro included",
         "price": "$185.00 USD"
       },
@@ -95,7 +95,7 @@
     "contactIntro": "Send us a message with your questions and we'll get back to you in less than 48 hours.",
     "shipNote": "Where is it available?",
     "shipNoteHref": "#faq-where-available",
-    "shipFinePrint": "All prices include 16% IVA and shipping within Mexico."
+    "shipFinePrint": "*Orders are shipped in the order they are received.\nAll prices include 16% IVA and shipping within Mexico."
   },
   "es": {
     "heroKicker": "Inteligencia ambiental",
@@ -169,7 +169,7 @@
     "shipBatches": [
       {
         "batch": "Founders Limited Edition",
-        "window": "Pre-orden abierta — se envía primero (Ago – Sep 26)",
+        "window": "Pre-ordena ahora — se envía Ago – Sep 26",
         "edition": "24 meses de Cloud Pro incluidos",
         "price": "$185.00 USD"
       },
@@ -193,6 +193,6 @@
     "contactIntro": "Envíanos un mensaje con tus preguntas y te responderemos en menos de 48 horas.",
     "shipNote": "¿Dónde está disponible?",
     "shipNoteHref": "#faq-where-available",
-    "shipFinePrint": "Todos los precios incluyen 16% de IVA y envío dentro de México."
+    "shipFinePrint": "*Los pedidos se envían en el orden en que se reciben.\nTodos los precios incluyen 16% de IVA y envío dentro de México."
   }
 }
