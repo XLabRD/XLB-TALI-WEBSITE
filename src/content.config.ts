@@ -112,6 +112,13 @@ const localeHome = z.object({
   pricingKicker: z.string(),
   pricingTitle: z.string(),
   pricingNote: z.string(),
+  shipKicker: z.string().default(''),
+  shipTitle: z.string().default(''),
+  // Production batches: window ("August – September 2026") per edition.
+  // Empty array = section hidden.
+  shipBatches: z
+    .array(z.object({ batch: z.string(), window: z.string(), edition: z.string() }))
+    .default([]),
   faqKicker: z.string(),
   faqTitle: z.string(),
   contactKicker: z.string(),

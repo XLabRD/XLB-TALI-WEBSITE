@@ -95,6 +95,16 @@ const homeLocale = (label: string) =>
       pricingKicker: fields.text({ label: 'Pricing kicker' }),
       pricingTitle: fields.text({ label: 'Pricing title' }),
       pricingNote: fields.text({ label: 'Pricing note', multiline: true }),
+      shipKicker: fields.text({ label: 'Shipping kicker', defaultValue: '' }),
+      shipTitle: fields.text({ label: 'Shipping title', defaultValue: '' }),
+      shipBatches: fields.array(
+        fields.object({
+          batch: fields.text({ label: 'Batch name' }),
+          window: fields.text({ label: 'Ship window' }),
+          edition: fields.text({ label: 'Edition' }),
+        }),
+        { label: 'Ship batches', itemLabel: (props) => props.fields.batch.value ?? 'Batch' }
+      ),
       faqKicker: fields.text({ label: 'FAQ kicker' }),
       faqTitle: fields.text({ label: 'FAQ title' }),
       contactKicker: fields.text({ label: 'Contact kicker' }),

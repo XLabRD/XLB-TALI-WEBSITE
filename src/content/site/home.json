@@ -66,6 +66,13 @@
     "pricingKicker": "The edition",
     "pricingTitle": "Founders Series, our limited edition",
     "pricingNote": "Pre-order yours now and be the first to own it. A numbered first release, shipping from September 2026.",
+    "shipKicker": "Production",
+    "shipTitle": "When will it ship?",
+    "shipBatches": [
+      { "batch": "Batch One", "window": "August – September 2026", "edition": "Founders Limited Edition" },
+      { "batch": "Batch Two", "window": "December 2026 – February 2027", "edition": "Limited Edition" },
+      { "batch": "Batch Three", "window": "April 2027 – ongoing", "edition": "Standard Edition" }
+    ],
     "faqKicker": "Questions",
     "faqTitle": "Asked, answered.",
     "contactKicker": "Contact",
@@ -139,6 +146,13 @@
     "pricingKicker": "La edición",
     "pricingTitle": "Founders Series, nuestra edición limitada",
     "pricingNote": "Pre-ordena la tuya ahora y sé de los primeros en tenerla. Una primera serie numerada, con envíos a partir de septiembre de 2026.",
+    "shipKicker": "Producción",
+    "shipTitle": "¿Cuándo se envía?",
+    "shipBatches": [
+      { "batch": "Lote Uno", "window": "Agosto – Septiembre 2026", "edition": "Edición Limitada Founders" },
+      { "batch": "Lote Dos", "window": "Diciembre 2026 – Febrero 2027", "edition": "Edición Limitada" },
+      { "batch": "Lote Tres", "window": "Abril 2027 – en adelante", "edition": "Edición Estándar" }
+    ],
     "faqKicker": "Preguntas",
     "faqTitle": "Preguntas frecuentes.",
     "contactKicker": "Contacto",

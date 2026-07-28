@@ -1,0 +1,87 @@
+---
+interface Props {
+  copy: Record<string, any>;
+}
+const { copy } = Astro.props;
+const batches: Array<{ batch: string; window: string; edition: string }> = copy.shipBatches ?? [];
+---
+
+{
+  batches.length > 0 && (
+    <section class="section" id="shipping">
+      <div class="wrap">
+        <div class="section__head head--center">
+          <p class="kicker">{copy.shipKicker}</p>
+          <h2 class="section__title">{copy.shipTitle}</h2>
+        </div>
+        <div class="batches">
+          {batches.map((b, i) => (
+            <div class:list={['row', { 'row--current': i === 0 }]}>
+              <span class="row__batch">{b.batch}</span>
+              <span class="row__window">{b.window}</span>
+              <span class="row__edition">{b.edition}</span>
+            </div>
+          ))}
+        </div>
+      </div>
+    </section>
+  )
+}
+
+<style>
+  .head--center {
+    margin-inline: auto;
+    text-align: center;
+    justify-items: center;
+  }
+  .batches {
+    max-width: 46rem;
+    margin-inline: auto;
+    border: 1px solid var(--line);
+    border-radius: 14px;
+    overflow: hidden;
+    background: linear-gradient(170deg, var(--surface), transparent 80%);
+  }
+  .row {
+    display: grid;
+    grid-template-columns: 1fr 1.4fr 1.4fr;
+    gap: 1rem;
+    align-items: baseline;
+    padding: 1.1rem 1.5rem;
+  }
+  .row + .row {
+    border-top: 1px solid var(--line);
+  }
+  .row__batch {
+    font-family: var(--mono);
+    font-size: 0.72rem;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--text-dim);
+  }
+  .row__window {
+    font-size: 0.95rem;
+    color: var(--text-dim);
+  }
+  .row__edition {
+    font-size: 0.98rem;
+    color: var(--text);
+    text-align: right;
+  }
+  .row--current .row__batch,
+  .row--current .row__window {
+    color: var(--accent);
+  }
+  .row--current .row__edition {
+    font-weight: 600;
+  }
+  @media (max-width: 640px) {
+    .row {
+      grid-template-columns: 1fr;
+      gap: 0.2rem;
+    }
+    .row__edition {
+      text-align: left;
+    }
+  }
+</style>
