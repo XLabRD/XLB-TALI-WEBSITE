@@ -1,0 +1,11 @@
+{
+  "order": 3,
+  "en": {
+    "question": "How many Puks can I have per Tali?",
+    "answer": "You can have up to 10 Puk sensors per Tali screen."
+  },
+  "es": {
+    "question": "¿Cuántos Puks puedo tener por Tali?",
+    "answer": "Puedes tener hasta 10 sensores Puk por cada pantalla Tali."
+  }
+}

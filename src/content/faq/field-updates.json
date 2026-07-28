@@ -1,0 +1,11 @@
+{
+  "order": 7,
+  "en": {
+    "question": "Can Tali be updated in the field?",
+    "answer": "Yes. Tali and Puk keep gaining new features and fixes through remote updates. You won't need to do anything — the cloud handles delivering the latest firmware to your Tali over Wi-Fi, and to your Puks via Bluetooth. In some situations you may be asked to update your Puks from the mobile app, but most updates go unnoticed."
+  },
+  "es": {
+    "question": "¿Tali se puede actualizar a distancia?",
+    "answer": "Sí. Tali y Puk siguen ganando nuevas funciones y correcciones mediante actualizaciones remotas. No tendrás que hacer nada — la nube se encarga de entregar el firmware más reciente a tu Tali por Wi-Fi, y a tus Puks vía Bluetooth. En algunas situaciones se te puede pedir actualizar tus Puks desde la app del teléfono, pero la mayoría de las actualizaciones pasan desapercibidas."
+  }
+}

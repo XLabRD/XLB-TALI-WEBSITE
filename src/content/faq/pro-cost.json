@@ -1,0 +1,11 @@
+{
+  "order": 12,
+  "en": {
+    "question": "How much does Tali Pro cost?",
+    "answer": "We're still finalizing Pro pricing, but we expect it to land between $5 and $15 USD per month depending on the options you choose. Your device and Basic service are never affected by this."
+  },
+  "es": {
+    "question": "¿Cuánto cuesta Tali Pro?",
+    "answer": "Todavía estamos finalizando el precio de Pro, pero esperamos que quede entre $5 y $15 USD al mes, según las opciones que elijas. Tu dispositivo y el servicio Basic nunca se ven afectados por esto."
+  }
+}

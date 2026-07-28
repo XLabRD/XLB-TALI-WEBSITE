@@ -31,7 +31,9 @@ const byOrder = (a: { data: { order: number } }, b: { data: { order: number } })
 const features = (await getCollection('features'))
   .sort(byOrder)
   .map((f) => ({ icon: f.data.icon, comingSoon: f.data.comingSoon, ...f.data[locale] }));
-const faqs = (await getCollection('faq')).sort(byOrder).map((f) => f.data[locale]);
+const faqs = (await getCollection('faq'))
+  .sort(byOrder)
+  .map((f) => ({ preorder: f.data.preorder, ...f.data[locale] }));
 const plans = (await getCollection('plans'))
   .sort(byOrder)
   .map((p) => ({ featured: p.data.featured, price: p.data.price, ...p.data[locale] }));
@@ -58,7 +60,7 @@ const jsonLd = {
     <Film copy={home} />
     <Pricing locale={locale} copy={home} ui={ui} plans={plans} settings={settings} />
     <ShipSchedule copy={home} />
-    <Faq copy={home} items={faqs} />
+    <Faq copy={home} items={faqs} ctaLabel={ui.navPreorder} />
     <Contact copy={home} ui={ui} settings={settings} />
   </main>
   <Footer ui={ui} settings={settings} />

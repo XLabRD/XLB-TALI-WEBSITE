@@ -32,12 +32,30 @@ const features = defineCollection({
   }),
 });
 
+const faqLocale = z.object({
+  question: z.string(),
+  answer: z.string(),
+  // Optional tier-comparison block (Basic vs Pro) rendered as side-by-side
+  // cards on desktop, stacked on mobile.
+  tiers: z
+    .array(
+      z.object({
+        name: z.string(),
+        tagline: z.string(),
+        items: z.array(z.string()).default([]),
+      })
+    )
+    .default([]),
+});
+
 const faq = defineCollection({
   loader: glob({ pattern: '**/*.json', base: './src/content/faq' }),
   schema: z.object({
     order: z.number().default(99),
-    en: z.object({ question: z.string(), answer: z.string() }),
-    es: z.object({ question: z.string(), answer: z.string() }),
+    // Renders a pre-order button (opens the checkout modal) after the answer.
+    preorder: z.boolean().default(false),
+    en: faqLocale,
+    es: faqLocale,
   }),
 });
 

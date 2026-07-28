@@ -1,5 +1,5 @@
 {
-  "order": 3,
+  "order": 4,
   "en": {
     "question": "What happens if my Wi-Fi goes down?",
     "answer": "Tali keeps measuring and displaying locally — the e-paper screen never depends on the cloud. When the connection returns, the full history syncs, gap-free."

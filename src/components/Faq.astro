@@ -1,9 +1,16 @@
 ---
 interface Props {
   copy: Record<string, any>;
-  items: Array<{ question: string; answer: string }>;
+  items: Array<{
+    question: string;
+    answer: string;
+    tiers?: Array<{ name: string; tagline: string; items: string[] }>;
+    preorder?: boolean;
+  }>;
+  /** Label for the pre-order button on entries flagged `preorder`. */
+  ctaLabel?: string;
 }
-const { copy, items } = Astro.props;
+const { copy, items, ctaLabel } = Astro.props;
 ---
 
 <section class="section" id="faq">
@@ -17,7 +24,31 @@ const { copy, items } = Astro.props;
         items.map((item) => (
           <details class="item">
             <summary>{item.question}</summary>
-            <p>{item.answer}</p>
+            {item.answer && <p>{item.answer}</p>}
+            {(item.tiers?.length ?? 0) > 0 && (
+              <div class="tiers">
+                {item.tiers!.map((tier) => (
+                  <div class="tier">
+                    <p class="tier__name">{tier.name}</p>
+                    <p class="tier__tagline">{tier.tagline}</p>
+                    <ul class="tier__list">
+                      {tier.items.map((entry) => (
+                        <li>{entry}</li>
+                      ))}
+                    </ul>
+                  </div>
+                ))}
+              </div>
+            )}
+            {item.preorder && ctaLabel && (
+              <p class="item__cta">
+                {/* data-preorder opens the embedded checkout (Pricing.astro);
+                    without JS the anchor falls back to the edition card. */}
+                <a class="btn" href="#edition" data-preorder>
+                  {ctaLabel}
+                </a>
+              </p>
+            )}
           </details>
         ))
       }
@@ -65,5 +96,55 @@ const { copy, items } = Astro.props;
     max-width: 40em;
     /* blank lines in the stored answer become paragraph breaks */
     white-space: pre-line;
+  }
+  .tiers {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1rem;
+    padding: 0 0 1.3rem;
+  }
+  .tier {
+    border: 1px solid var(--line);
+    border-radius: 12px;
+    padding: 1.1rem 1.25rem;
+    background: linear-gradient(170deg, var(--surface), transparent 80%);
+  }
+  .tier__name {
+    font-family: var(--display);
+    font-size: 1.05rem;
+    color: var(--text);
+    padding: 0 0 0.15rem;
+  }
+  .tier__tagline {
+    color: var(--text-dim);
+    font-size: 0.85rem;
+    padding: 0 0 0.7rem;
+  }
+  .tier__list {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: grid;
+    gap: 0.45rem;
+  }
+  .tier__list li {
+    font-size: 0.9rem;
+    color: var(--text-dim);
+    padding-left: 1.1rem;
+    position: relative;
+  }
+  .tier__list li::before {
+    content: '—';
+    position: absolute;
+    left: 0;
+    color: var(--accent);
+  }
+  .item__cta {
+    padding: 0 0 1.3rem;
+  }
+  @media (max-width: 640px) {
+    .tiers {
+      grid-template-columns: 1fr;
+    }
   }
 </style>

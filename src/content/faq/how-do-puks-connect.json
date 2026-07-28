@@ -1,12 +1,12 @@
 {
   "slug": "",
-  "order": 2,
+  "order": 1,
   "en": {
     "question": "How do the Puk sensors connect?",
-    "answer": "Each Puk talks wirelessly to the Tali display, which also connects to your Wi-Fi and syncs everything to the cloud in real time. The Puks themselves are powered by its internal battery and lasts about a year and a half and you can replace the battery every time it is needed.."
+    "answer": "Each Puk talks wirelessly to the Tali display, which connects to your Wi-Fi and syncs everything to the cloud in real time."
   },
   "es": {
     "question": "¿Cómo se conectan los sensores Puk?",
-    "answer": "Cada Puk se comunica de forma inalámbrica con la pantalla Tali, que a su vez se conecta a tu Wi-Fi y sincroniza todo con la nube en tiempo real. Cada Puk funciona con una batería interna que dura aproximadamente un año y medio, y puedes reemplazarla cada vez que haga falta."
+    "answer": "Cada Puk se comunica de forma inalámbrica con la pantalla Tali, que se conecta a tu Wi-Fi y sincroniza todo con la nube en tiempo real."
   }
 }

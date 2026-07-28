@@ -1,5 +1,6 @@
 {
-  "order": 5,
+  "order": 8,
+  "preorder": true,
   "en": {
     "question": "How do I get one?",
     "answer": "You can pre-order directly from this website — orders ship in the order they were received."

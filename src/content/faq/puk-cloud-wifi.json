@@ -1,0 +1,11 @@
+{
+  "order": 2,
+  "en": {
+    "question": "Does a Puk connect to the cloud via Wi-Fi?",
+    "answer": "No. Each Puk connects to a Tali screen/hub wirelessly using Bluetooth Low Energy. The Tali screen then connects to your Wi-Fi and sends the information to the cloud."
+  },
+  "es": {
+    "question": "¿El Puk se conecta a la nube por Wi-Fi?",
+    "answer": "No. Cada Puk se conecta a una pantalla/hub Tali de forma inalámbrica usando Bluetooth Low Energy. La pantalla Tali es la que se conecta a tu Wi-Fi y envía la información a la nube."
+  }
+}

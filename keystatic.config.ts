@@ -16,6 +16,20 @@ const qa = (label: string) =>
     {
       question: fields.text({ label: 'Question' }),
       answer: fields.text({ label: 'Answer', multiline: true }),
+      tiers: fields.array(
+        fields.object({
+          name: fields.text({ label: 'Tier name' }),
+          tagline: fields.text({ label: 'Tagline' }),
+          items: fields.array(fields.text({ label: 'Item' }), {
+            label: 'Items',
+            itemLabel: (props) => props.value ?? 'Item',
+          }),
+        }),
+        {
+          label: 'Tier comparison (optional)',
+          itemLabel: (props) => props.fields.name.value ?? 'Tier',
+        }
+      ),
     },
     { label }
   );
@@ -253,6 +267,11 @@ export default config({
       schema: {
         slug: fields.slug({ name: { label: 'Slug' } }),
         order: fields.number({ label: 'Order', defaultValue: 99 }),
+        preorder: fields.checkbox({
+          label: 'Pre-order button',
+          description: 'Show a pre-order button (opens checkout) after the answer.',
+          defaultValue: false,
+        }),
         en: qa('English'),
         es: qa('Español'),
       },

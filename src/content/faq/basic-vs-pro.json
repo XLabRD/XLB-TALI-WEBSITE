@@ -1,0 +1,49 @@
+{
+  "order": 10,
+  "en": {
+    "question": "What's the difference between Basic and Pro?",
+    "answer": "",
+    "tiers": [
+      {
+        "name": "Tali Basic",
+        "tagline": "Included with every device, for life:",
+        "items": [
+          "Realtime readings on your Tali screen and Puks",
+          "Local alerts"
+        ]
+      },
+      {
+        "name": "Tali Pro",
+        "tagline": "Everything in Basic, plus:",
+        "items": [
+          "Unlimited history and trend analysis",
+          "Remote viewing from anywhere",
+          "Push alerts to your phone"
+        ]
+      }
+    ]
+  },
+  "es": {
+    "question": "¿Cuál es la diferencia entre Basic y Pro?",
+    "answer": "",
+    "tiers": [
+      {
+        "name": "Tali Basic",
+        "tagline": "Incluido con cada dispositivo, de por vida:",
+        "items": [
+          "Lecturas en tiempo real en tu pantalla Tali y tus Puks",
+          "Alertas locales"
+        ]
+      },
+      {
+        "name": "Tali Pro",
+        "tagline": "Todo lo de Basic, más:",
+        "items": [
+          "Historial ilimitado y análisis de tendencias",
+          "Visualización remota desde donde estés",
+          "Alertas push a tu teléfono"
+        ]
+      }
+    ]
+  }
+}
