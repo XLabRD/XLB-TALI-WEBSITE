@@ -95,7 +95,8 @@
     "contactIntro": "Send us a message with your questions and we'll get back to you in less than 48 hours.",
     "shipNote": "Where is it available?",
     "shipNoteHref": "#faq-where-available",
-    "shipFinePrint": "*Orders are shipped in the order they are received.\nAll prices include 16% IVA and shipping within Mexico."
+    "shipFinePrint": "*Orders are shipped in the order they are received.\nAll prices include 16% IVA and shipping within Mexico.",
+    "heroTrust": "The best and most demanding sommeliers and enthusiasts trust Tali to watch their collections."
   },
   "es": {
     "heroKicker": "Inteligencia ambiental",
@@ -193,6 +194,7 @@
     "contactIntro": "Envíanos un mensaje con tus preguntas y te responderemos en menos de 48 horas.",
     "shipNote": "¿Dónde está disponible?",
     "shipNoteHref": "#faq-where-available",
-    "shipFinePrint": "*Los pedidos se envían en el orden en que se reciben.\nTodos los precios incluyen 16% de IVA y envío dentro de México."
+    "shipFinePrint": "*Los pedidos se envían en el orden en que se reciben.\nTodos los precios incluyen 16% de IVA y envío dentro de México.",
+    "heroTrust": "Los mejores y más exigentes sommeliers y aficionados confían en Tali para vigilar sus colecciones."
   }
 }

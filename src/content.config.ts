@@ -93,6 +93,8 @@ const localeHome = z.object({
   heroCtaPrimary: z.string(),
   heroCtaSecondary: z.string(),
   heroCtaFilm: z.string().default(''),
+  // Social-proof line under the hero CTAs; empty = hidden.
+  heroTrust: z.string().default(''),
   heroImageAlt: z.string(),
   systemKicker: z.string(),
   systemTitle: z.string(),

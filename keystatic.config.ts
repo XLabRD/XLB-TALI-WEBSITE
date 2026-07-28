@@ -66,6 +66,11 @@ const homeLocale = (label: string) =>
         description: 'Label of the "Watch the film" link. Empty = link hidden.',
         defaultValue: '',
       }),
+      heroTrust: fields.text({
+        label: 'Hero trust line',
+        description: 'Social-proof sentence under the hero buttons. Empty = hidden.',
+        defaultValue: '',
+      }),
       heroImageAlt: fields.text({ label: 'Hero image alt text' }),
       systemKicker: fields.text({ label: 'System kicker' }),
       systemTitle: fields.text({ label: 'System title' }),

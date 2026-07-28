@@ -17,6 +17,7 @@ const { copy } = Astro.props;
         <a class="btn" href="#edition" data-preorder>{copy.heroCtaPrimary}</a>
         <a class="btn btn--ghost" href="#system">{copy.heroCtaSecondary}</a>
       </div>
+      {copy.heroTrust && <p class="hero__trust">{copy.heroTrust}</p>}
     </div>
     <div class="hero__visual">
       <video
@@ -84,6 +85,12 @@ const { copy } = Astro.props;
     gap: 0.9rem;
     flex-wrap: wrap;
     margin-top: 0.5rem;
+  }
+  .hero__trust {
+    margin-top: 1.1rem;
+    font-size: 0.88rem;
+    color: var(--text-dim);
+    max-width: 34em;
   }
   .hero__visual {
     /* Video leads on wide screens; DOM keeps the h1 first for semantics. */
