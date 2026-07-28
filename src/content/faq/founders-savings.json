@@ -1,0 +1,14 @@
+{
+  "order": 9,
+  "linkHref": "#shipping",
+  "en": {
+    "question": "Will I see savings with the Founders Edition?",
+    "answer": "Yes. We're offering the Founders Edition at an introductory price — in addition to including premium services.",
+    "linkText": "See the shipping dates + pricing table for details."
+  },
+  "es": {
+    "question": "¿Tendré un ahorro con la Founders Edition?",
+    "answer": "Sí. Ofrecemos la Founders Edition a un precio introductorio — además de incluir servicios premium.",
+    "linkText": "Ver la tabla de fechas de envío + precios para más detalles."
+  }
+}

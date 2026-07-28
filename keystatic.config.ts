@@ -16,6 +16,11 @@ const qa = (label: string) =>
     {
       question: fields.text({ label: 'Question' }),
       answer: fields.text({ label: 'Answer', multiline: true }),
+      linkText: fields.text({
+        label: 'Link text (optional)',
+        description: 'Shown after the answer; target set in "Link target".',
+        defaultValue: '',
+      }),
       tiers: fields.array(
         fields.object({
           name: fields.text({ label: 'Tier name' }),
@@ -272,6 +277,11 @@ export default config({
           label: 'Pre-order button',
           description: 'Show a pre-order button (opens checkout) after the answer.',
           defaultValue: false,
+        }),
+        linkHref: fields.text({
+          label: 'Link target',
+          description: 'e.g. #shipping — used with the per-language link text.',
+          defaultValue: '',
         }),
         en: qa('English'),
         es: qa('Español'),

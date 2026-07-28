@@ -6,6 +6,8 @@ interface Props {
     answer: string;
     tiers?: Array<{ name: string; tagline: string; items: string[] }>;
     preorder?: boolean;
+    linkHref?: string;
+    linkText?: string;
   }>;
   /** Label for the pre-order button on entries flagged `preorder`. */
   ctaLabel?: string;
@@ -39,6 +41,11 @@ const { copy, items, ctaLabel } = Astro.props;
                   </div>
                 ))}
               </div>
+            )}
+            {item.linkHref && item.linkText && (
+              <p class="item__link">
+                <a href={item.linkHref}>{item.linkText}</a>
+              </p>
             )}
             {item.preorder && ctaLabel && (
               <p class="item__cta">
@@ -141,6 +148,13 @@ const { copy, items, ctaLabel } = Astro.props;
   }
   .item__cta {
     padding: 0 0 1.3rem;
+  }
+  .item__link {
+    padding: 0 0 1.3rem;
+    font-size: 0.92rem;
+  }
+  .item__link a {
+    color: var(--accent);
   }
   @media (max-width: 640px) {
     .tiers {

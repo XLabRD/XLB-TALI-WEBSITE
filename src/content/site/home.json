@@ -71,19 +71,19 @@
     "shipBatches": [
       {
         "batch": "Batch One",
-        "window": "August – September 2026",
+        "window": "Aug – Sep 26",
         "edition": "Founders Limited Edition",
         "price": "$148.00 USD"
       },
       {
         "batch": "Batch Two",
-        "window": "December 2026 – February 2027",
+        "window": "Dec 26 – Feb 27",
         "edition": "Limited Edition",
         "price": "$185.00 USD"
       },
       {
         "batch": "Batch Three",
-        "window": "April 2027 – ongoing",
+        "window": "Apr 27 – ongoing",
         "edition": "Standard Edition",
         "price": "$199.80 USD"
       }
@@ -166,19 +166,19 @@
     "shipBatches": [
       {
         "batch": "Lote Uno",
-        "window": "Agosto – Septiembre 2026",
+        "window": "Ago – Sep 26",
         "edition": "Edición Limitada Founders",
         "price": "$148.00 USD"
       },
       {
         "batch": "Lote Dos",
-        "window": "Diciembre 2026 – Febrero 2027",
+        "window": "Dic 26 – Feb 27",
         "edition": "Edición Limitada",
         "price": "$185.00 USD"
       },
       {
         "batch": "Lote Tres",
-        "window": "Abril 2027 – en adelante",
+        "window": "Abr 27 – en adelante",
         "edition": "Edición Estándar",
         "price": "$199.80 USD"
       }

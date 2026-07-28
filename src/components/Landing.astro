@@ -33,7 +33,7 @@ const features = (await getCollection('features'))
   .map((f) => ({ icon: f.data.icon, comingSoon: f.data.comingSoon, ...f.data[locale] }));
 const faqs = (await getCollection('faq'))
   .sort(byOrder)
-  .map((f) => ({ preorder: f.data.preorder, ...f.data[locale] }));
+  .map((f) => ({ preorder: f.data.preorder, linkHref: f.data.linkHref, ...f.data[locale] }));
 const plans = (await getCollection('plans'))
   .sort(byOrder)
   .map((p) => ({ featured: p.data.featured, price: p.data.price, ...p.data[locale] }));

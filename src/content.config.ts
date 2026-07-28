@@ -35,6 +35,8 @@ const features = defineCollection({
 const faqLocale = z.object({
   question: z.string(),
   answer: z.string(),
+  // Optional link rendered after the answer (href in the entry's linkHref).
+  linkText: z.string().default(''),
   // Optional tier-comparison block (Basic vs Pro) rendered as side-by-side
   // cards on desktop, stacked on mobile.
   tiers: z
@@ -54,6 +56,8 @@ const faq = defineCollection({
     order: z.number().default(99),
     // Renders a pre-order button (opens the checkout modal) after the answer.
     preorder: z.boolean().default(false),
+    // Target for the per-locale linkText, e.g. "#shipping".
+    linkHref: z.string().default(''),
     en: faqLocale,
     es: faqLocale,
   }),
