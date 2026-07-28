@@ -1,11 +1,11 @@
 {
   "order": 19,
   "en": {
-    "question": "What is a “place”?",
-    "answer": "A place is anywhere you put a Puk sensor — a cellar, a humidor, a display cabinet, a safe. One Tali display can watch several places at once, each with its own readings and alert thresholds."
+    "question": "What is a “zone”?",
+    "answer": "A zone is anywhere you put a Puk sensor — a cellar, a humidor, a display cabinet, a safe. One Tali display can watch several zones at once, each with its own readings and alert thresholds."
   },
   "es": {
-    "question": "¿Qué es un “lugar”?",
-    "answer": "Un lugar es cualquier sitio donde coloques un sensor Puk — una cava, un humidor, una vitrina, una caja fuerte. Una sola pantalla Tali puede vigilar varios lugares a la vez, cada uno con sus propias lecturas y umbrales de alerta."
+    "question": "¿Qué es una “zona”?",
+    "answer": "Una zona es cualquier sitio donde coloques un sensor Puk — una cava, un humidor, una vitrina, una caja fuerte. Una sola pantalla Tali puede vigilar varias zonas a la vez, cada una con sus propias lecturas y umbrales de alerta."
   }
 }

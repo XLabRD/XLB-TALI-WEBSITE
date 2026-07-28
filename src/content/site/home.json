@@ -14,7 +14,7 @@
       {
         "name": "Tali",
         "role": "The display",
-        "body": "An always-on e-paper screen that sits wherever you are. It shows live readings from every place you monitor — no glow, no noise, just ink-like clarity that lasts.",
+        "body": "An always-on e-paper screen that sits wherever you are. It shows live readings from every zone you monitor — no glow, no noise, just ink-like clarity that lasts.",
         "image": "/images/tali-display.jpg",
         "imageAlt": "The Tali e-paper display on a marble table, showing 18.0°C and 76% humidity for a wine cellar"
       },
@@ -45,7 +45,7 @@
       {
         "src": "/images/app-devices.jpg",
         "alt": "The Tali app home screen showing live temperature, humidity and light gauges for two cellar sensors",
-        "caption": "Every place, live"
+        "caption": "Every zone, live"
       },
       {
         "src": "/images/app-history.jpg",
@@ -112,7 +112,7 @@
       {
         "name": "Tali",
         "role": "La pantalla",
-        "body": "Una pantalla de tinta electrónica siempre encendida que vive donde tú estés. Muestra lecturas en vivo de cada lugar que monitoreas — sin brillo, sin ruido, con la claridad de la tinta sobre papel.",
+        "body": "Una pantalla de tinta electrónica siempre encendida que vive donde tú estés. Muestra lecturas en vivo de cada zona que monitoreas — sin brillo, sin ruido, con la claridad de la tinta sobre papel.",
         "image": "/images/tali-display.jpg",
         "imageAlt": "La pantalla Tali de tinta electrónica sobre una mesa de mármol, mostrando 18.0°C y 76% de humedad de una cava"
       },
@@ -143,7 +143,7 @@
       {
         "src": "/images/app-devices.jpg",
         "alt": "Pantalla principal de la app Tali con medidores en vivo de temperatura, humedad y luz de dos sensores de cava",
-        "caption": "Cada lugar, en vivo"
+        "caption": "Cada zona, en vivo"
       },
       {
         "src": "/images/app-history.jpg",
