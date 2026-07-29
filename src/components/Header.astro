@@ -32,6 +32,19 @@ const nav = [
   </div>
 </header>
 
+<script>
+  // An explicit language choice outranks the auto-redirect (Base.astro)
+  // forever after — remember it.
+  document.querySelectorAll<HTMLAnchorElement>('a.lang').forEach((a) =>
+    a.addEventListener('click', () => {
+      const es = a.getAttribute('href')?.startsWith('/es');
+      try {
+        localStorage.setItem('tali-lang', es ? 'es' : 'en');
+      } catch {}
+    })
+  );
+</script>
+
 <style>
   .header {
     position: sticky;
