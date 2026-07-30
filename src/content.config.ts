@@ -174,6 +174,7 @@ const localeUi = z.object({
   navSystem: z.string(),
   navApp: z.string(),
   navFeatures: z.string(),
+  navEdition: z.string(),
   navPricing: z.string(),
   navFaq: z.string(),
   navContact: z.string(),
