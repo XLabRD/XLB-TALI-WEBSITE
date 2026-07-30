@@ -2,9 +2,9 @@
   "siteName": "Tali",
   "contactEmail": "hello@tali.my",
   "formEndpoint": "https://formspree.io/f/xjgnpkjg",
-  "orderUrl": "https://buy.stripe.com/test_aFa8wO34K0H217AeUTefC02",
+  "orderUrl": "https://buy.stripe.com/6oU3co6AvceU0N1bFI0ZW02",
   "checkoutEndpoint": "https://tali-checkout.tali-my.workers.dev",
-  "stripePublishableKey": "pk_test_51TwnLqCxifEa1k4SyGsexcXr8r22y4s6Rsm0FOeOfGa0FN3ToyiY1MbbRzQDr2yYPYmtmfKJRWMbbKzo0dq3Gx9P00Rpgb8uqx",
+  "stripePublishableKey": "pk_live_51TwnLe2QQj9hlFmfsvRt8kki9OPz1FPTTsAFQCWmE89nXNYqBfwJhfUgQB2e8U2UWFmwTlhfCMQWK1LDy1OB3klT00Qc3i7CDO",
   "appStoreUrl": "https://www.apple.com",
   "instagram": "",
   "x": ""
