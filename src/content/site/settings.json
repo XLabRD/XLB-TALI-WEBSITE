@@ -5,7 +5,7 @@
   "orderUrl": "https://buy.stripe.com/6oU3co6AvceU0N1bFI0ZW02",
   "checkoutEndpoint": "https://tali-checkout.tali-my.workers.dev",
   "stripePublishableKey": "pk_live_51TwnLe2QQj9hlFmfsvRt8kki9OPz1FPTTsAFQCWmE89nXNYqBfwJhfUgQB2e8U2UWFmwTlhfCMQWK1LDy1OB3klT00Qc3i7CDO",
-  "appStoreUrl": "https://www.apple.com",
+  "appStoreUrl": "https://testflight.apple.com/join/8BrjthWQ",
   "instagram": "",
   "x": ""
 }

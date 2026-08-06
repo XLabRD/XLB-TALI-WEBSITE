@@ -231,7 +231,7 @@ export default config({
         }),
         appStoreUrl: fields.text({
           label: 'App Store URL (TODO DEC-18)',
-          description: 'iOS App Store link for the /hello onboarding page. When set, iOS visitors are redirected to it automatically.',
+          description: 'iOS app link for the /hello onboarding page — App Store or TestFlight. When set, iOS visitors are redirected to it automatically.',
         }),
         instagram: fields.text({ label: 'Instagram URL (TODO DEC-16)' }),
         x: fields.text({ label: 'X URL (TODO DEC-16)' }),

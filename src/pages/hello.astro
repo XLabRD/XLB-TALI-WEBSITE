@@ -10,9 +10,11 @@ import '../styles/global.css';
 import { getEntry } from 'astro:content';
 
 const settings = (await getEntry('site', 'settings'))!.data;
-// TODO(DEC-18): App Store link pending; badge is inert until set in Keystatic.
+// Badge stays inert until an app link is set in Keystatic.
 const appUrl = settings.appStoreUrl || '#';
 const appReady = Boolean(settings.appStoreUrl);
+// TestFlight builds get beta wording; a real App Store link gets the badge.
+const isBeta = appUrl.includes('testflight.apple.com');
 ---
 
 <!doctype html>
@@ -45,8 +47,8 @@ const appReady = Boolean(settings.appStoreUrl);
             ></path>
           </svg>
           <span>
-            <small>Download on the</small>
-            App Store
+            <small>{isBeta ? 'Join the beta on' : 'Download on the'}</small>
+            {isBeta ? 'TestFlight' : 'App Store'}
           </span>
         </a>
         <p class="hello__platform">Android app coming soon.</p>
@@ -59,7 +61,7 @@ const appReady = Boolean(settings.appStoreUrl);
     {
       appReady && (
         <script is:inline define:vars={{ appUrl }}>
-          // iOS visitors go straight to the App Store; everyone else sees the
+          // iOS visitors go straight to the app link; everyone else sees the
           // page. iPadOS 13+ masquerades as macOS, hence the touch check.
           const ios =
             /iP(hone|od|ad)/.test(navigator.userAgent) ||
