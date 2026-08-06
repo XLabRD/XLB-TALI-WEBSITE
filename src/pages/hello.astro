@@ -13,7 +13,7 @@ const settings = (await getEntry('site', 'settings'))!.data;
 // Badge stays inert until an app link is set in Keystatic.
 const appUrl = settings.appStoreUrl || '#';
 const appReady = Boolean(settings.appStoreUrl);
-// TestFlight builds get beta wording; a real App Store link gets the badge.
+// TestFlight links say "Download Beta"; a public App Store link drops it.
 const isBeta = appUrl.includes('testflight.apple.com');
 ---
 
@@ -47,8 +47,8 @@ const isBeta = appUrl.includes('testflight.apple.com');
             ></path>
           </svg>
           <span>
-            <small>{isBeta ? 'Join the beta on' : 'Download on the'}</small>
-            {isBeta ? 'TestFlight' : 'App Store'}
+            <small>{isBeta ? 'Download Beta on the' : 'Download on the'}</small>
+            App Store
           </span>
         </a>
         <p class="hello__platform">Android app coming soon.</p>
