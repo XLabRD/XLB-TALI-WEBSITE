@@ -65,7 +65,7 @@
     "filmCaption": "See why sommeliers and enthusiasts trust Tali with the collections they cherish.",
     "pricingKicker": "The edition",
     "pricingTitle": "Founders Series, our limited edition",
-    "pricingNote": "Pre-order yours now and be the first to own it. A marked first batch that ships before any other edition. The price includes 16% IVA and shipping within Mexico.",
+    "pricingNote": "Pre-order yours now and be the first to own it. A marked first batch that ships before any other edition. $125 is an introductory launch price, and it includes 16% IVA and shipping within Mexico.",
     "shipKicker": "The editions",
     "shipTitle": "Editions + pricing",
     "shipBatches": [
@@ -73,19 +73,19 @@
         "batch": "Founders Limited Edition",
         "window": "Pre-order now — ships Aug – Sep 26",
         "edition": "24 months of Cloud Pro included",
-        "price": "$185.00 USD"
+        "price": "$125.00 USD"
       },
       {
         "batch": "Signature Edition",
         "window": "Not for sale yet — est. Q1 27",
         "edition": "12 months of Cloud Pro included",
-        "price": "$185.00 USD"
+        "price": "$125.00 USD"
       },
       {
         "batch": "Standard Edition",
         "window": "Not for sale yet — est. Q2–Q3 27",
         "edition": "6 months of Cloud Pro included",
-        "price": "$198.00 USD"
+        "price": "Coming soon"
       }
     ],
     "faqKicker": "Questions",
@@ -95,7 +95,7 @@
     "contactIntro": "Send us a message with your questions and we'll get back to you in less than 48 hours.",
     "shipNote": "Where is it available?",
     "shipNoteHref": "#faq-where-available",
-    "shipFinePrint": "*Orders are shipped in the order they are received.\nAll prices include 16% IVA and shipping within Mexico.",
+    "shipFinePrint": "*Orders are shipped in the order they are received.\nAll prices include 16% IVA and shipping within Mexico.\nIntroductory launch pricing — subject to change.",
     "heroTrust": "The best and most demanding sommeliers and enthusiasts trust Tali to watch their collections."
   },
   "es": {
@@ -164,7 +164,7 @@
     "filmCaption": "Descubre por qué sommeliers y aficionados le confían a Tali las colecciones que atesoran.",
     "pricingKicker": "La edición",
     "pricingTitle": "Founders Series, nuestra edición limitada",
-    "pricingNote": "Pre-ordena la tuya ahora y sé de los primeros en tenerla. Un primer lote marcado que se envía antes que cualquier otra edición. El precio incluye 16% de IVA y envío dentro de México.",
+    "pricingNote": "Pre-ordena la tuya ahora y sé de los primeros en tenerla. Un primer lote marcado que se envía antes que cualquier otra edición. $125 USD es un precio introductorio de lanzamiento, e incluye 16% de IVA y envío dentro de México.",
     "shipKicker": "Las ediciones",
     "shipTitle": "Ediciones + precios",
     "shipBatches": [
@@ -172,19 +172,19 @@
         "batch": "Founders Limited Edition",
         "window": "Pre-ordena ahora — se envía Ago – Sep 26",
         "edition": "24 meses de Cloud Pro incluidos",
-        "price": "$185.00 USD"
+        "price": "$125.00 USD"
       },
       {
         "batch": "Signature Edition",
         "window": "Aún no a la venta — est. Q1 27",
         "edition": "12 meses de Cloud Pro incluidos",
-        "price": "$185.00 USD"
+        "price": "$125.00 USD"
       },
       {
         "batch": "Standard Edition",
         "window": "Aún no a la venta — est. Q2–Q3 27",
         "edition": "6 meses de Cloud Pro incluidos",
-        "price": "$198.00 USD"
+        "price": "Próximamente"
       }
     ],
     "faqKicker": "Preguntas",
@@ -194,7 +194,7 @@
     "contactIntro": "Envíanos un mensaje con tus preguntas y te responderemos en menos de 48 horas.",
     "shipNote": "¿Dónde está disponible?",
     "shipNoteHref": "#faq-where-available",
-    "shipFinePrint": "*Los pedidos se envían en el orden en que se reciben.\nTodos los precios incluyen 16% de IVA y envío dentro de México.",
+    "shipFinePrint": "*Los pedidos se envían en el orden en que se reciben.\nTodos los precios incluyen 16% de IVA y envío dentro de México.\nPrecio introductorio de lanzamiento — sujeto a cambio.",
     "heroTrust": "Los mejores y más exigentes sommeliers y aficionados confían en Tali para vigilar sus colecciones."
   }
 }

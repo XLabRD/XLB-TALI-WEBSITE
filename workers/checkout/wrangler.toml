@@ -5,8 +5,9 @@ main = "worker.js"
 compatibility_date = "2026-07-01"
 
 [vars]
-# Live-mode Founder Edition price.
-STRIPE_PRICE_ID = "price_1TypWV2QQj9hlFmfJYXOVDNE"
+# Live-mode Founder Edition price ($125 introductory; the $185 launch price
+# price_1TypWV2QQj9hlFmfJYXOVDNE is archived).
+STRIPE_PRICE_ID = "price_1U3tke2QQj9hlFmfEqnZabJp"
 SITE = "https://tali.my"
 # Origins allowed to call this worker (CORS). Localhost is for `npm run dev`.
 ALLOWED_ORIGINS = "https://tali.my,http://localhost:4321"
