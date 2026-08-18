@@ -47,7 +47,10 @@ const SOURCES = [
   },
 ];
 
-async function fetchRate() {
+// Exported so scripts/set-price.mjs prices a NEW peso amount from the same
+// sources and the same plausibility guards the cron uses — one rounding rule,
+// not two that drift apart.
+export async function fetchRate() {
   const errors = [];
   for (const src of SOURCES) {
     try {

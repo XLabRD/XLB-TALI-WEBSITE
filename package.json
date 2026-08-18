@@ -7,7 +7,8 @@
     "dev": "KEYSTATIC=true astro dev",
     "build": "astro build",
     "build:cms": "KEYSTATIC=true astro build",
-    "preview": "astro preview"
+    "preview": "astro preview",
+    "set-price": "node scripts/set-price.mjs"
   },
   "dependencies": {
     "@astrojs/node": "^10.1.4",

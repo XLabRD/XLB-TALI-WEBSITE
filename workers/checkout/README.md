@@ -180,6 +180,30 @@ oversell you can refund. Two known gaps, both deliberate:
 Wave wording lives in `src/content/site/home.json` (card) and `ui.json`
 (thanks page), both locales — change a boundary here and that copy must follow.
 
+## Changing the price (DEC-28)
+
+Never edit the price by hand — Stripe Prices are immutable on `unit_amount`,
+so a change means creating a new Price and archiving the old, and a fresh
+Price has no MXN option until the next cron run. That gap puts Mexican cards
+straight back to declining. Use the script, which closes it by setting the
+peso amount in the same call that creates the price:
+
+```bash
+export STRIPE_SECRET_KEY=sk_live_...
+npm run set-price -- 149            # dry run — prints every change, touches nothing
+npm run set-price -- 149 --apply    # do it
+```
+
+The amount is in dollars. It creates the new price (peso option and
+`metadata[fx_sync]` included), archives the old one, rewrites
+`STRIPE_PRICE_ID` here, and rewrites every hardcoded `$125` literal across
+`src/content/` in both locales. File edits are left uncommitted so you can
+read the diff — the prose ones deserve a glance.
+
+Three things it can't do, printed at the end: `wrangler deploy`, commit+push,
+and **rebuild the Payment Link** — `orderUrl` still points at a link built on
+the archived price, and it's the silent no-JS fallback.
+
 ## Going live
 
 Switch `STRIPE_PRICE_ID` to the live price, re-run `npx wrangler deploy`,
