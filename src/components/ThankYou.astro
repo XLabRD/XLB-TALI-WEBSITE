@@ -80,8 +80,10 @@ const endpoint = (settings.checkoutEndpoint || '').replace(/\/+$/, '');
           receipt.hidden = false;
         }
         // Founders number + wave (DEC-27), stamped on the order at purchase.
-        // Shown for OXXO-pending orders too — the voucher holds the unit, and
-        // that reassurance is exactly what someone owes a cash buyer.
+        // Absent for OXXO until the cash is actually paid: only paid orders
+        // claim a unit, so no row — and therefore no wave — exists while a
+        // voucher is outstanding. The line simply stays hidden, and appears
+        // when they revisit this URL after paying at the store.
         if (s.wave) {
           const line = main.querySelector<HTMLElement>('.thanks__wave')!;
           const key =
