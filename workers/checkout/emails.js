@@ -210,6 +210,26 @@ ${btnStaff(notionUrl, isOrder ? 'Abrir pedido en Notion' : 'Ver en Notion')}
   if (!res.ok) throw new Error(`Resend ${res.status}: ${await res.text()}`);
 }
 
+/**
+ * Plain staff alert — no order attached (DEC-26: the daily FX price sync
+ * failed, or proposed a move too large to publish unattended). Spanish, like
+ * the other staff mail.
+ */
+export async function sendAlertEmail(env, subject, lines) {
+  const html = `<div style="font-family:${SANS};font-size:15px;line-height:1.6;color:${C.text};max-width:520px;margin:0 auto;padding:24px;">
+<p style="margin:0 0 18px;color:${C.dim};">${lines.join('<br>')}</p>
+</div>`;
+  const res = await fetch('https://api.resend.com/emails', {
+    method: 'POST',
+    headers: {
+      Authorization: `Bearer ${env.RESEND_API_KEY}`,
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify({ from: FROM('es'), to: [env.STAFF_EMAIL], subject, html }),
+  });
+  if (!res.ok) throw new Error(`Resend ${res.status}: ${await res.text()}`);
+}
+
 const btnStaff = (href, label) =>
   `<a href="${href}" style="display:inline-block;background:${C.accent};color:${C.onAccent};text-decoration:none;border-radius:8px;padding:11px 20px;font-family:${SANS};font-size:14px;font-weight:600;">${label}</a>`;
 

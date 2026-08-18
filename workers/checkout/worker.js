@@ -15,6 +15,10 @@
 //                           email; refund/dispute → Notion status "Canceled"
 //   POST /notion-webhook?key=… — Notion automation on Status change → customer
 //                           email (shipped / canceled), deduped via KV
+//
+// Cron (DEC-26): a daily scheduled() run keeps the price's MXN
+// currency_option in step with USD/MXN — see fx.js for why that can't be
+// Stripe's job. Schedule in wrangler.toml.
 import {
   createOrderPage,
   findPageByPaymentIntent,
@@ -24,7 +28,8 @@ import {
   getPage,
   readOrder,
 } from './notion.js';
-import { sendOrderEmail, sendStaffEmail } from './emails.js';
+import { sendOrderEmail, sendStaffEmail, sendAlertEmail } from './emails.js';
+import { syncMxnPrice } from './fx.js';
 
 const STRIPE_API = 'https://api.stripe.com/v1';
 
@@ -413,6 +418,13 @@ async function handleNotionWebhook(request, url, env, cors) {
 }
 
 async function price(env, cors) {
+  // The Founder price is multi-currency: a USD base plus an MXN
+  // currency_option, so Mexican cards aren't asked to authorize a foreign
+  // currency (they decline with currency_not_supported) and OXXO — MXN-only —
+  // can appear. Checkout picks the option by buyer location on its own, which
+  // is why createSession passes no `currency`. The site quotes USD in both
+  // locales, so this route deliberately reports only the base amount;
+  // currency_options is expandable and would need expand[] to come back.
   const p = await stripeRequest(env, 'GET', `/prices/${env.STRIPE_PRICE_ID}`);
   return json({ unit_amount: p.unit_amount, currency: p.currency }, 200, {
     ...cors,
@@ -421,7 +433,59 @@ async function price(env, cors) {
   });
 }
 
+// --- Daily FX sync (DEC-26) ------------------------------------------------
+
+const money = (cents) =>
+  (cents / 100).toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g, ',');
+
+// Staff hear about this only when it matters: a failure, or a move too large
+// to publish unattended. A normal daily adjustment is just a log line —
+// emailing one every morning would train everyone to ignore the channel.
+async function runFxSync(env) {
+  const alert = async (subject, lines) => {
+    if (!env.STAFF_EMAIL || !env.RESEND_API_KEY) return;
+    try {
+      await sendAlertEmail(env, subject, lines);
+    } catch (err) {
+      console.error('fx alert email failed:', err.message);
+    }
+  };
+  try {
+    const result = await syncMxnPrice(env, stripeRequest);
+    console.log('fx sync:', JSON.stringify(result));
+    if (env.ORDERS) {
+      await env.ORDERS.put('fx:last', JSON.stringify({ ...result, at: new Date().toISOString() }));
+    }
+    if (result.blocked) {
+      await alert('Tali — precio MXN NO actualizado (movimiento grande)', [
+        `El sync diario propuso un cambio fuera del límite y <b>no</b> tocó el precio.`,
+        `Motivo: ${result.blocked}`,
+        `Actual: $${money(result.current)} MXN → propuesto: $${money(result.proposed)} MXN`,
+        `Tipo de cambio: ${result.rate} (${result.source})`,
+        `Si es real, actualiza el precio a mano en Stripe.`,
+      ]);
+    }
+    return result;
+  } catch (err) {
+    console.error('fx sync failed:', err.message);
+    await alert('Tali — falló el sync de precio MXN', [
+      `El precio en pesos <b>no</b> se actualizó hoy y sigue con el valor anterior.`,
+      `Error: ${err.message}`,
+      `Sin arreglo, el precio en MXN se va desfasando del precio en USD.`,
+    ]);
+    throw err;
+  }
+}
+
 export default {
+  // Cron trigger — schedule lives in wrangler.toml. Awaited rather than
+  // waitUntil'd on purpose: a throw here marks the invocation failed in the
+  // Cloudflare cron dashboard, which is the second place (after the staff
+  // alert) anyone would look to notice the price has stopped tracking.
+  async scheduled(event, env) {
+    await runFxSync(env);
+  },
+
   async fetch(request, env, ctx) {
     const cors = corsHeaders(request, env);
     if (request.method === 'OPTIONS') {

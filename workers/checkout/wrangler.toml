@@ -4,10 +4,18 @@ name = "tali-checkout"
 main = "worker.js"
 compatibility_date = "2026-07-01"
 
+# Daily USD→MXN price sync (DEC-26). 16:30 UTC = 10:30 Mexico City, after the
+# ECB publishes the day's reference rates (~15:00 UTC).
+[triggers]
+crons = ["30 16 * * *"]
+
 [vars]
 # Live-mode Founder Edition price ($125 introductory; the $185 launch price
 # price_1TypWV2QQj9hlFmfJYXOVDNE is archived).
 STRIPE_PRICE_ID = "price_1U3tke2QQj9hlFmfEqnZabJp"
+# Margin added on top of the spot rate when computing the MXN currency_option,
+# covering drift between daily runs. Raise it if the peso gets choppy.
+FX_BUFFER_PCT = "3"
 SITE = "https://tali.my"
 # Origins allowed to call this worker (CORS). Localhost is for `npm run dev`.
 ALLOWED_ORIGINS = "https://tali.my,http://localhost:4321"

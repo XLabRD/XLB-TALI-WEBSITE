@@ -97,6 +97,53 @@ Duplicate-email protection: the worker remembers the last emailed status per
 order in KV — repeat saves or status flip-flops never re-send. Editing only
 `Tracking URL` never emails; set it before flipping Status to Shipped.
 
+## Peso pricing + daily FX sync (DEC-26)
+
+The Founder price is a **USD** Price object that also carries an **MXN**
+`currency_options` entry. Both halves matter:
+
+- Mexican-issued cards decline foreign-currency authorizations
+  (`currency_not_supported`) — the error customers were hitting.
+- OXXO only exists in MXN, so a USD-only price hides it entirely.
+
+Checkout picks the right one from the buyer's location, which is why
+`createSession` passes **no** `currency` — don't add one.
+
+Stripe can't keep the peso figure current for us: Adaptive Pricing requires
+the price currency to be one of your settlement currencies, and Mexico has no
+multi-currency settlement, so MXN is the account's only one and a USD price is
+ineligible. `fx.js` therefore recomputes it daily from a live rate.
+
+**Seed the MXN option once** (the cron maintains it afterwards):
+
+```bash
+curl https://api.stripe.com/v1/prices/$STRIPE_PRICE_ID \
+  -u "sk_live_...:" \
+  -d "currency_options[mxn][unit_amount]=219900" \
+  -d "currency_options[mxn][tax_behavior]=inclusive"
+```
+
+Match `tax_behavior` to the base price's (DEC-17: IVA included). Also enable
+**OXXO** in the Dashboard's payment method settings — it can't have been
+appearing while the price was USD-only.
+
+Tune the margin with `FX_BUFFER_PCT` in `wrangler.toml` (default `3`). The
+rounding step adds a little more, so the real buffer is 3–5%.
+
+Test the cron without waiting a day:
+
+```bash
+npx wrangler dev --test-scheduled     # then, in another shell:
+curl "http://localhost:8787/__scheduled"
+npx wrangler tail                     # watch real runs: look for `fx sync:`
+```
+
+Guards, all failing closed — the price is left alone and staff get an email:
+rate must be within 10–30 MXN/USD, a single day's move can't exceed 8%, the
+result can't fall under $500 MXN, and an unchanged figure is never rewritten.
+Last run is stashed in KV under `fx:last` for debugging. A normal daily
+adjustment is a log line only; mail means something needs a human.
+
 ## Going live
 
 Switch `STRIPE_PRICE_ID` to the live price, re-run `npx wrangler deploy`,
