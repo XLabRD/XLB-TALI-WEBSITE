@@ -30,6 +30,12 @@ import {
 } from './notion.js';
 import { sendOrderEmail, sendStaffEmail, sendAlertEmail } from './emails.js';
 import { syncMxnPrice } from './fx.js';
+import {
+  claimedCount,
+  invalidateCount,
+  resolveInventory,
+  waveLabel,
+} from './inventory.js';
 
 const STRIPE_API = 'https://api.stripe.com/v1';
 
@@ -73,6 +79,23 @@ async function createSession(request, env, cors) {
   const { locale } = await request.json().catch(() => ({}));
   const es = locale === 'es';
   const site = env.SITE || 'https://tali.my';
+
+  // The real cap (DEC-27). Hiding the button stops nobody holding a stale tab
+  // or calling this route directly, so the refusal has to live here. Read
+  // fresh — a 60s-stale count is fine for a label, not for the last unit.
+  // Never blocks on a Notion outage: an unreachable count fails OPEN, because
+  // losing a sale is worse than overselling one unit we can refund.
+  if (env.NOTION_TOKEN && env.NOTION_DATABASE_ID) {
+    try {
+      const sold = await claimedCount(env, { fresh: true });
+      const inv = resolveInventory(env, sold);
+      if (inv.soldOut && !env.SIGNATURE_PRICE_ID) {
+        return json({ error: 'sold_out' }, 409, cors);
+      }
+    } catch (err) {
+      console.error('cap check failed, allowing checkout:', err.message);
+    }
+  }
   const params = new URLSearchParams({
     mode: 'payment',
     ui_mode: 'embedded_page',
@@ -112,6 +135,10 @@ async function sessionStatus(url, env, cors) {
   // (Received/Shipped/Canceled); the thanks page expects lowercase.
   let orderStatus = session.payment_intent?.metadata?.order_status ?? null;
   let trackingUrl = session.payment_intent?.metadata?.tracking_url ?? null;
+  // The wave stored at purchase (DEC-27) — authoritative, unlike the pricing
+  // card's forecast, which can shift under a buyer mid-checkout.
+  let position = null;
+  let wave = null;
   if (env.NOTION_TOKEN && env.NOTION_DATABASE_ID) {
     try {
       const page = await findPageBySessionId(env, session.id);
@@ -119,6 +146,8 @@ async function sessionStatus(url, env, cors) {
         const order = readOrder(page);
         orderStatus = order.status.toLowerCase() || orderStatus;
         trackingUrl = order.tracking || trackingUrl;
+        position = order.position;
+        wave = order.wave;
       }
     } catch (err) {
       console.error('notion status lookup failed:', err.message);
@@ -133,6 +162,8 @@ async function sessionStatus(url, env, cors) {
       receipt_url: session.payment_intent?.latest_charge?.receipt_url ?? null,
       order_status: orderStatus,
       tracking_url: trackingUrl,
+      position,
+      wave,
     },
     200,
     cors
@@ -232,7 +263,19 @@ async function handleStripeWebhook(request, env, cors, ctx) {
       labelUrl: `${new URL(request.url).origin}/label?session_id=${session.id}&key=${env.NOTION_WEBHOOK_KEY}`,
     };
     order.orderNumber = order.receiptNumber;
+    // Sequence + wave, fixed now and never recomputed (DEC-27). Counted
+    // BEFORE this row exists, so this order is the next unit. Best-effort:
+    // a Notion hiccup here must not cost us the order row itself.
+    try {
+      order.position = (await claimedCount(env, { fresh: true })) + 1;
+      order.wave = waveLabel(env, order.position);
+    } catch (err) {
+      console.error('wave assignment failed:', err.message);
+    }
     const page = await createOrderPage(env, order);
+    // The count moved — drop the cache so the pricing card updates now
+    // rather than up to a minute from now.
+    await invalidateCount(env);
     if (!order.receiptNumber) {
       ctx.waitUntil(
         backfillOrderNumber(env, page.id, session.payment_intent, pi.latest_charge?.receipt_url)
@@ -417,6 +460,18 @@ async function handleNotionWebhook(request, url, env, cors) {
   return json({ sent: kind }, 200, cors);
 }
 
+// What the next unit sold would be (DEC-27) — series, wave, and a remaining
+// count only once the wave is nearly gone. Never returns a total: see
+// inventory.js for why the threshold is applied server-side.
+async function inventory(env, cors) {
+  const sold = await claimedCount(env);
+  return json(resolveInventory(env, sold), 200, {
+    ...cors,
+    // Short, and the webhook busts the KV cache on every sale anyway.
+    'Cache-Control': 'public, max-age=30',
+  });
+}
+
 async function price(env, cors) {
   // The Founder price is multi-currency: a USD base plus an MXN
   // currency_option, so Mexican cards aren't asked to authorize a foreign
@@ -504,6 +559,12 @@ export default {
       }
       if (request.method === 'GET' && url.pathname === '/price') {
         return await price(env, cors);
+      }
+      if (request.method === 'GET' && url.pathname === '/inventory') {
+        if (!env.NOTION_TOKEN || !env.NOTION_DATABASE_ID) {
+          return json({ error: 'order pipeline not configured' }, 503, cors);
+        }
+        return await inventory(env, cors);
       }
       if (request.method === 'POST' && url.pathname === '/stripe-webhook') {
         if (!env.STRIPE_WEBHOOK_SECRET || !env.NOTION_TOKEN || !env.NOTION_DATABASE_ID) {

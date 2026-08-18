@@ -50,7 +50,7 @@ const parseInclude = (item: string): Part[] => {
       <h2 class="section__title">{copy.pricingTitle}</h2>
       <p class="note">{copy.pricingNote}</p>
     </div>
-    <div class="plans">
+    <div class="plans" data-waves={JSON.stringify(copy.waves ?? {})}>
       {
         plans.map((plan) => (
           <article class="plan">
@@ -59,6 +59,11 @@ const parseInclude = (item: string): Part[] => {
               <p class="plan__tagline">{plan.tagline}</p>
               {/* TODO(DEC-17): placeholder pricing until figures are decided */}
               <p class="plan__price">{plan.price}</p>
+              {/* Wave + ship window, filled in from the worker's /inventory
+                  (DEC-27). Hidden until then: with no JS there is no live
+                  count, and a stale wave is worse than none. */}
+              <p class="plan__wave" hidden />
+              <p class="plan__remaining" hidden />
               {embedded ? (
                 <>
                   <button class="btn plan__buy" type="button">
@@ -226,6 +231,38 @@ const parseInclude = (item: string): Part[] => {
           .forEach((el) => (el.textContent = label));
       })
       .catch(() => {});
+
+    // Wave + ship window for the unit being sold next (DEC-27). The worker
+    // returns no totals — `remaining` arrives only once a wave is nearly
+    // gone, so there is no count here to leak early on.
+    const plans = document.querySelector<HTMLElement>('.plans');
+    const waves = JSON.parse(plans?.dataset.waves || '{}');
+    fetch(`${endpoint}/inventory`)
+      .then((r) => (r.ok ? r.json() : Promise.reject()))
+      .then(({ series, wave, remaining, soldOut }) => {
+        const label =
+          series === 'signature' ? waves.signature : waves[`wave${wave}`];
+        const line = document.querySelector<HTMLElement>('.plan__wave');
+        if (line && label) {
+          line.textContent = label;
+          line.hidden = false;
+        }
+        const left = document.querySelector<HTMLElement>('.plan__remaining');
+        if (left && remaining && waves.remaining) {
+          left.textContent = waves.remaining.replace('{n}', String(remaining));
+          left.hidden = false;
+        }
+        // Founders gone and no Signature price live yet — the worker will
+        // refuse the session anyway, so don't offer a button that 409s.
+        if (soldOut) {
+          document
+            .querySelectorAll<HTMLButtonElement>('.plan__buy')
+            .forEach((b) => {
+              b.disabled = true;
+            });
+        }
+      })
+      .catch(() => {});
   }
 </script>
 
@@ -272,6 +309,25 @@ const parseInclude = (item: string): Part[] => {
     font-size: 2.1rem;
     color: var(--accent);
     margin-block: 0.4rem 0.9rem;
+  }
+  /* Wave + ship window (DEC-27) — sits between price and CTA, so the ship
+     expectation is read before the button, not after the purchase. */
+  .plan__wave {
+    font-family: var(--mono);
+    font-size: 0.78rem;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--text-dim);
+    margin-block: -0.5rem 0.5rem;
+  }
+  .plan__remaining {
+    font-size: 0.85rem;
+    color: var(--accent);
+    margin-block: -0.3rem 0.7rem;
+  }
+  .plan__buy:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
   }
   .plan__list {
     list-style: none;

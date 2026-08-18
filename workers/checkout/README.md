@@ -144,6 +144,42 @@ result can't fall under $500 MXN, and an unchanged figure is never rewritten.
 Last run is stashed in KV under `fx:last` for debugging. A normal daily
 adjustment is a log line only; mail means something needs a human.
 
+## Founders waves + cap (DEC-27)
+
+Founders is 100 units in two waves of 50 (`FOUNDERS_CAP`, `WAVE_SIZE` in
+`wrangler.toml`); unit 101 onward is the unlimited Signature Series.
+
+`GET /inventory` → `{series, wave, remaining, soldOut}` describes the **next**
+unit, for the pricing card. It never returns a total: `remaining` stays `null`
+until a wave is within `WAVE_COUNTDOWN_AT` units, and that threshold is applied
+server-side so the real count isn't sitting in a response anyone can poll.
+
+A buyer's own wave is different — the webhook stamps `Position` and `Wave` onto
+the Notion row at purchase and nothing recomputes them, so the date promised on
+`/thanks/` can't drift when a refund lands. Two extra properties are required:
+
+| Property | Type | Notes |
+| --- | --- | --- |
+| `Position` | Number | sequence in the run, set by the worker |
+| `Wave` | Select | options exactly: `Wave 1`, `Wave 2`, `Signature` |
+
+The count is Notion rows with Status `Received` or `Shipped` — `Canceled` and
+`Abandoned` release the unit — cached 60s in KV and busted on each sale.
+
+The cap is enforced in `createSession`, not just by disabling the button: a
+stale tab or a direct call would otherwise sell unit 101. It **fails open** if
+Notion is unreachable, on the grounds that a lost sale costs more than an
+oversell you can refund. Two known gaps, both deliberate:
+
+- Simultaneous buyers at unit 100 can both pass the check. At this volume,
+  reconcile by hand rather than build locking.
+- **The Payment Link fallback (`orderUrl`) bypasses this worker entirely** and
+  will keep selling after the cap. Set a `restrictions` completed-sessions
+  limit on the link in Stripe.
+
+Wave wording lives in `src/content/site/home.json` (card) and `ui.json`
+(thanks page), both locales — change a boundary here and that copy must follow.
+
 ## Going live
 
 Switch `STRIPE_PRICE_ID` to the live price, re-run `npx wrangler deploy`,

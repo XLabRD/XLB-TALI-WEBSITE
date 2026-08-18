@@ -16,6 +16,17 @@ STRIPE_PRICE_ID = "price_1U3tke2QQj9hlFmfEqnZabJp"
 # Margin added on top of the spot rate when computing the MXN currency_option,
 # covering drift between daily runs. Raise it if the peso gets choppy.
 FX_BUFFER_PCT = "3"
+
+# Founders waves + cap (DEC-27). Founders is 100 units in two waves of 50:
+# wave 1 ships September 2026, wave 2 October–December 2026. Unit 101 onward
+# is the Signature Series (unlimited, Feb–Apr 2027).
+# Ship-window wording lives in src/content/site/home.json, in both locales —
+# change a boundary here and the copy there must follow.
+FOUNDERS_CAP = "100"
+WAVE_SIZE = "50"
+# The pricing card withholds the remaining count until a wave is this close to
+# gone. Set it to 50 to always show a countdown, 0 to never.
+WAVE_COUNTDOWN_AT = "15"
 SITE = "https://tali.my"
 # Origins allowed to call this worker (CORS). Localhost is for `npm run dev`.
 ALLOWED_ORIGINS = "https://tali.my,http://localhost:4321"

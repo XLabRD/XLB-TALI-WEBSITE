@@ -21,6 +21,38 @@ async function notionRequest(env, method, path, body) {
 
 const text = (s) => ({ rich_text: [{ text: { content: s || '' } }] });
 
+/**
+ * Count orders that occupy a unit (DEC-27). `Received` and `Shipped` are the
+ * two statuses that mean a real buyer holds a slot; `Canceled` and
+ * `Abandoned` release it. Paginated — Notion caps a query at 100 rows, which
+ * is exactly the Founders cap, so the second page matters from unit 101.
+ *
+ * Counting rows rather than keeping a running KV counter is deliberate: a
+ * counter drifts the first time a webhook is retried or an order is fixed by
+ * hand, and Notion is already the sole source of truth for order state
+ * (DEC-25). It costs one API call per cache miss.
+ */
+export async function countClaimedOrders(env) {
+  const filter = {
+    or: [
+      { property: 'Status', select: { equals: 'Received' } },
+      { property: 'Status', select: { equals: 'Shipped' } },
+    ],
+  };
+  let count = 0;
+  let cursor;
+  do {
+    const page = await notionRequest(env, 'POST', `/databases/${env.NOTION_DATABASE_ID}/query`, {
+      filter,
+      page_size: 100,
+      ...(cursor ? { start_cursor: cursor } : {}),
+    });
+    count += page.results.length;
+    cursor = page.has_more ? page.next_cursor : null;
+  } while (cursor);
+  return count;
+}
+
 export function createOrderPage(env, o) {
   return notionRequest(env, 'POST', '/pages', {
     parent: { database_id: env.NOTION_DATABASE_ID },
@@ -33,6 +65,11 @@ export function createOrderPage(env, o) {
       // Stripe's receipt number (e.g. 1911-2504) — the human order number.
       'Order #': text(o.receiptNumber),
       Status: { select: { name: o.status || 'Received' } },
+      // Sequence + wave, fixed at purchase and never recomputed (DEC-27) —
+      // this is the ship date the buyer was promised. Omitted for abandoned
+      // checkouts, which never claimed a unit.
+      ...(o.position ? { Position: { number: o.position } } : {}),
+      ...(o.wave ? { Wave: { select: { name: o.wave } } } : {}),
       Locale: { select: { name: o.locale } },
       'Session ID': text(o.sessionId),
       'Payment Intent': text(o.paymentIntent),
@@ -92,5 +129,8 @@ export function readOrder(page) {
     tracking: p['Tracking URL']?.url ?? '',
     locale: p.Locale?.select?.name === 'es' ? 'es' : 'en',
     sessionId: plain(p['Session ID']),
+    // DEC-27 — null on rows created before waves existed.
+    position: p.Position?.number ?? null,
+    wave: p.Wave?.select?.name ?? null,
   };
 }

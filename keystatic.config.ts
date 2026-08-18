@@ -147,6 +147,21 @@ const homeLocale = (label: string) =>
         }),
         { label: 'Editions (rows)', itemLabel: (props) => props.fields.batch.value ?? 'Edition' }
       ),
+      // Founders wave labels on the pricing card (DEC-27). Which one shows is
+      // decided live by the checkout worker; boundaries live in
+      // workers/checkout/wrangler.toml, so edit these together.
+      waves: fields.object(
+        {
+          wave1: fields.text({ label: 'Wave 1 label', defaultValue: '' }),
+          wave2: fields.text({ label: 'Wave 2 label', defaultValue: '' }),
+          signature: fields.text({ label: 'Signature label', defaultValue: '' }),
+          remaining: fields.text({
+            label: 'Low-stock countdown ({n} = units left)',
+            defaultValue: '',
+          }),
+        },
+        { label: 'Wave labels' }
+      ),
       faqKicker: fields.text({ label: 'FAQ kicker' }),
       faqTitle: fields.text({ label: 'FAQ title' }),
       contactKicker: fields.text({ label: 'Contact kicker' }),
@@ -190,6 +205,13 @@ const uiLocale = (label: string) =>
       thanksStatusCanceled: fields.text({ label: 'Thanks page: status "canceled"', defaultValue: '' }),
       thanksTrack: fields.text({ label: 'Thanks page: tracking link label', defaultValue: '' }),
       thanksBookmark: fields.text({ label: 'Thanks page: bookmark hint', defaultValue: '' }),
+      // {n} is replaced with the buyer's Founders number (DEC-27).
+      thanksWave1: fields.text({ label: 'Thanks page: Wave 1 line ({n} = number)', defaultValue: '' }),
+      thanksWave2: fields.text({ label: 'Thanks page: Wave 2 line ({n} = number)', defaultValue: '' }),
+      thanksWaveSignature: fields.text({
+        label: 'Thanks page: Signature line ({n} = number)',
+        defaultValue: '',
+      }),
       footerTagline: fields.text({ label: 'Footer tagline' }),
       langSwitch: fields.text({ label: 'Language switch label' }),
       navPreorder: fields.text({ label: 'Nav: pre-order button' }),

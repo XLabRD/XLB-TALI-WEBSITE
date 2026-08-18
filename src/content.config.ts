@@ -163,6 +163,19 @@ const localeHome = z.object({
       })
     )
     .default([]),
+  // Wave labels on the Founders card (DEC-27). Which one shows is decided at
+  // runtime by the worker's /inventory route; the boundaries themselves live
+  // in workers/checkout/wrangler.toml (FOUNDERS_CAP, WAVE_SIZE) — change one
+  // and this copy must follow. `remaining` uses {n} as the count placeholder
+  // and only appears once a wave is nearly gone.
+  waves: z
+    .object({
+      wave1: z.string().default(''),
+      wave2: z.string().default(''),
+      signature: z.string().default(''),
+      remaining: z.string().default(''),
+    })
+    .default({}),
   faqKicker: z.string(),
   faqTitle: z.string(),
   contactKicker: z.string(),
@@ -202,6 +215,10 @@ const localeUi = z.object({
   thanksStatusCanceled: z.string().default(''),
   thanksTrack: z.string().default(''),
   thanksBookmark: z.string().default(''),
+  // Founders number + wave on the thanks page (DEC-27). {n} = position.
+  thanksWave1: z.string().default(''),
+  thanksWave2: z.string().default(''),
+  thanksWaveSignature: z.string().default(''),
   footerTagline: z.string(),
   langSwitch: z.string(),
   navPreorder: z.string().default('Pre-order'),

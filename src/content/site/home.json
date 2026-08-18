@@ -71,19 +71,19 @@
     "shipBatches": [
       {
         "batch": "Founders Limited Edition",
-        "window": "Pre-order now — ships Aug – Sep 26",
+        "window": "Pre-order now — 100 units, ships Sep – Dec 26",
         "edition": "24 months of Cloud Pro included",
         "price": "$125.00 USD"
       },
       {
         "batch": "Signature Edition",
-        "window": "Not for sale yet — est. Q1 27",
+        "window": "Opens when Founders sells out — ships Feb – Apr 27",
         "edition": "12 months of Cloud Pro included",
         "price": "$125.00 USD"
       },
       {
         "batch": "Standard Edition",
-        "window": "Not for sale yet — est. Q2–Q3 27",
+        "window": "No pre-orders — est. Q2–Q3 27",
         "edition": "6 months of Cloud Pro included",
         "price": "Coming soon"
       }
@@ -96,7 +96,13 @@
     "shipNote": "Where is it available?",
     "shipNoteHref": "#faq-where-available",
     "shipFinePrint": "*Orders are shipped in the order they are received.\nAll prices include 16% IVA and shipping within Mexico.\nIntroductory launch pricing — subject to change.",
-    "heroTrust": "The best and most demanding sommeliers and enthusiasts trust Tali to watch their collections."
+    "heroTrust": "The best and most demanding sommeliers and enthusiasts trust Tali to watch their collections.",
+    "waves": {
+      "wave1": "Wave 1 — ships September 2026",
+      "wave2": "Wave 2 — ships October–December 2026",
+      "signature": "Signature Series — ships February–April 2027",
+      "remaining": "Only {n} left in this wave"
+    }
   },
   "es": {
     "heroKicker": "Inteligencia ambiental",
@@ -170,19 +176,19 @@
     "shipBatches": [
       {
         "batch": "Founders Limited Edition",
-        "window": "Pre-ordena ahora — se envía Ago – Sep 26",
+        "window": "Pre-ordena ahora — 100 unidades, se envía Sep – Dic 26",
         "edition": "24 meses de Cloud Pro incluidos",
         "price": "$125.00 USD"
       },
       {
         "batch": "Signature Edition",
-        "window": "Aún no a la venta — est. Q1 27",
+        "window": "Abre cuando se agoten las Founders — se envía Feb – Abr 27",
         "edition": "12 meses de Cloud Pro incluidos",
         "price": "$125.00 USD"
       },
       {
         "batch": "Standard Edition",
-        "window": "Aún no a la venta — est. Q2–Q3 27",
+        "window": "Sin pre-órdenes — est. Q2–Q3 27",
         "edition": "6 meses de Cloud Pro incluidos",
         "price": "Próximamente"
       }
@@ -195,6 +201,12 @@
     "shipNote": "¿Dónde está disponible?",
     "shipNoteHref": "#faq-where-available",
     "shipFinePrint": "*Los pedidos se envían en el orden en que se reciben.\nTodos los precios incluyen 16% de IVA y envío dentro de México.\nPrecio introductorio de lanzamiento — sujeto a cambio.",
-    "heroTrust": "Los mejores y más exigentes sommeliers y aficionados confían en Tali para vigilar sus colecciones."
+    "heroTrust": "Los mejores y más exigentes sommeliers y aficionados confían en Tali para vigilar sus colecciones.",
+    "waves": {
+      "wave1": "Wave 1 — se envía en septiembre 2026",
+      "wave2": "Wave 2 — se envía de octubre a diciembre 2026",
+      "signature": "Signature Series — se envía de febrero a abril 2027",
+      "remaining": "Solo quedan {n} en esta wave"
+    }
   }
 }
