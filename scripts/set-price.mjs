@@ -45,6 +45,13 @@ const die = (msg) => {
   process.exit(1);
 };
 
+// A rejected top-level await in an ESM module surfaces as uncaughtException,
+// not unhandledRejection — so without this an ordinary Stripe error ("Invalid
+// API Key") prints a Node stack trace instead of the message. A failure after
+// the new price is created still leaves the old one active, which is the safe
+// half to fail on.
+process.on('uncaughtException', (err) => die(err?.message ?? String(err)));
+
 if (!amountArg) die('Usage: npm run set-price -- <new USD amount> [--apply]');
 
 const usd = Number(amountArg);
@@ -54,7 +61,17 @@ if (!Number.isFinite(usd) || usd < MIN_USD || usd > MAX_USD) {
 const usdCents = Math.round(usd * 100);
 
 const key = process.env.STRIPE_SECRET_KEY;
-if (!key) die('STRIPE_SECRET_KEY is not set.\n    export STRIPE_SECRET_KEY=sk_live_...');
+if (!key) die('STRIPE_SECRET_KEY is not set.\n    export STRIPE_SECRET_KEY=sk_live_<your key>');
+// Catch the placeholder being pasted through verbatim, which otherwise costs a
+// round trip to Stripe to be told "Invalid API Key provided: sk_live_...".
+if (!/^(sk|rk)_(live|test)_[A-Za-z0-9]{16,}$/.test(key)) {
+  die(
+    'STRIPE_SECRET_KEY does not look like a Stripe key.\n' +
+      '    Expected sk_live_… / sk_test_… (or rk_… for a restricted key).\n' +
+      '    If you copied the example literally, replace the "…" with the real key\n' +
+      '    from Stripe → Developers → API keys.'
+  );
+}
 
 async function stripe(method, path, params) {
   const res = await fetch(`${STRIPE}${path}`, {
