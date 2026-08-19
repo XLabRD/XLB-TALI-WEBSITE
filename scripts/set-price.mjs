@@ -11,7 +11,11 @@
 //      active / currency_options / lookup_key / metadata / nickname /
 //      tax_behavior and nothing else. Changing the amount means creating a new
 //      Price and archiving the old one.
-//   2. A brand-new Price has no MXN currency_option, and the DEC-26 cron only
+//   2. Stripe refuses to archive a Price that is its product's default_price,
+//      so the default has to be handed to the new price first. Miss this and
+//      you are left holding a created-but-unused price and a store still
+//      selling at the old one.
+//   3. A brand-new Price has no MXN currency_option, and the DEC-26 cron only
 //      fills it at 16:30 UTC. In that window every Mexican card is back to
 //      declining with currency_not_supported and OXXO disappears — the exact
 //      bug DEC-17 exists to fix, silently reintroduced by routine work. So the
@@ -159,21 +163,52 @@ if (!apply) {
 // New price first, archive second: if creation fails the store keeps selling
 // at the old price rather than having nothing to sell.
 
-const created = await stripe('POST', '/prices', {
-  product: old.product,
-  currency: old.currency,
-  unit_amount: String(usdCents),
-  ...(old.tax_behavior && old.tax_behavior !== 'unspecified'
-    ? { tax_behavior: old.tax_behavior }
-    : {}),
+const priceBody = {
   'currency_options[mxn][unit_amount]': String(mxnCents),
   ...(old.tax_behavior && old.tax_behavior !== 'unspecified'
     ? { 'currency_options[mxn][tax_behavior]': old.tax_behavior }
     : {}),
   // Marks the price as one the DEC-26 cron should keep in step with USD/MXN.
   'metadata[fx_sync]': 'true',
-});
-console.log(`\n  ✓ created ${created.id}`);
+};
+
+// An earlier run can have created the price and then failed before archiving
+// — the default_price rule below did exactly that. Reuse it instead of
+// littering the product with a duplicate on every retry.
+const active = await stripe(
+  'GET',
+  `/prices?product=${old.product}&active=true&limit=100&expand%5B%5D=data.currency_options`
+);
+let created = active.data.find(
+  (p) => p.id !== currentId && p.currency === old.currency && p.unit_amount === usdCents
+);
+if (created) {
+  console.log(`\n  ↻ reusing ${created.id} from an earlier run`);
+  if (
+    created.currency_options?.mxn?.unit_amount !== mxnCents ||
+    created.metadata?.fx_sync !== 'true'
+  ) {
+    created = await stripe('POST', `/prices/${created.id}`, priceBody);
+    console.log('  ✓ refreshed its peso option and fx_sync flag');
+  }
+} else {
+  created = await stripe('POST', '/prices', {
+    product: old.product,
+    currency: old.currency,
+    unit_amount: String(usdCents),
+    ...(old.tax_behavior && old.tax_behavior !== 'unspecified'
+      ? { tax_behavior: old.tax_behavior }
+      : {}),
+    ...priceBody,
+  });
+  console.log(`\n  ✓ created ${created.id}`);
+}
+
+// Stripe refuses to archive a product's default_price, so hand the default
+// over first. Doing it in this order also means the product never points at
+// an archived price, even if the archive call below fails.
+await stripe('POST', `/products/${old.product}`, { default_price: created.id });
+console.log(`  ✓ product default → ${created.id}`);
 
 await stripe('POST', `/prices/${currentId}`, { active: 'false' });
 console.log(`  ✓ archived ${currentId}`);
