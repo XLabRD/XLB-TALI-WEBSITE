@@ -12,7 +12,7 @@ crons = ["30 16 * * *"]
 [vars]
 # Live-mode Founder Edition price ($125 introductory; the $185 launch price
 # price_1TypWV2QQj9hlFmfJYXOVDNE is archived).
-STRIPE_PRICE_ID = "price_1U3tke2QQj9hlFmfEqnZabJp"
+STRIPE_PRICE_ID = "price_1U5xPL2QQj9hlFmfYtSkOK1o"
 # Margin added on top of the spot rate when computing the MXN currency_option,
 # covering drift between daily runs. Raise it if the peso gets choppy.
 FX_BUFFER_PCT = "3"

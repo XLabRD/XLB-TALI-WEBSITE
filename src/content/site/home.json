@@ -65,7 +65,7 @@
     "filmCaption": "See why sommeliers and enthusiasts trust Tali with the collections they cherish.",
     "pricingKicker": "The edition",
     "pricingTitle": "Founders Series, our limited edition",
-    "pricingNote": "Pre-order yours now and be the first to own it. A marked first batch that ships before any other edition. $125 is an introductory launch price, and it includes 16% IVA and shipping within Mexico.",
+    "pricingNote": "Pre-order yours now and be the first to own it. A marked first batch that ships before any other edition. $135 is an introductory launch price, and it includes 16% IVA and shipping within Mexico.",
     "shipKicker": "The editions",
     "shipTitle": "Editions + pricing",
     "shipBatches": [
@@ -73,13 +73,13 @@
         "batch": "Founders Limited Edition",
         "window": "Pre-order now — 100 units, ships Sep – Dec 26",
         "edition": "24 months of Cloud Pro included",
-        "price": "$125.00 USD"
+        "price": "$135.00 USD"
       },
       {
         "batch": "Signature Edition",
         "window": "Opens when Founders sells out — ships Feb – Apr 27",
         "edition": "12 months of Cloud Pro included",
-        "price": "$125.00 USD"
+        "price": "$135.00 USD"
       },
       {
         "batch": "Standard Edition",
@@ -170,7 +170,7 @@
     "filmCaption": "Descubre por qué sommeliers y aficionados le confían a Tali las colecciones que atesoran.",
     "pricingKicker": "La edición",
     "pricingTitle": "Founders Series, nuestra edición limitada",
-    "pricingNote": "Pre-ordena la tuya ahora y sé de los primeros en tenerla. Un primer lote marcado que se envía antes que cualquier otra edición. $125 USD es un precio introductorio de lanzamiento, e incluye 16% de IVA y envío dentro de México.",
+    "pricingNote": "Pre-ordena la tuya ahora y sé de los primeros en tenerla. Un primer lote marcado que se envía antes que cualquier otra edición. $135 USD es un precio introductorio de lanzamiento, e incluye 16% de IVA y envío dentro de México.",
     "shipKicker": "Las ediciones",
     "shipTitle": "Ediciones + precios",
     "shipBatches": [
@@ -178,13 +178,13 @@
         "batch": "Founders Limited Edition",
         "window": "Pre-ordena ahora — 100 unidades, se envía Sep – Dic 26",
         "edition": "24 meses de Cloud Pro incluidos",
-        "price": "$125.00 USD"
+        "price": "$135.00 USD"
       },
       {
         "batch": "Signature Edition",
         "window": "Abre cuando se agoten las Founders — se envía Feb – Abr 27",
         "edition": "12 meses de Cloud Pro incluidos",
-        "price": "$125.00 USD"
+        "price": "$135.00 USD"
       },
       {
         "batch": "Standard Edition",
