@@ -222,6 +222,28 @@ async function backfillOrderNumber(env, pageId, paymentIntent, receiptUrl) {
   }
 }
 
+/**
+ * The welcome email, at most once per payment. Deliberately decoupled from
+ * the Notion row: the buyer has already been charged, so a bookkeeping
+ * failure must never cost them their confirmation. Because a failed row now
+ * returns 5xx, Stripe replays the whole delivery until it lands — hence the
+ * KV guard, so one payment still produces exactly one confirmation.
+ * Returns an error message on failure, null on success or skip.
+ */
+async function sendWelcomeOnce(env, order) {
+  if (!order.email || !env.RESEND_API_KEY) return null;
+  const key = `welcomed:${order.paymentIntent || order.sessionId}`;
+  if (env.ORDERS && (await env.ORDERS.get(key))) return null;
+  try {
+    await sendOrderEmail(env, 'welcome', order);
+    if (env.ORDERS) await env.ORDERS.put(key, new Date().toISOString());
+    return null;
+  } catch (err) {
+    console.error('welcome email failed:', err.message);
+    return err.message;
+  }
+}
+
 async function handleStripeWebhook(request, env, cors, ctx) {
   const payload = await request.text();
   const signature = request.headers.get('Stripe-Signature') || '';
@@ -272,32 +294,51 @@ async function handleStripeWebhook(request, env, cors, ctx) {
     } catch (err) {
       console.error('wave assignment failed:', err.message);
     }
-    const page = await createOrderPage(env, order);
-    // The count moved — drop the cache so the pricing card updates now
-    // rather than up to a minute from now.
-    await invalidateCount(env);
-    if (!order.receiptNumber) {
+    // Row and confirmation are independent duties. A schema mismatch or a
+    // Notion outage used to throw straight past both emails, leaving a
+    // charged buyer with nothing — order #1 was lost exactly that way.
+    let page = null;
+    let notionError = null;
+    try {
+      page = await createOrderPage(env, order);
+      // The count moved — drop the cache so the pricing card updates now
+      // rather than up to a minute from now.
+      await invalidateCount(env);
+    } catch (err) {
+      notionError = err.message;
+      console.error('notion order row failed:', err.message, order.paymentIntent);
+    }
+    if (page && !order.receiptNumber) {
       ctx.waitUntil(
         backfillOrderNumber(env, page.id, session.payment_intent, pi.latest_charge?.receipt_url)
       );
     }
-    // Emails are best-effort: the row must survive even if Resend is down or
-    // not configured yet, and Stripe's retry would dedupe on the row anyway.
-    let emailError = null;
-    if (order.email && env.RESEND_API_KEY) {
-      try {
-        await sendOrderEmail(env, 'welcome', order);
-      } catch (err) {
-        emailError = err.message;
-        console.error('welcome email failed:', err.message);
-      }
-    }
+    // Goes out whether or not the row landed; KV keeps it to exactly once.
+    const emailError = await sendWelcomeOnce(env, order);
     if (env.STAFF_EMAIL && env.RESEND_API_KEY) {
       try {
-        await sendStaffEmail(env, 'new-order', order, page.url);
+        if (page) {
+          await sendStaffEmail(env, 'new-order', order, page.url);
+        } else {
+          // Louder than a log line nobody reads: a paid order with no row is
+          // the one case that needs a human the same day.
+          await sendAlertEmail(env, `Tali — pedido pagado SIN fila en Notion (${order.email})`, [
+            `Se cobró un pedido pero <b>no</b> se pudo crear su fila en Notion.`,
+            `Error de Notion: ${notionError}`,
+            `Cliente: ${order.name || order.email} — ${order.amount}`,
+            `Payment Intent: ${order.paymentIntent}`,
+            `El cliente <b>sí</b> recibió su correo de confirmación.`,
+            `Stripe reintentará solo; corrige la base y la fila entra sin tocar nada.`,
+          ]);
+        }
       } catch (err) {
         console.error('staff email failed:', err.message);
       }
+    }
+    if (notionError) {
+      // 5xx so Stripe keeps retrying until the row exists. Safe to replay:
+      // the row is deduped by Payment Intent, the email by KV.
+      return json({ error: 'notion row failed', notionError, emailError }, 500, cors);
     }
     return json({ created: true, emailError }, 200, cors);
   }

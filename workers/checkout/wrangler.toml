@@ -52,3 +52,10 @@ id = "b075e56a1deb413daba059fdc523fef6"
 # The secret key is NOT set here — never commit it. After deploying once, run:
 #   npx wrangler secret put STRIPE_SECRET_KEY
 # and paste the sk_test_… (later sk_live_…) key when prompted.
+
+# Persist request logs and console output. Without this the only view into a
+# failed webhook is a live `wrangler tail` that happens to already be running —
+# which is why order #1's Notion error was invisible after the fact.
+[observability]
+enabled = true
+head_sampling_rate = 1
