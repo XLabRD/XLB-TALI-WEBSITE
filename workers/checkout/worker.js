@@ -388,7 +388,12 @@ async function handleStripeWebhook(request, env, cors, ctx) {
     const page = paymentIntent && (await findPageByPaymentIntent(env, paymentIntent));
     // The status write triggers the Notion automation, which sends the
     // customer's cancellation email through /notion-webhook.
-    if (page) await setStatus(env, page.id, 'Canceled');
+    if (page) {
+      await setStatus(env, page.id, 'Canceled');
+      // The unit is released — drop the cached count so the pricing card
+      // reflects it now rather than up to a minute from now.
+      await invalidateCount(env);
+    }
     return json({ canceled: Boolean(page) }, 200, cors);
   }
 
@@ -487,6 +492,10 @@ async function handleNotionWebhook(request, url, env, cors) {
   if (!pageId) return json({ error: 'no page id in payload' }, 400, cors);
 
   const order = readOrder(await getPage(env, pageId));
+  // Any status edit can move the claimed count — Received/Shipped hold a
+  // unit, Canceled/Abandoned release it — so bust the cache before deciding
+  // whether this particular edit is also one that emails.
+  await invalidateCount(env);
   const kind =
     order.status === 'Shipped' ? 'shipped' : order.status === 'Canceled' ? 'canceled' : null;
   if (!kind || !order.email) return json({ skipped: order.status }, 200, cors);
