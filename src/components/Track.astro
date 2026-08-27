@@ -40,7 +40,7 @@ const canceled = ui.trackCanceled.split('{email}');
 <Base
   locale={locale}
   title={`${ui.trackTitle} — Tali`}
-  description={ui.trackDelivery}
+  description={ui.trackSubtitle}
   altPath={altPath}
 >
   <meta name="robots" content="noindex" slot="head" />
@@ -73,6 +73,8 @@ const canceled = ui.trackCanceled.split('{email}');
         <circle cx="17" cy="17.4" r="2" />
       </svg>
       <h1 class="track__title">{ui.trackTitle}</h1>
+      <p class="track__subtitle">{ui.trackSubtitle}</p>
+      <p class="track__delivery">{ui.trackDelivery}</p>
     </div>
 
     <div data-state="preparing" hidden>
@@ -104,10 +106,9 @@ const canceled = ui.trackCanceled.split('{email}');
       </div>
     </dl>
 
-    {/* The delivery promise closes the page (author's layout), paired with
-        the reason there is no number to follow. */}
+    {/* Why there is no number to follow — below the order details, so the
+        buyer reads their own details first (author's layout). */}
     <div class="track__closing" data-state="shipped">
-      <p class="track__delivery">{ui.trackDelivery}</p>
       <p class="track__note">{ui.trackNoNumber}</p>
     </div>
 
@@ -177,11 +178,21 @@ const canceled = ui.trackCanceled.split('{email}');
   }
   .track__title {
     font-family: var(--display);
-    font-size: clamp(2rem, 6vw, 2.75rem);
+    font-size: clamp(2.35rem, 8vw, 3.4rem);
     font-weight: 400;
-    line-height: 1.1;
+    line-height: 1.05;
     color: var(--text);
-    margin: 0 0 1rem;
+    margin: 0 0 0.6rem;
+  }
+  /* Smaller than the headline, still display-weight rather than body copy. */
+  .track__subtitle {
+    font-family: var(--display);
+    font-size: clamp(1.2rem, 4vw, 1.65rem);
+    font-weight: 400;
+    line-height: 1.25;
+    color: var(--text);
+    margin: 0 auto;
+    max-width: 22rem;
   }
   .track__lead {
     font-size: 1.05rem;
@@ -210,11 +221,11 @@ const canceled = ui.trackCanceled.split('{email}');
     border-top: 0;
   }
   .track__delivery {
-    font-size: 1.05rem;
+    font-size: 1rem;
     line-height: 1.6;
-    color: var(--text);
-    margin: 0 auto;
-    max-width: 30rem;
+    color: var(--text-dim);
+    margin: 0.9rem auto 0;
+    max-width: 26rem;
   }
   .track__note {
     font-size: 0.9rem;

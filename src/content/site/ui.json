@@ -40,16 +40,17 @@
     "thanksWave2": "You're Founders #{n} — Wave 2, shipping October–December 2026.",
     "thanksWaveSignature": "You're Signature #{n} — shipping February–April 2027.",
     "trackTitle": "GREAT NEWS!",
+    "trackSubtitle": "Your order is out for delivery",
+    "trackDelivery": "We will be hand delivering this order to you today before 6pm.",
     "trackTitlePreparing": "Preparing your order",
     "trackTitleCanceled": "Order canceled",
-    "trackDelivery": "Your order is out for delivery, we will be hand delivering this order to you today before 6pm.",
-    "trackNoNumber": "There's no tracking number to follow — this is a same-day hand delivery, not a carrier shipment.",
+    "trackNoNumber": "Since this is a local delivery there is no tracking number — this is a same-day, special, ultra VIP hand delivery for you.",
     "trackPreparing": "We're preparing your order. You'll get an email the moment it's on its way.",
     "trackCanceled": "This order was canceled. Write to us at {email} if that's unexpected.",
     "trackOrderLabel": "Order",
     "trackAddressLabel": "Delivering to",
     "trackUnit": "{series} #{n}",
-    "trackHelp": "Not there by the end of the day? Write to us at {email} and we'll chase it."
+    "trackHelp": "Not there by the end of the day, or have any questions? Write to us at {email} and we'll chase it."
   },
   "es": {
     "navSystem": "Sistema",
@@ -92,15 +93,16 @@
     "thanksWave2": "Eres Founders #{n} — Wave 2, se envía de octubre a diciembre 2026.",
     "thanksWaveSignature": "Eres Signature #{n} — se envía de febrero a abril 2027.",
     "trackTitle": "¡EXCELENTE NOTICIA!",
+    "trackSubtitle": "Tu pedido va en camino",
+    "trackDelivery": "Te lo entregaremos en mano hoy antes de las 6 pm.",
     "trackTitlePreparing": "Preparando tu pedido",
     "trackTitleCanceled": "Pedido cancelado",
-    "trackDelivery": "Tu pedido va en camino, te lo entregaremos en mano hoy antes de las 6 pm.",
-    "trackNoNumber": "No hay número de rastreo que seguir — es una entrega en mano el mismo día, no un envío de paquetería.",
+    "trackNoNumber": "Como es una entrega local no hay número de rastreo — es una entrega en mano el mismo día, especial y ultra VIP para ti.",
     "trackPreparing": "Estamos preparando tu pedido. Te escribiremos en cuanto vaya en camino.",
     "trackCanceled": "Este pedido fue cancelado. Escríbenos a {email} si no lo esperabas.",
     "trackOrderLabel": "Pedido",
     "trackAddressLabel": "Entregando en",
     "trackUnit": "{series} #{n}",
-    "trackHelp": "¿No llegó al final del día? Escríbenos a {email} y lo seguimos."
+    "trackHelp": "¿No llegó al final del día, o tienes alguna pregunta? Escríbenos a {email} y lo seguimos."
   }
 }

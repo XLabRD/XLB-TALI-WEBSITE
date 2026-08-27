@@ -224,18 +224,17 @@ const localeUi = z.object({
   navPreorder: z.string().default('Buy now'),
   // Local same-day delivery page (DEC-30) — /track/ + /es/track/.
   trackTitle: z.string().default('GREAT NEWS!'),
-  trackTitlePreparing: z.string().default('Preparing your order'),
-  trackTitleCanceled: z.string().default('Order canceled'),
-  // Renders at the FOOT of the page, with trackNoNumber (author's layout).
+  trackSubtitle: z.string().default('Your order is out for delivery'),
   trackDelivery: z
     .string()
-    .default(
-      'Your order is out for delivery, we will be hand delivering this order to you today before 6pm.'
-    ),
+    .default('We will be hand delivering this order to you today before 6pm.'),
+  trackTitlePreparing: z.string().default('Preparing your order'),
+  trackTitleCanceled: z.string().default('Order canceled'),
+  // Renders below the order details, at the foot of the page.
   trackNoNumber: z
     .string()
     .default(
-      "There's no tracking number to follow — this is a same-day hand delivery, not a carrier shipment."
+      'Since this is a local delivery there is no tracking number — this is a same-day, special, ultra VIP hand delivery for you.'
     ),
   trackPreparing: z
     .string()
@@ -248,7 +247,9 @@ const localeUi = z.object({
   trackUnit: z.string().default('{series} #{n}'),
   trackHelp: z
     .string()
-    .default("Not there by the end of the day? Write to us at {email} and we'll chase it."),
+    .default(
+      "Not there by the end of the day, or have any questions? Write to us at {email} and we'll chase it."
+    ),
   metaTitle: z.string(),
   metaDescription: z.string(),
 });
