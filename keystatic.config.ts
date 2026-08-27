@@ -214,7 +214,7 @@ const uiLocale = (label: string) =>
       }),
       footerTagline: fields.text({ label: 'Footer tagline' }),
       langSwitch: fields.text({ label: 'Language switch label' }),
-      navPreorder: fields.text({ label: 'Nav: pre-order button' }),
+      navPreorder: fields.text({ label: 'Nav: buy button' }),
       metaTitle: fields.text({ label: 'Meta title' }),
       metaDescription: fields.text({ label: 'Meta description', multiline: true }),
     },
@@ -239,7 +239,7 @@ export default config({
         orderUrl: fields.text({
           label: 'Order URL (TODO DEC-21)',
           description:
-            'Stripe Payment Link for the Founder edition — the fallback when embedded checkout is not configured. Empty = "Pre-order now" scrolls to the contact form.',
+            'Stripe Payment Link for the Founder edition — the fallback when embedded checkout is not configured. Empty = "Buy now" scrolls to the contact form.',
         }),
         checkoutEndpoint: fields.text({
           label: 'Checkout endpoint (TODO DEC-21)',
@@ -319,8 +319,8 @@ export default config({
         slug: fields.slug({ name: { label: 'Slug' } }),
         order: fields.number({ label: 'Order', defaultValue: 99 }),
         preorder: fields.checkbox({
-          label: 'Pre-order button',
-          description: 'Show a pre-order button (opens checkout) after the answer.',
+          label: 'Buy button',
+          description: 'Show a buy button (opens checkout) after the answer.',
           defaultValue: false,
         }),
         linkHref: fields.text({

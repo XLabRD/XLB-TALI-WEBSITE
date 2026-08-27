@@ -54,7 +54,7 @@ const faq = defineCollection({
   loader: glob({ pattern: '**/*.json', base: './src/content/faq' }),
   schema: z.object({
     order: z.number().default(99),
-    // Renders a pre-order button (opens the checkout modal) after the answer.
+    // Renders a buy button (opens the checkout modal) after the answer.
     preorder: z.boolean().default(false),
     // Target for the per-locale linkText, e.g. "#shipping".
     linkHref: z.string().default(''),
@@ -221,7 +221,7 @@ const localeUi = z.object({
   thanksWaveSignature: z.string().default(''),
   footerTagline: z.string(),
   langSwitch: z.string(),
-  navPreorder: z.string().default('Pre-order'),
+  navPreorder: z.string().default('Buy now'),
   metaTitle: z.string(),
   metaDescription: z.string(),
 });

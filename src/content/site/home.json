@@ -3,7 +3,7 @@
     "heroKicker": "Environmental intelligence",
     "heroTitle": "The keeper of everything you cherish.",
     "heroSubtitle": "Tali monitors the environment around your wine, cigars and other delicate collections — precisely, around the clock and in realtime. Track and make sense of temperature, humidity, vibration and light.",
-    "heroCtaPrimary": "Pre-order now",
+    "heroCtaPrimary": "Buy now",
     "heroCtaSecondary": "See how it works",
     "heroCtaFilm": "Watch the film",
     "heroImageAlt": "The Tali e-paper display standing on a marble table, showing 17.2°C and 67% humidity for a wine cellar",
@@ -65,13 +65,13 @@
     "filmCaption": "See why sommeliers and enthusiasts trust Tali with the collections they cherish.",
     "pricingKicker": "The edition",
     "pricingTitle": "Founders Series, our limited edition",
-    "pricingNote": "Pre-order yours now and be the first to own it. A marked first batch that ships before any other edition. $135 is an introductory launch price, and it includes 16% IVA and shipping within Mexico.",
+    "pricingNote": "Buy yours now and be the first to own it. A marked first batch that ships before any other edition. $135 is an introductory launch price, and it includes 16% IVA and shipping within Mexico.",
     "shipKicker": "The editions",
     "shipTitle": "Editions + pricing",
     "shipBatches": [
       {
         "batch": "Founders Limited Edition",
-        "window": "Pre-order now — 100 units, ships Sep – Dec 26",
+        "window": "Available now — 100 units, ships Sep – Dec 26",
         "edition": "24 months of Cloud Pro included",
         "price": "$135.00 USD"
       },
@@ -83,7 +83,7 @@
       },
       {
         "batch": "Standard Edition",
-        "window": "No pre-orders — est. Q2–Q3 27",
+        "window": "Not on sale yet — est. Q2–Q3 27",
         "edition": "6 months of Cloud Pro included",
         "price": "Coming soon"
       }
@@ -108,7 +108,7 @@
     "heroKicker": "Inteligencia ambiental",
     "heroTitle": "El guardián de todo lo que atesoras.",
     "heroSubtitle": "Tali vigila el entorno de tus vinos, puros y otras colecciones delicadas — con precisión, a toda hora y en tiempo real. Registra y da sentido a la temperatura, la humedad, la vibración y la luz.",
-    "heroCtaPrimary": "Pre-ordena ahora",
+    "heroCtaPrimary": "Compra ahora",
     "heroCtaSecondary": "Cómo funciona",
     "heroCtaFilm": "Ve el video",
     "heroImageAlt": "La pantalla Tali de tinta electrónica sobre una mesa de mármol, mostrando 17.2°C y 67% de humedad de una cava",
@@ -170,13 +170,13 @@
     "filmCaption": "Descubre por qué sommeliers y aficionados le confían a Tali las colecciones que atesoran.",
     "pricingKicker": "La edición",
     "pricingTitle": "Founders Series, nuestra edición limitada",
-    "pricingNote": "Pre-ordena la tuya ahora y sé de los primeros en tenerla. Un primer lote marcado que se envía antes que cualquier otra edición. $135 USD es un precio introductorio de lanzamiento, e incluye 16% de IVA y envío dentro de México.",
+    "pricingNote": "Compra la tuya ahora y sé de los primeros en tenerla. Un primer lote marcado que se envía antes que cualquier otra edición. $135 USD es un precio introductorio de lanzamiento, e incluye 16% de IVA y envío dentro de México.",
     "shipKicker": "Las ediciones",
     "shipTitle": "Ediciones + precios",
     "shipBatches": [
       {
         "batch": "Founders Limited Edition",
-        "window": "Pre-ordena ahora — 100 unidades, se envía Sep – Dic 26",
+        "window": "Disponible ahora — 100 unidades, se envía Sep – Dic 26",
         "edition": "24 meses de Cloud Pro incluidos",
         "price": "$135.00 USD"
       },
@@ -188,7 +188,7 @@
       },
       {
         "batch": "Standard Edition",
-        "window": "Sin pre-órdenes — est. Q2–Q3 27",
+        "window": "Aún no a la venta — est. Q2–Q3 27",
         "edition": "6 meses de Cloud Pro incluidos",
         "price": "Próximamente"
       }

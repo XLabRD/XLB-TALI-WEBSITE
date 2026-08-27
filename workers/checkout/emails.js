@@ -38,7 +38,7 @@ const COPY = {
     en: {
       kicker: 'Order confirmed',
       title: (o) => `Thank you${o.name ? `, ${o.name.split(' ')[0]}` : ''}.`,
-      preheader: 'Your Founder Edition pre-order is confirmed.',
+      preheader: 'Your Founder Edition order is confirmed.',
       body: `We've received your payment and your Founder Edition is now being prepared. You can follow your order anytime — the button below always shows its latest status.`,
       item: 'Tali Founders Edition + Puk',
       cta: 'View your order status',
@@ -47,7 +47,7 @@ const COPY = {
     es: {
       kicker: 'Pedido confirmado',
       title: (o) => `Gracias${o.name ? `, ${o.name.split(' ')[0]}` : ''}.`,
-      preheader: 'Tu pre-orden de la Edición Founder está confirmada.',
+      preheader: 'Tu pedido de la Edición Founder está confirmado.',
       body: `Recibimos tu pago y tu Edición Founder ya está en preparación. Puedes seguir tu pedido cuando quieras — el botón de abajo siempre muestra su estado más reciente.`,
       item: 'Tali Edición Founders + Puk',
       cta: 'Ver el estado de tu pedido',
