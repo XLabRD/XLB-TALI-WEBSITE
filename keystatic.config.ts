@@ -215,6 +215,27 @@ const uiLocale = (label: string) =>
       footerTagline: fields.text({ label: 'Footer tagline' }),
       langSwitch: fields.text({ label: 'Language switch label' }),
       navPreorder: fields.text({ label: 'Nav: buy button' }),
+      trackTitle: fields.text({ label: 'Track: title' }),
+      trackLead: fields.text({ label: 'Track: lead line' }),
+      trackNoNumber: fields.text({
+        label: 'Track: why there is no tracking number',
+        multiline: true,
+      }),
+      trackPreparing: fields.text({ label: 'Track: order not dispatched yet' }),
+      trackCanceled: fields.text({
+        label: 'Track: canceled order',
+        description: '{email} is replaced with the contact email.',
+      }),
+      trackOrderLabel: fields.text({ label: 'Track: order-number label' }),
+      trackAddressLabel: fields.text({ label: 'Track: address label' }),
+      trackUnit: fields.text({
+        label: 'Track: unit line',
+        description: '{series} is Founders or Signature, {n} the unit number.',
+      }),
+      trackHelp: fields.text({
+        label: 'Track: what to do if it never arrives',
+        description: '{email} is replaced with the contact email.',
+      }),
       metaTitle: fields.text({ label: 'Meta title' }),
       metaDescription: fields.text({ label: 'Meta description', multiline: true }),
     },

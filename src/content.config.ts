@@ -222,6 +222,26 @@ const localeUi = z.object({
   footerTagline: z.string(),
   langSwitch: z.string(),
   navPreorder: z.string().default('Buy now'),
+  // Local same-day delivery page (DEC-30) — /track/ + /es/track/.
+  trackTitle: z.string().default('Out for delivery'),
+  trackLead: z.string().default('A local courier is bringing your Tali to you today.'),
+  trackNoNumber: z
+    .string()
+    .default(
+      "There's no tracking number to follow — this is a same-day hand delivery, not a carrier shipment."
+    ),
+  trackPreparing: z
+    .string()
+    .default("We're preparing your order. You'll get an email the moment it's on its way."),
+  trackCanceled: z
+    .string()
+    .default('This order was canceled. Write to us at {email} if that\'s unexpected.'),
+  trackOrderLabel: z.string().default('Order'),
+  trackAddressLabel: z.string().default('Delivering to'),
+  trackUnit: z.string().default('{series} #{n}'),
+  trackHelp: z
+    .string()
+    .default("Not there by the end of the day? Write to us at {email} and we'll chase it."),
   metaTitle: z.string(),
   metaDescription: z.string(),
 });

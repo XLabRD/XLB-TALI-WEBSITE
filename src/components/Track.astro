@@ -1,0 +1,231 @@
+---
+// Local same-day delivery page (DEC-30).
+//
+// Founders units inside Mexico go out with a local courier who carries no
+// carrier tracking number and delivers the same day the order is marked
+// Shipped. There is nothing to "track" in the parcel-carrier sense, so this
+// page exists to say that plainly — an order with no tracking number should
+// read as normal, not as something that went missing.
+//
+// It is reached through the machinery that already exists: paste this page's
+// URL into the order row's `Tracking URL` in Notion and it becomes the
+// "Track your shipment" button on both /thanks/ and the shipped email, with
+// no pipeline changes at all.
+//
+//   https://tali.my/track/                      — generic, nothing to copy
+//   https://tali.my/track/?session_id=cs_live_…  — personalized (Session ID
+//                                                  is on the same Notion row)
+//
+// Both forms work, so a forgotten ID degrades to the generic message instead
+// of a broken link in a buyer's inbox. Unlisted and noindex like /thanks/,
+// but public by design: the buyer must be able to open it from their email.
+import { getEntry } from 'astro:content';
+import Base from '../layouts/Base.astro';
+
+interface Props {
+  locale: 'en' | 'es';
+}
+const { locale } = Astro.props;
+const settings = (await getEntry('site', 'settings'))!.data;
+const ui = (await getEntry('ui', 'ui'))!.data[locale];
+const homePath = locale === 'en' ? '/' : '/es/';
+const altPath = locale === 'en' ? '/es/track/' : '/track/';
+const endpoint = (settings.checkoutEndpoint || '').replace(/\/+$/, '');
+const email = settings.contactEmail;
+// {email} becomes a real mailto link rather than bare text.
+const help = ui.trackHelp.split('{email}');
+const canceled = ui.trackCanceled.split('{email}');
+---
+
+<Base
+  locale={locale}
+  title={`${ui.trackTitle} — Tali`}
+  description={ui.trackLead}
+  altPath={altPath}
+>
+  <meta name="robots" content="noindex" slot="head" />
+  <main class="track" data-endpoint={endpoint}>
+    <a href={homePath}>
+      <img class="track__logo" src="/images/tali-logo.png" alt="Tali" height="34" />
+    </a>
+
+    {/* Out for delivery is the default: the link only exists on an order
+        staff have already dispatched, so it is what nearly every visitor
+        should see — including when the worker can't be reached. */}
+    <div data-state="shipped">
+      <h1 class="track__title">{ui.trackTitle}</h1>
+      <p class="track__lead">{ui.trackLead}</p>
+      <p class="track__note">{ui.trackNoNumber}</p>
+    </div>
+
+    <div data-state="preparing" hidden>
+      <h1 class="track__title">{ui.trackTitle}</h1>
+      <p class="track__lead">{ui.trackPreparing}</p>
+    </div>
+
+    <div data-state="canceled" hidden>
+      <h1 class="track__title">{ui.trackTitle}</h1>
+      <p class="track__lead">
+        {canceled[0]}<a href={`mailto:${email}`}>{email}</a>{canceled[1]}
+      </p>
+    </div>
+
+    {/* Only filled in when a session_id resolves; the generic link shows
+        nothing here rather than empty labels. */}
+    <dl class="track__details" hidden>
+      <div class="track__row" data-row="order" hidden>
+        <dt>{ui.trackOrderLabel}</dt>
+        <dd class="track__order"></dd>
+      </div>
+      <div class="track__row" data-row="unit" hidden>
+        <dt>Tali</dt>
+        <dd class="track__unit" data-template={ui.trackUnit}></dd>
+      </div>
+      <div class="track__row" data-row="address" hidden>
+        <dt>{ui.trackAddressLabel}</dt>
+        <dd class="track__address"></dd>
+      </div>
+    </dl>
+
+    <p class="track__help">
+      {help[0]}<a href={`mailto:${email}`}>{email}</a>{help[1]}
+    </p>
+    <a class="track__site" href={homePath}>tali.my</a>
+  </main>
+</Base>
+
+<script>
+  const main = document.querySelector<HTMLElement>('.track')!;
+  const endpoint = main.dataset.endpoint;
+  const sessionId = new URLSearchParams(location.search).get('session_id');
+
+  const show = (state: string) => {
+    main.querySelectorAll<HTMLElement>('[data-state]').forEach((el) => {
+      el.hidden = el.dataset.state !== state;
+    });
+  };
+  const fill = (row: string, selector: string, value: string) => {
+    const el = main.querySelector<HTMLElement>(selector)!;
+    el.textContent = value;
+    main.querySelector<HTMLElement>(`[data-row="${row}"]`)!.hidden = false;
+    main.querySelector<HTMLElement>('.track__details')!.hidden = false;
+  };
+
+  if (endpoint && sessionId) {
+    fetch(`${endpoint}/session-status?session_id=${encodeURIComponent(sessionId)}`)
+      .then((r) => (r.ok ? r.json() : Promise.reject()))
+      .then((s) => {
+        // Tolerate both spellings of canceled, and treat anything unknown as
+        // still-preparing rather than claiming a courier has it.
+        if (/^cancell?ed$/.test(s.order_status ?? '')) show('canceled');
+        else if (s.order_status !== 'shipped') show('preparing');
+
+        if (s.order_number) fill('order', '.track__order', s.order_number);
+        if (s.address) fill('address', '.track__address', s.address);
+        if (s.wave && s.position) {
+          const unit = main.querySelector<HTMLElement>('.track__unit')!;
+          fill(
+            'unit',
+            '.track__unit',
+            (unit.dataset.template || '')
+              .replace('{series}', s.wave === 'Signature' ? 'Signature' : 'Founders')
+              .replace('{n}', String(s.position))
+          );
+        }
+      })
+      // Worker unreachable: the default out-for-delivery message is the right
+      // thing to leave on screen, since the link only exists once dispatched.
+      .catch(() => {});
+  }
+</script>
+
+<style>
+  .track {
+    max-width: 34rem;
+    margin: 0 auto;
+    padding: clamp(3rem, 10vh, 6rem) var(--gutter) 4rem;
+    text-align: center;
+  }
+  .track__logo {
+    height: 34px;
+    width: auto;
+    margin-bottom: 2.5rem;
+  }
+  .track__title {
+    font-family: var(--display);
+    font-size: clamp(2rem, 6vw, 2.75rem);
+    font-weight: 400;
+    line-height: 1.1;
+    color: var(--text);
+    margin: 0 0 1rem;
+  }
+  .track__lead {
+    font-size: 1.05rem;
+    line-height: 1.6;
+    color: var(--text);
+    margin: 0 auto;
+    max-width: 28rem;
+  }
+  .track__note {
+    font-size: 0.9rem;
+    line-height: 1.6;
+    color: var(--text-dim);
+    margin: 1rem auto 0;
+    max-width: 28rem;
+  }
+  .track__details {
+    display: grid;
+    gap: 1px;
+    margin: 2.5rem 0 0;
+    background: var(--line);
+    border: 1px solid var(--line);
+    border-radius: 12px;
+    overflow: hidden;
+    text-align: left;
+  }
+  .track__row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.25rem 1rem;
+    justify-content: space-between;
+    align-items: baseline;
+    padding: 0.9rem 1.1rem;
+    background: var(--surface);
+  }
+  .track__row dt {
+    font-family: var(--mono);
+    font-size: 0.68rem;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--text-dim);
+  }
+  .track__row dd {
+    margin: 0;
+    font-size: 0.95rem;
+    color: var(--text);
+    text-align: right;
+  }
+  .track__help {
+    font-size: 0.9rem;
+    line-height: 1.6;
+    color: var(--text-dim);
+    margin: 2.5rem auto 0;
+    max-width: 28rem;
+  }
+  .track__help a,
+  .track__lead a {
+    color: var(--accent);
+  }
+  .track__site {
+    display: inline-block;
+    margin-top: 3rem;
+    font-family: var(--mono);
+    font-size: 0.72rem;
+    letter-spacing: 0.1em;
+    color: var(--text-dim);
+    text-decoration: none;
+  }
+  .track__site:hover {
+    color: var(--accent);
+  }
+</style>

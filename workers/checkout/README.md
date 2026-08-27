@@ -204,6 +204,37 @@ Three things it can't do, printed at the end: `wrangler deploy`, commit+push,
 and **rebuild the Payment Link** — `orderUrl` still points at a link built on
 the archived price, and it's the silent no-JS fallback.
 
+## Local same-day delivery (DEC-30)
+
+Founders units inside Mexico go out with a local courier: no carrier tracking
+number, delivered the same day the order is marked Shipped. `Tracking URL`
+still wants a link, and an empty one hides the "Track your shipment" button on
+both `/thanks/` and the shipped email — so point it at our own page instead:
+
+```
+https://tali.my/track/                        generic, nothing to copy
+https://tali.my/track/?session_id=cs_live_…   personalized (Session ID is on
+                                              the same Notion row)
+https://tali.my/es/track/                     Spanish — match the row's Locale
+```
+
+Both forms work, so a forgotten session ID degrades to the generic message
+rather than a broken link in a buyer's inbox. No pipeline changes: the field
+already feeds the button in both places.
+
+The page reads `/session-status`, which now also returns `order_number` and
+`address` for it. That is the same trust boundary as the `customer_email` it
+already returned — an unguessable session ID that only reached the buyer's own
+inbox — but it does mean a forwarded link shows a shipping address. Send the
+plain URL when that matters.
+
+Wording is per-status: `Shipped` reads as out-for-delivery-today (and is the
+fallback when the worker can't be reached, since the link only exists on a
+dispatched order), anything else reads as still-being-prepared, and `Canceled`
+says so. There is deliberately **no Delivered state** — that would need a new
+Notion select option; the page instead tells the buyer to write in if it
+hasn't arrived by end of day.
+
 ## Traffic figures (DEC-29)
 
 The site is static and carries no analytics script, so this worker is the only

@@ -4,7 +4,9 @@
 // consumed by Pricing.astro and ThankYou.astro:
 //
 //   POST /create-checkout-session  { locale: "en" | "es" } → { clientSecret }
-//   GET  /session-status?session_id=cs_… → { status, payment_status, customer_email, receipt_url }
+//   GET  /session-status?session_id=cs_… → { status, payment_status, customer_email,
+//                           receipt_url, order_status, tracking_url, position, wave,
+//                           order_number, address }
 //   GET  /price → { unit_amount, currency }   (live price so the site never shows a stale figure)
 //
 // Deploy: see README.md in this directory. No npm dependencies — talks to the
@@ -147,6 +149,11 @@ async function sessionStatus(url, env, cors) {
   // card's forecast, which can shift under a buyer mid-checkout.
   let position = null;
   let wave = null;
+  // For /track/ (DEC-30): the human order number and where the courier is
+  // headed. Same trust boundary as customer_email below — an unguessable
+  // session_id that only reached the buyer's own inbox.
+  let orderNumber = null;
+  let address = null;
   if (env.NOTION_TOKEN && env.NOTION_DATABASE_ID) {
     try {
       const page = await findPageBySessionId(env, session.id);
@@ -156,6 +163,8 @@ async function sessionStatus(url, env, cors) {
         trackingUrl = order.tracking || trackingUrl;
         position = order.position;
         wave = order.wave;
+        orderNumber = order.orderNumber || null;
+        address = order.address || null;
       }
     } catch (err) {
       console.error('notion status lookup failed:', err.message);
@@ -172,6 +181,8 @@ async function sessionStatus(url, env, cors) {
       tracking_url: trackingUrl,
       position,
       wave,
+      order_number: orderNumber,
+      address,
     },
     200,
     cors

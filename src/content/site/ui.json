@@ -38,7 +38,16 @@
     "metaDescription": "Tali monitors temperature, humidity, vibration and light with laboratory precision. An e-paper display, discreet wireless Puk sensors, and an app — made for serious collections.",
     "thanksWave1": "You're Founders #{n} — Wave 1, shipping September 2026.",
     "thanksWave2": "You're Founders #{n} — Wave 2, shipping October–December 2026.",
-    "thanksWaveSignature": "You're Signature #{n} — shipping February–April 2027."
+    "thanksWaveSignature": "You're Signature #{n} — shipping February–April 2027.",
+    "trackTitle": "Out for delivery",
+    "trackLead": "A local courier is bringing your Tali to you today.",
+    "trackNoNumber": "There's no tracking number to follow — this is a same-day hand delivery, not a carrier shipment.",
+    "trackPreparing": "We're preparing your order. You'll get an email the moment it's on its way.",
+    "trackCanceled": "This order was canceled. Write to us at {email} if that's unexpected.",
+    "trackOrderLabel": "Order",
+    "trackAddressLabel": "Delivering to",
+    "trackUnit": "{series} #{n}",
+    "trackHelp": "Not there by the end of the day? Write to us at {email} and we'll chase it."
   },
   "es": {
     "navSystem": "Sistema",
@@ -79,6 +88,15 @@
     "metaDescription": "Tali monitorea temperatura, humedad, vibración y luz con precisión de laboratorio. Una pantalla de tinta electrónica, sensores inalámbricos Puk y una app — para colecciones serias.",
     "thanksWave1": "Eres Founders #{n} — Wave 1, se envía en septiembre 2026.",
     "thanksWave2": "Eres Founders #{n} — Wave 2, se envía de octubre a diciembre 2026.",
-    "thanksWaveSignature": "Eres Signature #{n} — se envía de febrero a abril 2027."
+    "thanksWaveSignature": "Eres Signature #{n} — se envía de febrero a abril 2027.",
+    "trackTitle": "En reparto",
+    "trackLead": "Un mensajero local te lleva tu Tali hoy.",
+    "trackNoNumber": "No hay número de rastreo que seguir — es una entrega en mano el mismo día, no un envío de paquetería.",
+    "trackPreparing": "Estamos preparando tu pedido. Te escribiremos en cuanto vaya en camino.",
+    "trackCanceled": "Este pedido fue cancelado. Escríbenos a {email} si no lo esperabas.",
+    "trackOrderLabel": "Pedido",
+    "trackAddressLabel": "Entregando en",
+    "trackUnit": "{series} #{n}",
+    "trackHelp": "¿No llegó al final del día? Escríbenos a {email} y lo seguimos."
   }
 }

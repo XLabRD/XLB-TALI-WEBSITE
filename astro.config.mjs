@@ -14,14 +14,16 @@ export default defineConfig({
   integrations: [
     sitemap({
       // /hello is the device-QR onboarding page (DEC-23), /thanks the
-      // post-checkout return page (DEC-21) and /stats the private traffic
-      // page (DEC-29) — public but unlisted.
+      // post-checkout return page (DEC-21), /track the local-delivery page
+      // (DEC-30) and /stats the private traffic page (DEC-29) — public but
+      // unlisted.
       filter: (page) => {
         const path = new URL(page).pathname;
         return (
           !path.startsWith('/hello') &&
           !path.startsWith('/stats') &&
-          !path.includes('/thanks')
+          !path.includes('/thanks') &&
+          !path.includes('/track')
         );
       },
       i18n: {

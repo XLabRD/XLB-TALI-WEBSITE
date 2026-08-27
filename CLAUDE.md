@@ -52,6 +52,11 @@ in code with `TODO(DEC-n)`; find them with `grep -rn "TODO(DEC-" src/ public/ *.
   Payment Link (`orderUrl`), then `#contact`. Post-payment return pages at
   `/thanks/` + `/es/thanks/` (noindex, sitemap-excluded) query the worker's
   `/session-status` to distinguish paid / OXXO-voucher-pending / incomplete.
+- **Local delivery** (DEC-30): `/track/` + `/es/track/` (noindex,
+  sitemap-excluded, public) explain that a same-day courier carries no tracking
+  number. Staff paste the page's URL into the Notion row's `Tracking URL`, which
+  already drives the "Track your shipment" button on `/thanks/` and in the
+  shipped email. Works bare or with `?session_id=` for a personalized view.
 - **Traffic figures** (DEC-29): the worker counts page loads (`/inventory`) and
   Buy-now presses (`/create-checkout-session`) in KV as a side effect of calls
   the site already makes — no analytics script anywhere. `src/pages/stats.astro`
