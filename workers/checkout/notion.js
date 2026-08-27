@@ -74,7 +74,11 @@ export function createOrderPage(env, o) {
       // Pre-filled with the buyer's delivery page (DEC-30) so a row is never
       // missing a link. Only set at creation, so a carrier link pasted later
       // is never overwritten. Abandoned rows pass nothing and stay empty.
-      'Tracking URL': { url: o.tracking || null },
+      //
+      // Guarded because Notion rejects a malformed URL for the WHOLE page:
+      // this value is assembled from env.SITE, and a misconfigured SITE must
+      // cost an empty field, never the order row itself.
+      'Tracking URL': { url: /^https?:\/\//.test(o.tracking || '') ? o.tracking : null },
       'Session ID': text(o.sessionId),
       'Payment Intent': text(o.paymentIntent),
       Receipt: { url: o.receiptUrl || null },
