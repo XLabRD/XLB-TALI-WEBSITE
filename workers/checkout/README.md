@@ -209,7 +209,16 @@ the archived price, and it's the silent no-JS fallback.
 Founders units inside Mexico go out with a local courier: no carrier tracking
 number, delivered the same day the order is marked Shipped. `Tracking URL`
 still wants a link, and an empty one hides the "Track your shipment" button on
-both `/thanks/` and the shipped email — so point it at our own page instead:
+both `/thanks/` and the shipped email — so it points at our own page instead.
+
+**The worker now fills it in automatically** when it creates the order row, with
+the buyer's locale baked in. Nothing to paste: while the row is `Received` the
+page reads "preparing your order", and it flips to the out-for-delivery message
+the moment you set `Shipped`. It is written **only at creation**, so a carrier
+link pasted later is never overwritten — when a parcel carrier does carry the
+order, replace the field before flipping to Shipped and the buyer gets the
+carrier's link instead. Abandoned rows are left empty. Rows created before this
+shipped need the URL pasted by hand:
 
 ```
 https://tali.my/track/                        generic, nothing to copy

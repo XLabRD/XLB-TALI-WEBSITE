@@ -71,6 +71,10 @@ export function createOrderPage(env, o) {
       ...(o.position ? { Position: { number: o.position } } : {}),
       ...(o.wave ? { Wave: { select: { name: o.wave } } } : {}),
       Locale: { select: { name: o.locale } },
+      // Pre-filled with the buyer's delivery page (DEC-30) so a row is never
+      // missing a link. Only set at creation, so a carrier link pasted later
+      // is never overwritten. Abandoned rows pass nothing and stay empty.
+      'Tracking URL': { url: o.tracking || null },
       'Session ID': text(o.sessionId),
       'Payment Intent': text(o.paymentIntent),
       Receipt: { url: o.receiptUrl || null },

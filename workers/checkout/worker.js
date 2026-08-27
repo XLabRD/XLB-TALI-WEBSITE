@@ -208,6 +208,20 @@ async function verifyStripeSignature(payload, header, secret) {
   return v1s.includes(hex);
 }
 
+/**
+ * The buyer's own delivery page (DEC-30). Pre-filled into the order row's
+ * Tracking URL at creation, so every order has a working link from the
+ * moment it is paid: while the row is Received the page reads "preparing
+ * your order", and it becomes the out-for-delivery message the instant
+ * staff flip the row to Shipped.
+ *
+ * When a real carrier does carry the parcel, staff replace the field with
+ * the carrier's link before flipping to Shipped — this is only ever the
+ * default, and nothing overwrites it afterwards.
+ */
+const trackUrl = (env, locale, sessionId) =>
+  `${env.SITE || 'https://tali.my'}${locale === 'es' ? '/es' : ''}/track/?session_id=${sessionId}`;
+
 function formatAddress(details) {
   const a = details?.address ?? {};
   return [a.line1, a.line2, a.city, a.state, a.postal_code, a.country]
@@ -300,10 +314,10 @@ async function handleStripeWebhook(request, env, cors, ctx) {
       receiptUrl: pi.latest_charge?.receipt_url ?? null,
       receiptNumber: pi.latest_charge?.receipt_number ?? '',
       paidAt: new Date(event.created * 1000).toISOString(),
-      tracking: '',
       labelUrl: `${new URL(request.url).origin}/label?session_id=${session.id}&key=${env.NOTION_WEBHOOK_KEY}`,
     };
     order.orderNumber = order.receiptNumber;
+    order.tracking = trackUrl(env, order.locale, session.id);
     // Sequence + wave, fixed now and never recomputed (DEC-27). Counted
     // BEFORE this row exists, so this order is the next unit. Best-effort:
     // a Notion hiccup here must not cost us the order row itself.
