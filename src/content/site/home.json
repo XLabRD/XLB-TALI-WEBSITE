@@ -62,16 +62,16 @@
     "featuresTitle": "Every variable that matters, measured precisely.",
     "filmKicker": "The film",
     "filmTitle": "See Tali in action.",
-    "filmCaption": "See why sommeliers and enthusiasts trust Tali with the collections they cherish.",
+    "filmCaption": "A closer look at Tali, and the collections it was built to watch.",
     "pricingKicker": "The edition",
     "pricingTitle": "Founders Series, our limited edition",
-    "pricingNote": "Buy yours now and be the first to own it. A marked first batch that ships before any other edition. $135 is an introductory launch price, and it includes 16% IVA and shipping within Mexico.",
+    "pricingNote": "Buy yours now and be the first to own it. A marked first batch that ships before any other edition. $135 is an introductory launch price, and it includes 16% IVA and shipping within Mexico. If it isn't for you, send it back within 30 days for a full refund.",
     "shipKicker": "The editions",
     "shipTitle": "Editions + pricing",
     "shipBatches": [
       {
         "batch": "Founders Limited Edition",
-        "window": "Available now — 100 units, ships Sep – Dec 26",
+        "window": "Available now — 100 units, first come, first served",
         "edition": "24 months of Cloud Pro included",
         "price": "$135.00 USD"
       },
@@ -96,9 +96,9 @@
     "shipNote": "Where is it available?",
     "shipNoteHref": "#faq-where-available",
     "shipFinePrint": "*Orders are shipped in the order they are received.\nAll prices include 16% IVA and shipping within Mexico.\nIntroductory launch pricing — subject to change.",
-    "heroTrust": "The best and most demanding sommeliers and enthusiasts trust Tali to watch their collections.",
+    "heroTrust": "",
     "waves": {
-      "wave1": "Wave 1 — ships September 2026",
+      "wave1": "Wave 1 — available now, first come, first served",
       "wave2": "Wave 2 — ships October–December 2026",
       "signature": "Signature Series — ships February–April 2027",
       "remaining": "Only {n} left in this wave"
@@ -167,16 +167,16 @@
     "featuresTitle": "Cada variable que importa, medida con precisión.",
     "filmKicker": "El video",
     "filmTitle": "Ve a Tali en acción.",
-    "filmCaption": "Descubre por qué sommeliers y aficionados le confían a Tali las colecciones que atesoran.",
+    "filmCaption": "Una mirada de cerca a Tali y a las colecciones para las que fue creado.",
     "pricingKicker": "La edición",
     "pricingTitle": "Founders Series, nuestra edición limitada",
-    "pricingNote": "Compra la tuya ahora y sé de los primeros en tenerla. Un primer lote marcado que se envía antes que cualquier otra edición. $135 USD es un precio introductorio de lanzamiento, e incluye 16% de IVA y envío dentro de México.",
+    "pricingNote": "Compra la tuya ahora y sé de los primeros en tenerla. Un primer lote marcado que se envía antes que cualquier otra edición. $135 USD es un precio introductorio de lanzamiento, e incluye 16% de IVA y envío dentro de México. Si no es para ti, devuélvela en 30 días y te reembolsamos por completo.",
     "shipKicker": "Las ediciones",
     "shipTitle": "Ediciones + precios",
     "shipBatches": [
       {
         "batch": "Founders Limited Edition",
-        "window": "Disponible ahora — 100 unidades, se envía Sep – Dic 26",
+        "window": "Disponible ahora — 100 unidades, por orden de llegada",
         "edition": "24 meses de Cloud Pro incluidos",
         "price": "$135.00 USD"
       },
@@ -201,9 +201,9 @@
     "shipNote": "¿Dónde está disponible?",
     "shipNoteHref": "#faq-where-available",
     "shipFinePrint": "*Los pedidos se envían en el orden en que se reciben.\nTodos los precios incluyen 16% de IVA y envío dentro de México.\nPrecio introductorio de lanzamiento — sujeto a cambio.",
-    "heroTrust": "Los mejores y más exigentes sommeliers y aficionados confían en Tali para vigilar sus colecciones.",
+    "heroTrust": "",
     "waves": {
-      "wave1": "Wave 1 — se envía en septiembre 2026",
+      "wave1": "Wave 1 — disponible ahora, por orden de llegada",
       "wave2": "Wave 2 — se envía de octubre a diciembre 2026",
       "signature": "Signature Series — se envía de febrero a abril 2027",
       "remaining": "Solo quedan {n} en esta wave"
