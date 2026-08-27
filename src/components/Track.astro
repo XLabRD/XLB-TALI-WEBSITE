@@ -49,9 +49,11 @@ const canceled = ui.trackCanceled.split('{email}');
       <img class="track__logo" src="/images/tali-logo.png" alt="Tali" height="34" />
     </a>
 
-    {/* Out for delivery is the default: the link only exists on an order
-        staff have already dispatched, so it is what nearly every visitor
-        should see — including when the worker can't be reached.
+    {/* Out for delivery is the markup default, which is right for the bare
+        link staff paste by hand when dispatching. It is NOT right for a link
+        carrying a session id: since the URL is pre-filled at order creation
+        (DEC-30) that link exists long before dispatch, so the script drops to
+        the conservative message until the lookup says otherwise.
 
         Two blocks carry data-state="shipped" — this heading and the closing
         note below — because show() toggles every element with the state, so
@@ -122,7 +124,17 @@ const canceled = ui.trackCanceled.split('{email}');
 <script>
   const main = document.querySelector<HTMLElement>('.track')!;
   const endpoint = main.dataset.endpoint;
-  const sessionId = new URLSearchParams(location.search).get('session_id');
+  // session_id is the canonical key, but these links get retyped and
+  // hand-edited, and a near-miss like ?sessionid= used to look up nothing at
+  // all — silently leaving the out-for-delivery message on an order that had
+  // not shipped. Accept the shapes people actually paste.
+  let sessionId = '';
+  for (const [k, v] of new URLSearchParams(location.search)) {
+    if (k.toLowerCase().replace(/[-_]/g, '') === 'sessionid' && v) {
+      sessionId = v;
+      break;
+    }
+  }
 
   const show = (state: string) => {
     main.querySelectorAll<HTMLElement>('[data-state]').forEach((el) => {
@@ -137,13 +149,17 @@ const canceled = ui.trackCanceled.split('{email}');
   };
 
   if (endpoint && sessionId) {
+    // Nothing is known yet, and the optimistic message is the one that must
+    // never be shown wrongly — so start conservative and let the lookup
+    // promote it.
+    show('preparing');
     fetch(`${endpoint}/session-status?session_id=${encodeURIComponent(sessionId)}`)
       .then((r) => (r.ok ? r.json() : Promise.reject()))
       .then((s) => {
         // Tolerate both spellings of canceled, and treat anything unknown as
         // still-preparing rather than claiming a courier has it.
         if (/^cancell?ed$/.test(s.order_status ?? '')) show('canceled');
-        else if (s.order_status !== 'shipped') show('preparing');
+        else if (s.order_status === 'shipped') show('shipped');
 
         if (s.order_number) fill('order', '.track__order', s.order_number);
         if (s.address) fill('address', '.track__address', s.address);
@@ -158,8 +174,9 @@ const canceled = ui.trackCanceled.split('{email}');
           );
         }
       })
-      // Worker unreachable: the default out-for-delivery message is the right
-      // thing to leave on screen, since the link only exists once dispatched.
+      // Worker unreachable, or an id that resolves to nothing: stay on the
+      // conservative message. Announcing a delivery we cannot confirm is the
+      // one failure mode worth designing against.
       .catch(() => {});
   }
 </script>
