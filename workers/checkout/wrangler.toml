@@ -38,7 +38,8 @@ NOTION_DATABASE_ID = "3aa573dfb66a8042b266e6d6e64d211b"
 # Internal notifications (new order / abandoned cart). Empty = no staff emails.
 STAFF_EMAIL = "xlab@protexa.mx"
 
-# Duplicate-email guard for /notion-webhook.
+# Duplicate-email guard for /notion-webhook, the 60s inventory-count cache,
+# and the traffic counters behind /stats (DEC-29).
 [[kv_namespaces]]
 binding = "ORDERS"
 id = "b075e56a1deb413daba059fdc523fef6"
@@ -48,6 +49,9 @@ id = "b075e56a1deb413daba059fdc523fef6"
 #   NOTION_TOKEN          — ntn_/secret_… internal-integration token
 #   RESEND_API_KEY        — re_… from Resend
 #   NOTION_WEBHOOK_KEY    — shared key in the Notion automation's webhook URL
+#   STATS_KEY             — unlocks GET /stats for the site's /stats page
+#                           (DEC-29). Unset = the route 503s and the page
+#                           stays empty, which is the safe default.
 
 # The secret key is NOT set here — never commit it. After deploying once, run:
 #   npx wrangler secret put STRIPE_SECRET_KEY

@@ -204,6 +204,54 @@ Three things it can't do, printed at the end: `wrangler deploy`, commit+push,
 and **rebuild the Payment Link** — `orderUrl` still points at a link built on
 the archived price, and it's the silent no-JS fallback.
 
+## Traffic figures (DEC-29)
+
+The site is static and carries no analytics script, so this worker is the only
+place that sees traffic — and it already sees all of it: every page load calls
+`/inventory` for the wave line, and every Buy-now press calls
+`/create-checkout-session`. Both routes bump a KV counter as a side effect, so
+counting costs no extra request and no beacon.
+
+Set the key that unlocks the figures, once:
+
+```bash
+openssl rand -hex 24 | tee /dev/tty | npx wrangler secret put STATS_KEY
+npx wrangler deploy
+```
+
+Then open `https://tali.my/stats/?key=<that key>`. The page saves the key in
+`localStorage` and strips it from the URL, so afterwards plain
+`https://tali.my/stats/` works on that device; "Forget key" clears it.
+
+```
+GET /stats?key=…&days=N → { days: [{date, views, clicks}], total, since, orders }
+```
+
+Without `STATS_KEY` the route 503s and the page stays empty — that is the safe
+default, and the reason a stray visitor to `/stats/` learns nothing.
+
+**What the numbers are.** `views` are loads that ran JS and reached
+`/inventory`: crawlers that don't execute scripts never register, and the
+route's 30s browser cache folds a reload burst into one, so it is a floor on
+real traffic. `clicks` are Buy-now presses, counted before the cap check so a
+refused press still registers — the intent was real. `orders` is Notion's
+claimed count, the same figure the cap trusts, and it is all-time rather than
+windowed. Only calls carrying an allowed `Origin` are counted.
+
+**Nothing is ever incremented.** KV has no compare-and-swap, so a
+read-add-write counter loses concurrent hits — measured against this worker,
+ten simultaneous requests recorded two. Each event instead appends its own
+uniquely-named key, which cannot collide, and counting is a `list()` over the
+day's prefix. The daily cron then folds each closed day into a compact month
+map (assigned, not added, so re-running is safe) and advances the lifetime
+total; today is always counted live, so the page is never a day behind.
+
+That makes one KV write per event, which on the Workers **free plan** means the
+1,000-writes-per-day quota is also the counting ceiling — past it, counting
+stops silently while the site keeps working. Check the plan before trusting a
+big day. Reads are cached by KV for up to 60s, so a refresh can lag by about a
+minute; the numbers settle on their own.
+
 ## Going live
 
 Switch `STRIPE_PRICE_ID` to the live price, re-run `npx wrangler deploy`,

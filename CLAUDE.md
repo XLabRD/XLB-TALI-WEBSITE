@@ -52,6 +52,11 @@ in code with `TODO(DEC-n)`; find them with `grep -rn "TODO(DEC-" src/ public/ *.
   Payment Link (`orderUrl`), then `#contact`. Post-payment return pages at
   `/thanks/` + `/es/thanks/` (noindex, sitemap-excluded) query the worker's
   `/session-status` to distinguish paid / OXXO-voucher-pending / incomplete.
+- **Traffic figures** (DEC-29): the worker counts page loads (`/inventory`) and
+  Buy-now presses (`/create-checkout-session`) in KV as a side effect of calls
+  the site already makes — no analytics script anywhere. `src/pages/stats.astro`
+  (`/stats/`, noindex, sitemap-excluded, English-only) reads them back through
+  `/stats?key=…`, gated on the worker's `STATS_KEY` secret.
 
 ## Gotchas
 

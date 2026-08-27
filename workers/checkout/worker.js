@@ -16,6 +16,13 @@
 //   POST /notion-webhook?key=… — Notion automation on Status change → customer
 //                           email (shipped / canceled), deduped via KV
 //
+// Private traffic counters (DEC-29):
+//   GET  /stats?key=…&days=N → { days[], total, since, orders } for /stats on
+//                           the site. The counting itself is a side effect of
+//                           /inventory and /create-checkout-session — see
+//                           stats.js for what each number does and does not
+//                           mean.
+//
 // Cron (DEC-26): a daily scheduled() run keeps the price's MXN
 // currency_option in step with USD/MXN — see fx.js for why that can't be
 // Stripe's job. Schedule in wrangler.toml.
@@ -30,6 +37,7 @@ import {
 } from './notion.js';
 import { sendOrderEmail, sendStaffEmail, sendAlertEmail } from './emails.js';
 import { syncMxnPrice } from './fx.js';
+import { fromSite, readStats, record, rollup } from './stats.js';
 import {
   claimedCount,
   invalidateCount,
@@ -522,6 +530,25 @@ async function inventory(env, cors) {
   });
 }
 
+/**
+ * The numbers behind the site's /stats page. Views and clicks come from the
+ * KV counters; the funnel's last stage is Notion's claimed count, the same
+ * one the cap check trusts — so orders never disagree with inventory.
+ */
+async function handleStats(url, env, cors) {
+  const data = await readStats(env, url.searchParams.get('days'));
+  let orders = null;
+  if (env.NOTION_TOKEN && env.NOTION_DATABASE_ID) {
+    try {
+      orders = await claimedCount(env);
+    } catch (err) {
+      // A Notion outage costs the funnel's last stage, not the whole page.
+      console.error('stats: order count unavailable:', err.message);
+    }
+  }
+  return json({ ...data, orders }, 200, { ...cors, 'Cache-Control': 'no-store' });
+}
+
 async function price(env, cors) {
   // The Founder price is multi-currency: a USD base plus an MXN
   // currency_option, so Mexican cards aren't asked to authorize a foreign
@@ -589,6 +616,15 @@ export default {
   // alert) anyone would look to notice the price has stopped tracking.
   async scheduled(event, env) {
     await runFxSync(env);
+    // Fold yesterday's traffic events into their month map (DEC-29). Separate
+    // try: a rollup failure must not look like an FX failure, and neither
+    // should take the other down.
+    try {
+      const { rolled } = await rollup(env);
+      console.log(`stats: rolled up ${rolled} day-metrics`);
+    } catch (err) {
+      console.error('stats: rollup failed:', err.message);
+    }
   },
 
   async fetch(request, env, ctx) {
@@ -599,6 +635,10 @@ export default {
     const url = new URL(request.url);
     try {
       if (request.method === 'POST' && url.pathname === '/create-checkout-session') {
+        // Counted here rather than inside createSession so a press still
+        // registers when the cap refuses it or Stripe errors — the visitor
+        // pressed Buy either way (DEC-29).
+        if (fromSite(request, env)) record(env, ctx, 'c');
         if (!env.STRIPE_SECRET_KEY || !env.STRIPE_PRICE_ID) {
           return json({ error: 'worker not configured' }, 500, cors);
         }
@@ -611,6 +651,9 @@ export default {
         return await price(env, cors);
       }
       if (request.method === 'GET' && url.pathname === '/inventory') {
+        // Every page load fetches the wave line, so this route doubles as the
+        // impression counter — no beacon script on a static site (DEC-29).
+        if (fromSite(request, env)) record(env, ctx, 'v');
         if (!env.NOTION_TOKEN || !env.NOTION_DATABASE_ID) {
           return json({ error: 'order pipeline not configured' }, 503, cors);
         }
@@ -627,6 +670,15 @@ export default {
           return json({ error: 'order pipeline not configured' }, 503, cors);
         }
         return await handleLabel(url, env, cors);
+      }
+      if (request.method === 'GET' && url.pathname === '/stats') {
+        if (!env.STATS_KEY) {
+          return json({ error: 'stats not configured' }, 503, cors);
+        }
+        if (url.searchParams.get('key') !== env.STATS_KEY) {
+          return json({ error: 'unauthorized' }, 401, cors);
+        }
+        return await handleStats(url, env, cors);
       }
       if (request.method === 'POST' && url.pathname === '/notion-webhook') {
         if (!env.NOTION_WEBHOOK_KEY || !env.NOTION_TOKEN || !env.RESEND_API_KEY) {
