@@ -40,7 +40,7 @@ const canceled = ui.trackCanceled.split('{email}');
 <Base
   locale={locale}
   title={`${ui.trackTitle} — Tali`}
-  description={ui.trackLead}
+  description={ui.trackDelivery}
   altPath={altPath}
 >
   <meta name="robots" content="noindex" slot="head" />
@@ -51,20 +51,37 @@ const canceled = ui.trackCanceled.split('{email}');
 
     {/* Out for delivery is the default: the link only exists on an order
         staff have already dispatched, so it is what nearly every visitor
-        should see — including when the worker can't be reached. */}
+        should see — including when the worker can't be reached.
+
+        Two blocks carry data-state="shipped" — this heading and the closing
+        note below — because show() toggles every element with the state, so
+        the page's head and foot appear and hide together with no extra JS. */}
     <div data-state="shipped">
+      <svg
+        class="track__truck"
+        viewBox="0 0 24 24"
+        fill="none"
+        stroke="currentColor"
+        stroke-width="1.4"
+        stroke-linecap="round"
+        stroke-linejoin="round"
+        aria-hidden="true"
+      >
+        <rect x="1" y="5" width="12" height="10" rx="1.2" />
+        <path d="M13 9h3.7a2 2 0 0 1 1.45.62L20.5 12.1V15H13z" />
+        <circle cx="5.6" cy="17.4" r="2" />
+        <circle cx="17" cy="17.4" r="2" />
+      </svg>
       <h1 class="track__title">{ui.trackTitle}</h1>
-      <p class="track__lead">{ui.trackLead}</p>
-      <p class="track__note">{ui.trackNoNumber}</p>
     </div>
 
     <div data-state="preparing" hidden>
-      <h1 class="track__title">{ui.trackTitle}</h1>
+      <h1 class="track__title">{ui.trackTitlePreparing}</h1>
       <p class="track__lead">{ui.trackPreparing}</p>
     </div>
 
     <div data-state="canceled" hidden>
-      <h1 class="track__title">{ui.trackTitle}</h1>
+      <h1 class="track__title">{ui.trackTitleCanceled}</h1>
       <p class="track__lead">
         {canceled[0]}<a href={`mailto:${email}`}>{email}</a>{canceled[1]}
       </p>
@@ -86,6 +103,13 @@ const canceled = ui.trackCanceled.split('{email}');
         <dd class="track__address"></dd>
       </div>
     </dl>
+
+    {/* The delivery promise closes the page (author's layout), paired with
+        the reason there is no number to follow. */}
+    <div class="track__closing" data-state="shipped">
+      <p class="track__delivery">{ui.trackDelivery}</p>
+      <p class="track__note">{ui.trackNoNumber}</p>
+    </div>
 
     <p class="track__help">
       {help[0]}<a href={`mailto:${email}`}>{email}</a>{help[1]}
@@ -165,6 +189,32 @@ const canceled = ui.trackCanceled.split('{email}');
     color: var(--text);
     margin: 0 auto;
     max-width: 28rem;
+  }
+  .track__truck {
+    display: block;
+    width: clamp(3.25rem, 12vw, 4.25rem);
+    height: auto;
+    margin: 0 auto 1.25rem;
+    color: var(--accent);
+  }
+  .track__closing {
+    margin-top: 2.5rem;
+    padding-top: 2rem;
+    border-top: 1px solid var(--line);
+  }
+  /* On the bare link there is no details block, so the rule would sit
+     directly under the heading with nothing to divide. */
+  .track__details[hidden] + .track__closing {
+    margin-top: 2rem;
+    padding-top: 0;
+    border-top: 0;
+  }
+  .track__delivery {
+    font-size: 1.05rem;
+    line-height: 1.6;
+    color: var(--text);
+    margin: 0 auto;
+    max-width: 30rem;
   }
   .track__note {
     font-size: 0.9rem;

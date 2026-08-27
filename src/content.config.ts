@@ -223,8 +223,15 @@ const localeUi = z.object({
   langSwitch: z.string(),
   navPreorder: z.string().default('Buy now'),
   // Local same-day delivery page (DEC-30) — /track/ + /es/track/.
-  trackTitle: z.string().default('Out for delivery'),
-  trackLead: z.string().default('A local courier is bringing your Tali to you today.'),
+  trackTitle: z.string().default('GREAT NEWS!'),
+  trackTitlePreparing: z.string().default('Preparing your order'),
+  trackTitleCanceled: z.string().default('Order canceled'),
+  // Renders at the FOOT of the page, with trackNoNumber (author's layout).
+  trackDelivery: z
+    .string()
+    .default(
+      'Your order is out for delivery, we will be hand delivering this order to you today before 6pm.'
+    ),
   trackNoNumber: z
     .string()
     .default(

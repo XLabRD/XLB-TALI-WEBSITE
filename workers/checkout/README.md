@@ -228,10 +228,14 @@ already returned — an unguessable session ID that only reached the buyer's own
 inbox — but it does mean a forwarded link shows a shipping address. Send the
 plain URL when that matters.
 
-Wording is per-status: `Shipped` reads as out-for-delivery-today (and is the
-fallback when the worker can't be reached, since the link only exists on a
-dispatched order), anything else reads as still-being-prepared, and `Canceled`
-says so. There is deliberately **no Delivered state** — that would need a new
+Wording is per-status: `Shipped` shows a truck, "GREAT NEWS!", and closes the
+page with the delivery promise — hand-delivered today before 6pm — plus why
+there is no number to follow. It is also the fallback when the worker can't be
+reached, since the link only exists on a dispatched order. Anything else reads
+as still-being-prepared, and `Canceled` says so.
+
+The 6pm promise is fixed copy in `ui.json` (`trackDelivery`), not a per-order
+field — change it there, in both locales, and it changes everywhere. There is deliberately **no Delivered state** — that would need a new
 Notion select option; the page instead tells the buyer to write in if it
 hasn't arrived by end of day.
 
