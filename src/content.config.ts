@@ -70,18 +70,21 @@ const plans = defineCollection({
     featured: z.boolean().default(false),
     // TODO(DEC-17): placeholder pricing — set real figures when decided.
     price: z.string().default('—'),
-    priceNote: z.string().optional(),
     en: z.object({
       name: z.string(),
       tagline: z.string(),
       includes: z.array(z.string()).default([]),
       cta: z.string(),
+      // Fine print under the buy button. Per-locale: it used to be one
+      // shared field holding Spanish, which the bilingual rule forbids.
+      priceNote: z.string().default(''),
     }),
     es: z.object({
       name: z.string(),
       tagline: z.string(),
       includes: z.array(z.string()).default([]),
       cta: z.string(),
+      priceNote: z.string().default(''),
     }),
   }),
 });

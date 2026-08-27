@@ -49,6 +49,7 @@ const planLocale = (label: string) =>
         itemLabel: (props) => props.value ?? 'Item',
       }),
       cta: fields.text({ label: 'Button label' }),
+      priceNote: fields.text({ label: 'Fine print under the button' }),
     },
     { label }
   );
@@ -370,7 +371,6 @@ export default config({
         order: fields.number({ label: 'Order', defaultValue: 99 }),
         featured: fields.checkbox({ label: 'Featured', defaultValue: false }),
         price: fields.text({ label: 'Price (TODO DEC-17)', defaultValue: '—' }),
-        priceNote: fields.text({ label: 'Price note' }),
         en: planLocale('English'),
         es: planLocale('Español'),
       },

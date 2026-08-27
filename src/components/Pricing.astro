@@ -10,6 +10,7 @@ interface Props {
     tagline: string;
     includes: string[];
     cta: string;
+    priceNote?: string;
   }>;
   settings: {
     orderUrl?: string;
@@ -95,6 +96,7 @@ const parseInclude = (item: string): Part[] => {
                   {plan.cta}
                 </a>
               )}
+              {plan.priceNote && <p class="plan__note">{plan.priceNote}</p>}
             </div>
             <ul class="plan__list">
               {plan.includes.map((item) => (
@@ -325,6 +327,14 @@ const parseInclude = (item: string): Part[] => {
     font-size: 2.1rem;
     color: var(--accent);
     margin-block: 0.4rem 0.9rem;
+  }
+  /* Fine print under the CTA: what the price already covers, answered at
+     the moment the buyer is deciding rather than at checkout. */
+  .plan__note {
+    margin: 0.7rem 0 0;
+    font-size: 0.78rem;
+    line-height: 1.5;
+    color: var(--text-dim);
   }
   /* Wave + ship window (DEC-27) — sits between price and CTA, so the ship
      expectation is read before the button, not after the purchase. */

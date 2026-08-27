@@ -3,7 +3,6 @@
   "order": 1,
   "featured": true,
   "price": "$135.00 USD",
-  "priceNote": "IVA y envío incluidos",
   "en": {
     "name": "Founders Limited Edition",
     "tagline": "A limited edition just for you.",
@@ -16,7 +15,8 @@
       "Priority technical support",
       "[30-day money-back guarantee](#faq-money-back)"
     ],
-    "cta": "Buy now"
+    "cta": "Buy now",
+    "priceNote": "* Shipping and taxes within Mexico included"
   },
   "es": {
     "name": "Founders Limited Edition",
@@ -30,6 +30,7 @@
       "Soporte técnico prioritario",
       "[Garantía de devolución de 30 días](#faq-money-back)"
     ],
-    "cta": "Compra ahora"
+    "cta": "Compra ahora",
+    "priceNote": "* Envío e impuestos en México incluidos"
   }
 }
