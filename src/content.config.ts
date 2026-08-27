@@ -227,7 +227,9 @@ const localeUi = z.object({
   trackSubtitle: z.string().default('Your order is out for delivery'),
   trackDelivery: z
     .string()
-    .default('We will be hand delivering this order to you today before 6pm.'),
+    .default(
+      'We will be hand delivering this order specially to you today (or tomorrow) before 6pm.'
+    ),
   trackTitlePreparing: z.string().default('Preparing your order'),
   trackTitleCanceled: z.string().default('Order canceled'),
   // Renders below the order details, at the foot of the page.
