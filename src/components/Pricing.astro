@@ -221,15 +221,31 @@ const parseInclude = (item: string): Part[] => {
     // (2026-07-28: derived pricing removed per author).
     fetch(`${endpoint}/price`)
       .then((r) => (r.ok ? r.json() : Promise.reject()))
-      .then(({ unit_amount, currency }) => {
-        // Always the USD base amount, both locales (2026-08-18): the price
-        // also carries an MXN currency_option, but that is a checkout-time
-        // convenience for Mexican cards — the site quotes one figure, USD.
-        const label = `$${(unit_amount / 100).toFixed(2)} ${currency.toUpperCase()}`;
+      .then(({ unit_amount, currency, mxn }) => {
+        // Spanish quotes pesos (DEC-32, superseding the one-figure rule of
+        // 2026-08-18): we ship only to Mexico, so making a Mexican buyer
+        // convert a USD figure is friction at the worst moment. This is the
+        // exact amount checkout will charge — Stripe's own currency_option,
+        // kept in step by the daily FX cron (DEC-26).
+        //
+        // It is fetched, never committed: a peso literal in content would be
+        // stale by the next morning, and set-price only rewrites USD.
+        const money = (c) => (c / 100).toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g, ',');
+        const usd = `$${money(unit_amount)} ${currency.toUpperCase()}`;
+        const label = locale === 'es' && mxn ? `$${money(mxn)} MXN` : usd;
         document
           .querySelectorAll('.plan__price')
           .forEach((el) => (el.textContent = label));
+        // The editions table quotes the same figure — swap only rows whose
+        // USD amount matches this price, never every row.
+        document
+          .querySelectorAll<HTMLElement>('.row__price[data-usd-cents]')
+          .forEach((el) => {
+            if (el.dataset.usdCents === String(unit_amount)) el.textContent = label;
+          });
       })
+      // No peso figure (cron not yet run) or worker unreachable: the static
+      // USD literal stays, which is correct rather than merely graceful.
       .catch(() => {});
 
     // Wave + ship window for the unit being sold next (DEC-27). The worker

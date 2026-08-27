@@ -579,15 +579,31 @@ async function price(env, cors) {
   // currency_option, so Mexican cards aren't asked to authorize a foreign
   // currency (they decline with currency_not_supported) and OXXO — MXN-only —
   // can appear. Checkout picks the option by buyer location on its own, which
-  // is why createSession passes no `currency`. The site quotes USD in both
-  // locales, so this route deliberately reports only the base amount;
-  // currency_options is expandable and would need expand[] to come back.
-  const p = await stripeRequest(env, 'GET', `/prices/${env.STRIPE_PRICE_ID}`);
-  return json({ unit_amount: p.unit_amount, currency: p.currency }, 200, {
-    ...cors,
-    // let browsers cache briefly — a price change propagates within minutes
-    'Cache-Control': 'public, max-age=300',
-  });
+  // is why createSession passes no `currency`.
+  //
+  // Both figures are reported because the Spanish site quotes pesos (DEC-32).
+  // currency_options is expandable, hence expand[] — and this is deliberately
+  // the ONLY source of the peso figure: the daily cron (DEC-26) keeps it in
+  // step with USD, so a peso literal committed to content would be stale by
+  // the next morning. `mxn` is null until the cron has run against a price.
+  const p = await stripeRequest(
+    env,
+    'GET',
+    `/prices/${env.STRIPE_PRICE_ID}?expand[]=currency_options`
+  );
+  return json(
+    {
+      unit_amount: p.unit_amount,
+      currency: p.currency,
+      mxn: p.currency_options?.mxn?.unit_amount ?? null,
+    },
+    200,
+    {
+      ...cors,
+      // let browsers cache briefly — a price change propagates within minutes
+      'Cache-Control': 'public, max-age=300',
+    }
+  );
 }
 
 // --- Daily FX sync (DEC-26) ------------------------------------------------

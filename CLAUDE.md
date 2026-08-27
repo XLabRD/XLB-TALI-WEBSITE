@@ -57,6 +57,9 @@ in code with `TODO(DEC-n)`; find them with `grep -rn "TODO(DEC-" src/ public/ *.
   number. Staff paste the page's URL into the Notion row's `Tracking URL`, which
   already drives the "Track your shipment" button on `/thanks/` and in the
   shipped email. Works bare or with `?session_id=` for a personalized view.
+- **Currency** (DEC-32): `/` quotes USD, `/es/` quotes **MXN** — fetched at runtime from the
+  worker's `/price` (`currency_options.mxn`, maintained by the daily FX cron). Never commit a
+  peso literal: FX moves daily and `npm run set-price` rewrites USD patterns only.
 - **Traffic figures** (DEC-29): the worker counts page loads (`/inventory`) and
   Buy-now presses (`/create-checkout-session`) in KV as a side effect of calls
   the site already makes — no analytics script anywhere. `src/pages/stats.astro`

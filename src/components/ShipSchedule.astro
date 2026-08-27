@@ -3,6 +3,12 @@ interface Props {
   copy: Record<string, any>;
 }
 const { copy } = Astro.props;
+/** "$135.00 USD" -> "13500". Anything else (e.g. "Coming soon") -> undefined. */
+const usdCents = (value?: string) => {
+  const m = /^\$([\d,]+)(?:\.(\d{2}))?\s*USD$/.exec((value || '').trim());
+  return m ? String(Number(m[1].replace(/,/g, '')) * 100 + Number(m[2] ?? 0)) : undefined;
+};
+
 const batches: Array<{
   batch: string;
   window: string;
@@ -37,7 +43,11 @@ const batches: Array<{
                 )}
               </span>
               <span class="row__edition">{b.edition}</span>
-              <span class="row__price">{b.price}</span>
+              {/* data-usd-cents lets the Spanish page swap this cell for the
+                  live peso figure (DEC-32) — and only when the row's amount
+                  actually matches the Founder price, so an edition priced
+                  differently later is never relabelled with this one's. */}
+              <span class="row__price" data-usd-cents={usdCents(b.price)}>{b.price}</span>
             </div>
           ))}
         </div>
