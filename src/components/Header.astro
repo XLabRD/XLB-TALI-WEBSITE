@@ -35,12 +35,14 @@ const nav = [
 
 <script>
   // An explicit language choice outranks the auto-redirect (Base.astro)
-  // forever after — remember it.
+  // forever after — remember it. Key is `tali-locale`, not the old
+  // `tali-lang`: that one also stored *guesses*, so a guess became
+  // indistinguishable from a click and pinned the visitor for good.
   document.querySelectorAll<HTMLAnchorElement>('a.lang').forEach((a) =>
     a.addEventListener('click', () => {
       const es = a.getAttribute('href')?.startsWith('/es');
       try {
-        localStorage.setItem('tali-lang', es ? 'es' : 'en');
+        localStorage.setItem('tali-locale', es ? 'es' : 'en');
       } catch {}
     })
   );

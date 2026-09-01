@@ -14,6 +14,44 @@ interface Props {
 }
 
 const { locale, title, description, altPath } = Astro.props;
+
+// Locale auto-redirect on `/` (DEC-4). Injected with set:html — Astro treats
+// script contents as raw text, so an inline `{`…`}` wrapper is emitted
+// verbatim and the function never runs. That is exactly what happened here:
+// the detector shipped inert, and `/` served English to everyone.
+const localeRedirect = `(function () {
+  try {
+    /* Only a switcher click is remembered (DEC-4). The old 'tali-lang' key
+       also recorded guesses, making a guess indistinguishable from a click.
+       Drop it so a stale guess can't outlive this fix. */
+    localStorage.removeItem('tali-lang');
+    var chosen = localStorage.getItem('tali-locale');
+    if (chosen === 'en') return;
+    if (chosen === 'es') { location.replace('/es/'); return; }
+    /* Where you are outranks what your OS is set to (DEC-4, revised): this
+       audience is in Mexico on English-configured machines. Timezone is the
+       only location signal a static page gets — no network call, no consent
+       prompt, and no flash, since this runs in <head> before first paint. */
+    var tz = '';
+    try { tz = Intl.DateTimeFormat().resolvedOptions().timeZone || ''; } catch (e) {}
+    /* No location signal at all → Spanish. Tali ships only to Mexico, so an
+       unknown visitor is far likelier to be a customer than a tourist. */
+    if (!tz) { location.replace('/es/'); return; }
+    if (/^(Mexico\\/|America\\/(Mexico_City|Cancun|Merida|Monterrey|Matamoros|Chihuahua|Ciudad_Juarez|Ojinaga|Mazatlan|Bahia_Banderas|Hermosillo|Tijuana|Ensenada|Santa_Isabel)$)/.test(tz)) {
+      location.replace('/es/'); return;
+    }
+    /* Located, and not in Mexico — only here does the browser's language get
+       a vote, and only an explicitly English one keeps you on English. */
+    var langs = navigator.languages || [navigator.language || ''];
+    for (var i = 0; i < langs.length; i++) {
+      var l = String(langs[i]).toLowerCase();
+      if (l.indexOf('en') === 0) return;
+      if (l.indexOf('es') === 0) break;
+    }
+    location.replace('/es/');
+  } catch (e) {}
+})();`;
+
 const site = Astro.site!;
 const canonical = new URL(Astro.url.pathname, site);
 const altUrl = new URL(altPath, site);
@@ -42,22 +80,7 @@ const ogLocale = locale === 'en' ? 'en_US' : 'es_MX';
     <meta name="twitter:card" content="summary" />
     {
       locale === 'en' && Astro.url.pathname === '/' && (
-        <script is:inline>{`(function () {
-  try {
-    var stored = localStorage.getItem('tali-lang');
-    if (stored === 'es') { location.replace('/es/'); return; }
-    if (stored === 'en') return;
-    var langs = navigator.languages || [navigator.language || ''];
-    for (var i = 0; i < langs.length; i++) {
-      var l = String(langs[i]).toLowerCase();
-      if (l.indexOf('en') === 0) { localStorage.setItem('tali-lang', 'en'); return; }
-      if (l.indexOf('es') === 0) break;
-    }
-    /* Spanish preferred — or nothing conclusive: default to Spanish (DEC-4) */
-    localStorage.setItem('tali-lang', 'es');
-    location.replace('/es/');
-  } catch (e) {}
-})();`}</script>
+        <script is:inline set:html={localeRedirect} />
       )
     }
     <slot name="head" />
