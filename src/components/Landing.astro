@@ -59,11 +59,15 @@ const jsonLd = {
   <main>
     <Hero locale={locale} copy={home} />
     <System copy={home} />
+    {/* The edition sits high on purpose: this audience arrives warm, already
+        knowing what Tali is, so the ask comes right after the one-hub pitch
+        rather than eight sections down. ShipSchedule stays deep — it answers
+        "when does mine arrive", which is a question you have after the price. */}
+    <Pricing locale={locale} copy={home} ui={ui} plans={plans} settings={settings} />
     <ExplodedView copy={home} />
     <AppShowcase copy={home} />
     <Features locale={locale} copy={home} features={features} soonLabel={ui.featureSoon} />
     <Film copy={home} />
-    <Pricing locale={locale} copy={home} ui={ui} plans={plans} settings={settings} />
     <ShipSchedule copy={home} />
     <Faq copy={home} items={faqs} ctaLabel={ui.navPreorder} />
     <Contact copy={home} ui={ui} settings={settings} />
