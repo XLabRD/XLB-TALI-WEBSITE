@@ -76,6 +76,7 @@ const homeLocale = (label: string) =>
       systemKicker: fields.text({ label: 'System kicker' }),
       systemTitle: fields.text({ label: 'System title' }),
       systemIntro: fields.text({ label: 'System intro', multiline: true }),
+      systemLinkAlt: fields.text({ label: 'System illustration alt text', multiline: true }),
       systemParts: fields.array(
         fields.object({
           name: fields.text({ label: 'Name' }),

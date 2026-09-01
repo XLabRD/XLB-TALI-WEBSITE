@@ -1,4 +1,6 @@
 ---
+import SystemLink from './SystemLink.astro';
+
 interface Props {
   copy: Record<string, any>;
 }
@@ -7,10 +9,13 @@ const { copy } = Astro.props;
 
 <section class="section" id="system">
   <div class="wrap">
-    <div class="section__head">
-      <p class="kicker">{copy.systemKicker}</p>
-      <h2 class="section__title">{copy.systemTitle}</h2>
-      <p class="intro">{copy.systemIntro}</p>
+    <div class="system__top">
+      <div class="section__head system__copy">
+        <p class="kicker">{copy.systemKicker}</p>
+        <h2 class="section__title">{copy.systemTitle}</h2>
+        <p class="intro">{copy.systemIntro}</p>
+      </div>
+      <SystemLink copy={copy} />
     </div>
     <div class="parts">
       {
@@ -45,6 +50,19 @@ const { copy } = Astro.props;
 </section>
 
 <style>
+  /* Copy left, the wireless link shown on the right; stacks under the copy on
+     narrow screens, where the illustration goes first to break up the text. */
+  .system__top {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1.02fr);
+    gap: clamp(1.5rem, 4vw, 3rem);
+    align-items: center;
+    margin-bottom: clamp(2.25rem, 5vw, 3.5rem);
+  }
+  .system__copy {
+    margin-bottom: 0;
+    max-width: 36em;
+  }
   .intro {
     color: var(--text-dim);
     /* blank lines in the copy become paragraph breaks */
@@ -106,6 +124,9 @@ const { copy } = Astro.props;
     margin-top: 0.5rem;
   }
   @media (max-width: 860px) {
+    .system__top {
+      grid-template-columns: 1fr;
+    }
     .parts {
       grid-template-columns: 1fr;
     }

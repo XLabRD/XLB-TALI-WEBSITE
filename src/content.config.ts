@@ -102,6 +102,7 @@ const localeHome = z.object({
   systemKicker: z.string(),
   systemTitle: z.string(),
   systemIntro: z.string(),
+  systemLinkAlt: z.string().default(''),
   systemParts: z.array(
     z.object({
       name: z.string(),

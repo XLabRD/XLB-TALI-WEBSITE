@@ -1,0 +1,95 @@
+---
+// "One hub for unlimited zones", rendered rather than asserted (DEC-33): four
+// Puks on an arc, each sending its reading in to a single Tali. Both bodies are
+// the real Fusion models (Tali v13 / Puck v6) rendered together in one pass by
+// scripts/3d/hub_render.py, so lighting and perspective agree by construction.
+//
+// The signal stays SVG on top of the render: it can then use the accent token,
+// animate, and be re-aimed without re-rendering. Its arc centres come from the
+// renderer's own PROJ output, so the waves start on the Puks themselves.
+interface Props {
+  copy: Record<string, any>;
+}
+const { copy } = Astro.props;
+---
+
+<figure class="sysillo">
+  <svg viewBox="52 168 1700 838" role="img" aria-labelledby="hubT">
+    <title id="hubT">{copy.systemLinkAlt}</title>
+  
+    <defs>
+      <linearGradient id="wg0_0" gradientUnits="userSpaceOnUse" x1="1543.2" y1="538.2" x2="1504.0" y2="450.5"><stop offset="0" stop-color="var(--accent)" stop-opacity="0"/><stop offset="0.5" stop-color="var(--accent)" stop-opacity="0.95"/><stop offset="1" stop-color="var(--accent)" stop-opacity="0"/></linearGradient>
+      <linearGradient id="wg0_1" gradientUnits="userSpaceOnUse" x1="1518.6" y1="572.2" x2="1462.2" y2="446.2"><stop offset="0" stop-color="var(--accent)" stop-opacity="0"/><stop offset="0.5" stop-color="var(--accent)" stop-opacity="0.7"/><stop offset="1" stop-color="var(--accent)" stop-opacity="0"/></linearGradient>
+      <linearGradient id="wg0_2" gradientUnits="userSpaceOnUse" x1="1493.9" y1="606.2" x2="1420.5" y2="441.9"><stop offset="0" stop-color="var(--accent)" stop-opacity="0"/><stop offset="0.5" stop-color="var(--accent)" stop-opacity="0.45"/><stop offset="1" stop-color="var(--accent)" stop-opacity="0"/></linearGradient>
+      <linearGradient id="wg0_3" gradientUnits="userSpaceOnUse" x1="1469.3" y1="640.2" x2="1378.7" y2="437.5"><stop offset="0" stop-color="var(--accent)" stop-opacity="0"/><stop offset="0.5" stop-color="var(--accent)" stop-opacity="0.24"/><stop offset="1" stop-color="var(--accent)" stop-opacity="0"/></linearGradient>
+      <linearGradient id="wg1_0" gradientUnits="userSpaceOnUse" x1="1149.5" y1="393.6" x2="1064.2" y2="349.6"><stop offset="0" stop-color="var(--accent)" stop-opacity="0"/><stop offset="0.5" stop-color="var(--accent)" stop-opacity="0.95"/><stop offset="1" stop-color="var(--accent)" stop-opacity="0"/></linearGradient>
+      <linearGradient id="wg1_1" gradientUnits="userSpaceOnUse" x1="1151.5" y1="435.5" x2="1028.8" y2="372.3"><stop offset="0" stop-color="var(--accent)" stop-opacity="0"/><stop offset="0.5" stop-color="var(--accent)" stop-opacity="0.7"/><stop offset="1" stop-color="var(--accent)" stop-opacity="0"/></linearGradient>
+      <linearGradient id="wg1_2" gradientUnits="userSpaceOnUse" x1="1153.5" y1="477.5" x2="993.5" y2="395.1"><stop offset="0" stop-color="var(--accent)" stop-opacity="0"/><stop offset="0.5" stop-color="var(--accent)" stop-opacity="0.45"/><stop offset="1" stop-color="var(--accent)" stop-opacity="0"/></linearGradient>
+      <linearGradient id="wg1_3" gradientUnits="userSpaceOnUse" x1="1155.5" y1="519.4" x2="958.2" y2="417.8"><stop offset="0" stop-color="var(--accent)" stop-opacity="0"/><stop offset="0.5" stop-color="var(--accent)" stop-opacity="0.24"/><stop offset="1" stop-color="var(--accent)" stop-opacity="0"/></linearGradient>
+      <linearGradient id="wg2_0" gradientUnits="userSpaceOnUse" x1="735.8" y1="349.6" x2="650.5" y2="393.6"><stop offset="0" stop-color="var(--accent)" stop-opacity="0"/><stop offset="0.5" stop-color="var(--accent)" stop-opacity="0.95"/><stop offset="1" stop-color="var(--accent)" stop-opacity="0"/></linearGradient>
+      <linearGradient id="wg2_1" gradientUnits="userSpaceOnUse" x1="771.2" y1="372.3" x2="648.5" y2="435.5"><stop offset="0" stop-color="var(--accent)" stop-opacity="0"/><stop offset="0.5" stop-color="var(--accent)" stop-opacity="0.7"/><stop offset="1" stop-color="var(--accent)" stop-opacity="0"/></linearGradient>
+      <linearGradient id="wg2_2" gradientUnits="userSpaceOnUse" x1="806.5" y1="395.1" x2="646.5" y2="477.5"><stop offset="0" stop-color="var(--accent)" stop-opacity="0"/><stop offset="0.5" stop-color="var(--accent)" stop-opacity="0.45"/><stop offset="1" stop-color="var(--accent)" stop-opacity="0"/></linearGradient>
+      <linearGradient id="wg2_3" gradientUnits="userSpaceOnUse" x1="841.8" y1="417.8" x2="644.5" y2="519.4"><stop offset="0" stop-color="var(--accent)" stop-opacity="0"/><stop offset="0.5" stop-color="var(--accent)" stop-opacity="0.24"/><stop offset="1" stop-color="var(--accent)" stop-opacity="0"/></linearGradient>
+      <linearGradient id="wg3_0" gradientUnits="userSpaceOnUse" x1="296.0" y1="450.5" x2="256.8" y2="538.2"><stop offset="0" stop-color="var(--accent)" stop-opacity="0"/><stop offset="0.5" stop-color="var(--accent)" stop-opacity="0.95"/><stop offset="1" stop-color="var(--accent)" stop-opacity="0"/></linearGradient>
+      <linearGradient id="wg3_1" gradientUnits="userSpaceOnUse" x1="337.8" y1="446.2" x2="281.4" y2="572.2"><stop offset="0" stop-color="var(--accent)" stop-opacity="0"/><stop offset="0.5" stop-color="var(--accent)" stop-opacity="0.7"/><stop offset="1" stop-color="var(--accent)" stop-opacity="0"/></linearGradient>
+      <linearGradient id="wg3_2" gradientUnits="userSpaceOnUse" x1="379.5" y1="441.9" x2="306.1" y2="606.2"><stop offset="0" stop-color="var(--accent)" stop-opacity="0"/><stop offset="0.5" stop-color="var(--accent)" stop-opacity="0.45"/><stop offset="1" stop-color="var(--accent)" stop-opacity="0"/></linearGradient>
+      <linearGradient id="wg3_3" gradientUnits="userSpaceOnUse" x1="421.3" y1="437.5" x2="330.7" y2="640.2"><stop offset="0" stop-color="var(--accent)" stop-opacity="0"/><stop offset="0.5" stop-color="var(--accent)" stop-opacity="0.24"/><stop offset="1" stop-color="var(--accent)" stop-opacity="0"/></linearGradient>
+    </defs>
+    <image href="/images/system-hub.webp" x="0" y="0" width="1800" height="1200"/>
+    <g fill="none" stroke-linecap="round">
+      <g class="hub__wave" style="--d:0.00s">
+        <path d="M 1543.2 538.2 A 96 96 0 0 1 1504.0 450.5" stroke="url(#wg0_0)" stroke-width="11"/>
+        <path d="M 1518.6 572.2 A 138 138 0 0 1 1462.2 446.2" stroke="url(#wg0_1)" stroke-width="9.5"/>
+        <path d="M 1493.9 606.2 A 180 180 0 0 1 1420.5 441.9" stroke="url(#wg0_2)" stroke-width="8"/>
+        <path d="M 1469.3 640.2 A 222 222 0 0 1 1378.7 437.5" stroke="url(#wg0_3)" stroke-width="6.5"/>
+      </g>
+      <g class="hub__wave" style="--d:0.16s">
+        <path d="M 1149.5 393.6 A 96 96 0 0 1 1064.2 349.6" stroke="url(#wg1_0)" stroke-width="11"/>
+        <path d="M 1151.5 435.5 A 138 138 0 0 1 1028.8 372.3" stroke="url(#wg1_1)" stroke-width="9.5"/>
+        <path d="M 1153.5 477.5 A 180 180 0 0 1 993.5 395.1" stroke="url(#wg1_2)" stroke-width="8"/>
+        <path d="M 1155.5 519.4 A 222 222 0 0 1 958.2 417.8" stroke="url(#wg1_3)" stroke-width="6.5"/>
+      </g>
+      <g class="hub__wave" style="--d:0.32s">
+        <path d="M 735.8 349.6 A 96 96 0 0 1 650.5 393.6" stroke="url(#wg2_0)" stroke-width="11"/>
+        <path d="M 771.2 372.3 A 138 138 0 0 1 648.5 435.5" stroke="url(#wg2_1)" stroke-width="9.5"/>
+        <path d="M 806.5 395.1 A 180 180 0 0 1 646.5 477.5" stroke="url(#wg2_2)" stroke-width="8"/>
+        <path d="M 841.8 417.8 A 222 222 0 0 1 644.5 519.4" stroke="url(#wg2_3)" stroke-width="6.5"/>
+      </g>
+      <g class="hub__wave" style="--d:0.48s">
+        <path d="M 296.0 450.5 A 96 96 0 0 1 256.8 538.2" stroke="url(#wg3_0)" stroke-width="11"/>
+        <path d="M 337.8 446.2 A 138 138 0 0 1 281.4 572.2" stroke="url(#wg3_1)" stroke-width="9.5"/>
+        <path d="M 379.5 441.9 A 180 180 0 0 1 306.1 606.2" stroke="url(#wg3_2)" stroke-width="8"/>
+        <path d="M 421.3 437.5 A 222 222 0 0 1 330.7 640.2" stroke="url(#wg3_3)" stroke-width="6.5"/>
+      </g>
+    </g>
+  </svg>
+</figure>
+
+<style>
+  .sysillo {
+    margin: 0;
+  }
+  .sysillo svg {
+    display: block;
+    width: 100%;
+    height: auto;
+  }
+  /* Each Puk's fan brightens in turn, so the signal reads as travelling inward
+     rather than sitting still. Decorative — off entirely for reduced motion. */
+  @media (prefers-reduced-motion: no-preference) {
+    .hub__wave {
+      animation: hub-pulse 3.4s ease-in-out infinite;
+      animation-delay: var(--d, 0s);
+    }
+  }
+  @keyframes hub-pulse {
+    0%,
+    58%,
+    100% {
+      opacity: 0.4;
+    }
+    20% {
+      opacity: 1;
+    }
+  }
+</style>

@@ -10,6 +10,7 @@
     "systemKicker": "The system",
     "systemTitle": "One hub for unlimited zones.",
     "systemIntro": "Discreet wireless sensors live with your collection. A glanceable e-paper display shows what they sense. The app keeps the detailed log wherever you are, and tells you when something needs your attention.\n\nPair one Puk (remote sensor) or many. The display reads its own surroundings too, so it can watch the room while your Puks watch inside — and the gap between them is often the first sign something is changing. Or let it stand as a zone of its own.",
+    "systemLinkAlt": "Four wireless Puk sensors arranged around a single Tali display, each sending its readings in to the hub, which shows 18.0°C and 76% for zone 1 of 4",
     "systemParts": [
       {
         "name": "Tali",
@@ -115,6 +116,7 @@
     "systemKicker": "El sistema",
     "systemTitle": "Un hub para zonas ilimitadas.",
     "systemIntro": "Sensores inalámbricos discretos viven con tu colección. Una pantalla de tinta electrónica muestra lo que perciben, de un vistazo. La app guarda el registro detallado estés donde estés, y te avisa cuando algo necesita tu atención.\n\nEmpareja un Puk (sensor remoto) o varios. La pantalla también lee su propio entorno, así que puede vigilar la habitación mientras tus Puks vigilan el interior — y la diferencia entre ambos suele ser la primera señal de que algo está cambiando. O déjala funcionar como una zona por sí misma.",
+    "systemLinkAlt": "Cuatro sensores Puk inalámbricos alrededor de una sola pantalla Tali, cada uno enviando sus lecturas al hub, que muestra 18.0°C y 76% de la zona 1 de 4",
     "systemParts": [
       {
         "name": "Tali",
