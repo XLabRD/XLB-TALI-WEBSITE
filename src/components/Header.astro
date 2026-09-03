@@ -50,17 +50,45 @@ const nav = [
       <a class="preorder" href={to('#edition')} data-preorder={onLanding ? true : undefined}>
         {ui.navPreorder}
       </a>
-      <a class="lang" href={altPath}>{ui.langSwitch}</a>
+      <a class="lang" href={altPath} data-lang>{ui.langSwitch}</a>
+      {/* Below 760px the nav is hidden, which used to leave Support (and every
+          other section) unreachable from the header. This opens it. */}
+      <button
+        class="burger"
+        type="button"
+        aria-label="Menu"
+        aria-expanded="false"
+        aria-controls="nav-menu"
+      >
+        <svg viewBox="0 0 24 24" width="22" height="22" aria-hidden="true" fill="none"
+          stroke="currentColor" stroke-width="1.6" stroke-linecap="round">
+          <path d="M3 6h18M3 12h18M3 18h18" />
+        </svg>
+      </button>
     </div>
   </div>
 </header>
+
+<dialog class="menu" id="nav-menu" aria-label="Menu">
+  <button class="menu__close" type="button" aria-label="Close">✕</button>
+  <nav class="menu__nav">
+    {
+      nav.map((item) => (
+        <a href={item.href} aria-current={item.current ? 'page' : undefined}>
+          {item.label}
+        </a>
+      ))
+    }
+  </nav>
+  <a class="menu__lang" href={altPath} data-lang>{ui.langSwitch}</a>
+</dialog>
 
 <script>
   // An explicit language choice outranks the auto-redirect (Base.astro)
   // forever after — remember it. Key is `tali-locale`, not the old
   // `tali-lang`: that one also stored *guesses*, so a guess became
   // indistinguishable from a click and pinned the visitor for good.
-  document.querySelectorAll<HTMLAnchorElement>('a.lang').forEach((a) =>
+  document.querySelectorAll<HTMLAnchorElement>('a[data-lang]').forEach((a) =>
     a.addEventListener('click', () => {
       const es = a.getAttribute('href')?.startsWith('/es');
       try {
@@ -68,6 +96,30 @@ const nav = [
       } catch {}
     })
   );
+
+  // Mobile drawer. <dialog> gives Escape, the backdrop and focus trapping for
+  // free, so this only has to open, close, and keep aria-expanded honest.
+  const burger = document.querySelector<HTMLButtonElement>('.burger');
+  const menu = document.querySelector<HTMLDialogElement>('.menu');
+  if (burger && menu) {
+    const setOpen = (open: boolean) => burger.setAttribute('aria-expanded', String(open));
+    burger.addEventListener('click', () => {
+      menu.showModal();
+      setOpen(true);
+    });
+    menu.addEventListener('close', () => setOpen(false));
+    menu.querySelector('.menu__close')?.addEventListener('click', () => menu.close());
+    // Every link closes it. Anchors on this page would otherwise scroll behind
+    // an open drawer; #contact additionally opens the contact dialog, and one
+    // modal replacing another is only correct if this one goes away.
+    menu.querySelectorAll('a').forEach((a) => a.addEventListener('click', () => menu.close()));
+    menu.addEventListener('click', (e) => {
+      const r = menu.getBoundingClientRect();
+      const inside =
+        e.clientX >= r.left && e.clientX <= r.right && e.clientY >= r.top && e.clientY <= r.bottom;
+      if (e.target === menu && !inside) menu.close();
+    });
+  }
 </script>
 
 <style>
@@ -143,9 +195,84 @@ const nav = [
   .preorder:hover {
     filter: brightness(1.12);
   }
+  .burger {
+    display: none;
+    align-items: center;
+    justify-content: center;
+    padding: 0.3rem;
+    background: none;
+    border: none;
+    color: var(--text);
+    cursor: pointer;
+  }
+
+  .menu {
+    margin: 0 0 0 auto;
+    height: 100%;
+    max-height: 100%;
+    width: min(20rem, 84vw);
+    border: none;
+    border-left: 1px solid var(--line);
+    background: var(--surface);
+    color: var(--text);
+    padding: calc(var(--header-h) * 0.55) 1.75rem 2rem;
+    box-shadow: -30px 0 70px -40px rgba(58, 42, 24, 0.5);
+  }
+  .menu::backdrop {
+    background: color-mix(in srgb, var(--text) 35%, transparent);
+    backdrop-filter: blur(3px);
+  }
+  .menu__close {
+    position: absolute;
+    top: 0.9rem;
+    right: 1rem;
+    background: none;
+    border: none;
+    color: var(--text-dim);
+    font-size: 1rem;
+    line-height: 1;
+    padding: 0.35rem;
+    cursor: pointer;
+  }
+  .menu__nav {
+    display: grid;
+    gap: 0.25rem;
+  }
+  .menu__nav a {
+    padding: 0.7rem 0;
+    border-bottom: 1px solid var(--line);
+    font-family: var(--display);
+    font-size: 1.15rem;
+    text-decoration: none;
+  }
+  .menu__nav a[aria-current='page'] {
+    color: var(--accent);
+  }
+  .menu__lang {
+    display: inline-block;
+    margin-top: 1.5rem;
+    font-family: var(--mono);
+    font-size: 0.75rem;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--accent);
+    border: 1px solid var(--line);
+    border-radius: 999px;
+    padding: 0.4rem 0.9rem;
+    text-decoration: none;
+  }
+
   @media (max-width: 760px) {
     .nav {
       display: none;
+    }
+    /* The switcher moves into the drawer — three pills plus a logo do not fit
+       on a phone, and the drawer is where someone looks for it anyway. */
+    .lang {
+      display: none;
+    }
+    .burger {
+      display: inline-flex;
     }
   }
 </style>
