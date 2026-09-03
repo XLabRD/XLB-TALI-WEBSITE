@@ -273,8 +273,9 @@ const site = defineCollection({
     // from workers/checkout + pk_… key); empty = fall back to orderUrl.
     checkoutEndpoint: z.string().default(''),
     stripePublishableKey: z.string().default(''),
-    // TODO(DEC-18): App Store link pending; empty = onboarding badge inert.
+    // TODO(DEC-18): store links for /hello; empty = that platform's badge inert.
     appStoreUrl: z.string().default(''),
+    playStoreUrl: z.string().default(''),
     // TODO(DEC-16): real social URLs pending; empty = link hidden.
     instagram: z.string().default(''),
     x: z.string().default(''),
