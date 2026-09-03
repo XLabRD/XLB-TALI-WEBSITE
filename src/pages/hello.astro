@@ -68,9 +68,10 @@ const isBeta = appUrl.includes('testflight.apple.com');
         </div>
         {!playUrl && <p class="hello__platform">Android app coming soon.</p>}
         {!appUrl && <p class="hello__platform">iOS app coming soon.</p>}
-        <a class="hello__help" href={`mailto:${settings.contactEmail}?subject=Tali%20help`}>
-          Get help
-        </a>
+        {/* Straight to the setup walkthrough (DEC-34) rather than a mailto:
+            someone standing over a new device wants the steps, and the
+            walkthrough itself ends with a route to a person. */}
+        <a class="hello__help" href="/support/#start">Get help</a>
       </div>
       <a class="hello__site" href="/">tali.my</a>
     </main>

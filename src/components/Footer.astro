@@ -1,9 +1,27 @@
 ---
 interface Props {
+  locale: 'en' | 'es';
   ui: Record<string, string>;
   settings: { siteName: string; contactEmail: string; instagram: string; x: string };
+  /**
+   * Address to print. Defaults to the site-wide contact email; support pages
+   * pass their own announced address (support@ / soporte@) so the footer of a
+   * support page doesn't send readers somewhere they were just told not to.
+   */
+  email?: string;
+  /** Set on support pages: replaces the Support link with a Contact one. */
+  contactHref?: string;
+  contactLabel?: string;
 }
-const { ui, settings } = Astro.props;
+const {
+  locale,
+  ui,
+  settings,
+  email = settings.contactEmail,
+  contactHref,
+  contactLabel,
+} = Astro.props;
+const supportPath = locale === 'en' ? '/support/' : '/es/support/';
 const year = new Date().getFullYear();
 // TODO(DEC-16): social URLs pending — empty values render nothing.
 const socials = [
@@ -19,7 +37,16 @@ const socials = [
       <p class="footer__tag">{ui.footerTagline}</p>
     </div>
     <div class="footer__links">
-      <a href={`mailto:${settings.contactEmail}`}>{settings.contactEmail}</a>
+      {/* Address first, then the way through to a person: on a support page
+          that is its contact panel, everywhere else the support page itself. */}
+      <a href={`mailto:${email}`}>{email}</a>
+      {
+        contactHref && contactLabel ? (
+          <a href={contactHref}>{contactLabel}</a>
+        ) : (
+          <a href={supportPath}>{ui.navSupport}</a>
+        )
+      }
       {socials.map((s) => <a href={s.href} rel="noopener">{s.label}</a>)}
     </div>
   </div>

@@ -70,9 +70,15 @@ const jsonLd = {
     <Film copy={home} />
     <ShipSchedule copy={home} />
     <Faq copy={home} items={faqs} ctaLabel={ui.navPreorder} />
-    <Contact copy={home} ui={ui} settings={settings} />
+    <Contact
+      copy={home}
+      ui={ui}
+      settings={settings}
+      supportHref={locale === 'en' ? '/support/' : '/es/support/'}
+      supportLabel={ui.navSupport}
+    />
   </main>
-  <Footer ui={ui} settings={settings} />
+  <Footer locale={locale} ui={ui} settings={settings} />
   <script>
     // Long-distance anchor clicks jump instantly instead of smooth-scrolling
     // through the tall exploded-view track (where the glide is slow and any

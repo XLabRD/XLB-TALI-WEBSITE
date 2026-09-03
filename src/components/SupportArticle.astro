@@ -1,0 +1,316 @@
+---
+// One support article (DEC-34) at /support/<slug>/ + /es/support/<slug>/.
+// The body is markdown, so an article can run as long as the subject deserves
+// and carry headings, lists, illustrations and — through the `video` field —
+// a demonstration.
+import { getCollection, getEntry, render, type CollectionEntry } from 'astro:content';
+import Base from '../layouts/Base.astro';
+import Header from './Header.astro';
+import Footer from './Footer.astro';
+
+interface Props {
+  locale: 'en' | 'es';
+  entry: CollectionEntry<'support'>;
+}
+const { locale, entry } = Astro.props;
+const homePath = locale === 'en' ? '/' : '/es/';
+const base = locale === 'en' ? '/support/' : '/es/support/';
+const other = locale === 'en' ? 'es' : 'en';
+const otherBase = locale === 'en' ? '/es/support/' : '/support/';
+const slug = entry.id.slice(locale.length + 1);
+
+const settings = (await getEntry('site', 'settings'))!.data;
+const ui = (await getEntry('ui', 'ui'))!.data[locale];
+const copy = (await getEntry('supportPage', 'support'))!.data[locale];
+const supportEmail = copy.supportEmail || settings.contactEmail;
+
+const all = await getCollection('support');
+// The switcher lands on the same article in the other language when one
+// exists, and on that language's index when it doesn't — never on a 404.
+const hasTwin = all.some((a) => a.id === `${other}/${slug}`);
+const altPath = hasTwin ? `${otherBase}${slug}/` : otherBase;
+
+const d = entry.data;
+const categoryLabel = {
+  setup: copy.tabStart,
+  device: copy.catDevice,
+  puk: copy.catPuk,
+  app: copy.catApp,
+  order: copy.catOrder,
+}[d.category];
+// Which tab of the index this article belongs to, so "back" returns the
+// reader to the list they came from rather than the top of the page.
+const backHref = `${base}#${d.section === 'start' ? 'start' : 'fix'}`;
+
+const related = all
+  .filter(
+    (a) => a.id.startsWith(`${locale}/`) && a.id !== entry.id && a.data.category === d.category
+  )
+  .sort((a, b) => a.data.order - b.data.order)
+  .slice(0, 3)
+  .map((a) => ({ slug: a.id.slice(locale.length + 1), title: a.data.title }));
+
+// Links stored as '#faq-…' point at the landing FAQ, which lives at a
+// different path per language; anything already absolute is left alone.
+const link = d.linkHref.startsWith('#') ? `${homePath}${d.linkHref}` : d.linkHref;
+
+const { Content } = await render(entry);
+---
+
+<Base
+  locale={locale}
+  title={`${d.title} — ${copy.metaTitle}`}
+  description={d.summary}
+  altPath={altPath}
+>
+  <Header locale={locale} ui={ui} altPath={altPath} homePath={homePath} current="support" />
+  <main class="article">
+    <div class="wrap">
+      <a class="back" href={backHref}>← {copy.backToSupport}</a>
+
+      <header class="head">
+        <p class="kicker">{categoryLabel}</p>
+        <h1 class="head__title">{d.title}</h1>
+        <p class="head__summary">{d.summary}</p>
+      </header>
+
+      {
+        d.video ? (
+          <div class="media">
+            <video
+              src={d.video}
+              poster={d.image || undefined}
+              controls
+              preload="none"
+              playsinline
+              aria-label={d.imageAlt || d.title}
+            />
+          </div>
+        ) : (
+          d.image && (
+            <div class="media">
+              <img src={d.image} alt={d.imageAlt} loading="lazy" />
+            </div>
+          )
+        )
+      }
+
+      <div class="prose">
+        <Content />
+      </div>
+
+      {
+        link && d.linkText && (
+          <p class="outlink">
+            <a href={link}>{d.linkText} →</a>
+          </p>
+        )
+      }
+
+      <aside class="help">
+        <h2 class="help__title">{copy.articleHelpTitle}</h2>
+        <p class="help__text">{copy.articleHelpText}</p>
+        <a class="btn" href={`${base}#contact`}>{copy.articleHelpCta}</a>
+        <p class="help__mail">
+          <a href={`mailto:${supportEmail}`}>{supportEmail}</a>
+        </p>
+      </aside>
+
+      {
+        related.length > 0 && (
+          <nav class="related" aria-label={copy.relatedTitle}>
+            <h2 class="related__title">{copy.relatedTitle}</h2>
+            <ul>
+              {related.map((r) => (
+                <li>
+                  <a href={`${base}${r.slug}/`}>{r.title}</a>
+                </li>
+              ))}
+            </ul>
+          </nav>
+        )
+      }
+    </div>
+  </main>
+  <Footer
+    locale={locale}
+    ui={ui}
+    settings={settings}
+    email={supportEmail}
+    contactHref={`${base}#contact`}
+    contactLabel={copy.tabContact}
+  />
+</Base>
+
+<style>
+  .article .wrap {
+    max-width: 46rem;
+    padding-block: clamp(2rem, 5vw, 3.5rem) clamp(4rem, 9vw, 7rem);
+  }
+  .back {
+    display: inline-block;
+    font-family: var(--mono);
+    font-size: 0.72rem;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--text-dim);
+    text-decoration: none;
+    margin-bottom: clamp(1.75rem, 4vw, 2.75rem);
+  }
+  .back:hover {
+    color: var(--accent);
+  }
+  .head {
+    display: grid;
+    gap: 0.8rem;
+    margin-bottom: clamp(1.75rem, 4vw, 2.5rem);
+  }
+  .head__title {
+    font-size: clamp(1.9rem, 4vw, 2.6rem);
+  }
+  .head__summary {
+    color: var(--text-dim);
+    font-size: 1.05rem;
+  }
+  .media {
+    margin-bottom: clamp(1.75rem, 4vw, 2.5rem);
+  }
+  .media img,
+  .media video {
+    width: 100%;
+    height: auto;
+    border-radius: 14px;
+    border: 1px solid var(--line);
+    background: var(--surface);
+  }
+
+  /* Markdown comes in unstyled — these are the only global selectors on the
+     page, and they are confined to the rendered body. */
+  .prose :global(h2) {
+    font-size: 1.35rem;
+    margin-top: 2.25rem;
+    margin-bottom: 0.7rem;
+  }
+  .prose :global(h3) {
+    font-size: 1.1rem;
+    margin-top: 1.75rem;
+    margin-bottom: 0.5rem;
+  }
+  .prose :global(p) {
+    margin-bottom: 1.1rem;
+  }
+  .prose :global(ul),
+  .prose :global(ol) {
+    margin: 0 0 1.3rem;
+    padding-left: 1.3rem;
+    display: grid;
+    gap: 0.5rem;
+  }
+  .prose :global(li) {
+    padding-left: 0.2rem;
+  }
+  .prose :global(li)::marker {
+    color: var(--accent);
+  }
+  .prose :global(a) {
+    color: var(--accent);
+    text-underline-offset: 3px;
+  }
+  .prose :global(strong) {
+    font-weight: 620;
+  }
+  .prose :global(img),
+  .prose :global(video) {
+    width: 100%;
+    height: auto;
+    border-radius: 14px;
+    border: 1px solid var(--line);
+    margin-block: 1.6rem;
+  }
+  .prose :global(code) {
+    font-family: var(--mono);
+    font-size: 0.88em;
+    background: var(--surface-2);
+    border-radius: 5px;
+    padding: 0.1em 0.35em;
+  }
+  .prose :global(blockquote) {
+    margin: 1.6rem 0;
+    padding-left: 1.1rem;
+    border-left: 2px solid var(--accent-dim);
+    color: var(--text-dim);
+  }
+  .prose :global(hr) {
+    border: none;
+    border-top: 1px solid var(--line);
+    margin: 2.25rem 0;
+  }
+
+  .outlink {
+    margin-top: 1.75rem;
+    font-size: 0.95rem;
+  }
+  .outlink a {
+    color: var(--accent);
+  }
+
+  .help {
+    margin-top: clamp(2.5rem, 6vw, 4rem);
+    padding: clamp(1.4rem, 3vw, 2rem);
+    border: 1px solid var(--line);
+    border-radius: 16px;
+    background: linear-gradient(170deg, var(--surface), transparent 85%);
+    display: grid;
+    justify-items: start;
+    gap: 0.55rem;
+  }
+  .help__title {
+    font-size: 1.2rem;
+  }
+  .help__text {
+    color: var(--text-dim);
+    font-size: 0.95rem;
+    margin-bottom: 0.5rem;
+  }
+  .help__mail a {
+    font-family: var(--mono);
+    font-size: 0.8rem;
+    color: var(--accent);
+    text-decoration: none;
+  }
+  .help__mail a:hover {
+    text-decoration: underline;
+  }
+
+  .related {
+    margin-top: clamp(2.5rem, 5vw, 3.5rem);
+  }
+  .related__title {
+    font-family: var(--mono);
+    font-size: 0.72rem;
+    font-weight: 500;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    color: var(--text-dim);
+    padding-bottom: 0.8rem;
+    border-bottom: 1px solid var(--line);
+  }
+  .related ul {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+  }
+  .related li {
+    border-bottom: 1px solid var(--line);
+  }
+  .related a {
+    display: block;
+    padding: 0.9rem 0.25rem;
+    font-family: var(--display);
+    font-size: 1.05rem;
+    text-decoration: none;
+  }
+  .related a:hover {
+    color: var(--accent);
+  }
+</style>

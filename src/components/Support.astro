@@ -1,0 +1,528 @@
+---
+// Support index (DEC-34). Three sections — getting started, troubleshooting,
+// contact — shown one at a time rather than as one long scroll, which is the
+// point of the page: someone arrives with a problem, not to browse.
+//
+// The articles themselves are separate pages (/support/<slug>/) so they can
+// run long and carry illustrations or a video; this page is the index over
+// them plus the contact form.
+import { getCollection, getEntry } from 'astro:content';
+import Base from '../layouts/Base.astro';
+import Header from './Header.astro';
+import Footer from './Footer.astro';
+import ContactForm from './ContactForm.astro';
+
+interface Props {
+  locale: 'en' | 'es';
+}
+const { locale } = Astro.props;
+const homePath = locale === 'en' ? '/' : '/es/';
+const base = locale === 'en' ? '/support/' : '/es/support/';
+const altPath = locale === 'en' ? '/es/support/' : '/support/';
+
+const settings = (await getEntry('site', 'settings'))!.data;
+const ui = (await getEntry('ui', 'ui'))!.data[locale];
+const copy = (await getEntry('supportPage', 'support'))!.data[locale];
+// support@ / soporte@ are announced here only; the form still posts to the
+// endpoint in settings, which lands in the same inbox as hello@.
+const supportEmail = copy.supportEmail || settings.contactEmail;
+// wa.me wants bare digits; the stored value keeps whatever spacing reads best.
+const waDigits = (settings.whatsapp || '').replace(/\D/g, '');
+
+// Entry ids are '<locale>/<slug>' — the loader keeps the directory.
+const all = (await getCollection('support'))
+  .filter((a) => a.id.startsWith(`${locale}/`))
+  .map((a) => ({ slug: a.id.slice(locale.length + 1), ...a.data }))
+  .sort((a, b) => a.order - b.order);
+
+const steps = all.filter((a) => a.section === 'start');
+const fixes = all.filter((a) => a.section === 'fix');
+
+// Fixed group order, so the index reads the same way every time regardless of
+// which categories happen to have articles.
+const groups = (['device', 'puk', 'app', 'order'] as const)
+  .map((key) => ({
+    key,
+    label: {
+      device: copy.catDevice,
+      puk: copy.catPuk,
+      app: copy.catApp,
+      order: copy.catOrder,
+    }[key],
+    items: fixes.filter((a) => a.category === key),
+  }))
+  .filter((g) => g.items.length > 0);
+
+const tabs = [
+  { id: 'start', label: copy.tabStart },
+  { id: 'fix', label: copy.tabFix },
+  { id: 'contact', label: copy.tabContact },
+];
+---
+
+<Base
+  locale={locale}
+  title={copy.metaTitle}
+  description={copy.metaDescription}
+  altPath={altPath}
+>
+  {/* Set in <head>, before any panel exists: with JS the CSS below collapses
+      the page to one panel from the very first paint; without JS the rule
+      never matches and all three sections render as an ordinary long page. */}
+  <script is:inline slot="head">document.documentElement.classList.add('js');</script>
+  <Header locale={locale} ui={ui} altPath={altPath} homePath={homePath} current="support" />
+  <main class="support">
+    <div class="wrap support__head">
+      <p class="kicker">{copy.kicker}</p>
+      <h1 class="support__title">{copy.title}</h1>
+      <p class="support__intro">{copy.intro}</p>
+    </div>
+
+    <div class="support__tabsbar">
+      <div class="wrap">
+        <nav class="tabs" aria-label={copy.kicker}>
+          {
+            tabs.map((t) => (
+              <a class="tab" href={`#${t.id}`} data-tab={t.id}>
+                {t.label}
+              </a>
+            ))
+          }
+        </nav>
+      </div>
+    </div>
+
+    {/* ---------------------------------------------------------------- */}
+    <section class="panel wrap is-active" id="start" data-panel="start">
+      <div class="panel__head">
+        <h2 class="panel__title">{copy.startTitle}</h2>
+        <p class="panel__intro">{copy.startIntro}</p>
+      </div>
+      <ol class="steps">
+        {
+          steps.map((a, i) => (
+            <li class="step">
+              <a class="step__link" href={`${base}${a.slug}/`}>
+                <span class="step__n">{String(i + 1).padStart(2, '0')}</span>
+                <span class="step__body">
+                  <span class="step__title">{a.title}</span>
+                  <span class="step__summary">{a.summary}</span>
+                </span>
+              </a>
+            </li>
+          ))
+        }
+      </ol>
+      {
+        copy.startNote && (
+          <p class="panel__note">
+            {copy.startNote} <a href="/hello">tali.my/hello</a>
+          </p>
+        )
+      }
+      {
+        copy.startHelp && (
+          <div class="panel__cta">
+            <p>{copy.startHelp}</p>
+            {/* A plain #contact anchor: the tab script picks the hash change
+                up and swaps to the contact panel. */}
+            <a class="btn" href="#contact">
+              {copy.articleHelpCta}
+            </a>
+          </div>
+        )
+      }
+    </section>
+
+    {/* ---------------------------------------------------------------- */}
+    <section class="panel wrap" id="fix" data-panel="fix">
+      <div class="panel__head">
+        <h2 class="panel__title">{copy.fixTitle}</h2>
+        <p class="panel__intro">{copy.fixIntro}</p>
+      </div>
+      {
+        groups.map((g) => (
+          <div class="group">
+            <h3 class="group__title">{g.label}</h3>
+            <ul class="cards">
+              {g.items.map((a) => (
+                <li>
+                  <a class="card" href={`${base}${a.slug}/`}>
+                    <span class="card__title">{a.title}</span>
+                    <span class="card__summary">{a.summary}</span>
+                    <span class="card__more">{copy.readMore} →</span>
+                  </a>
+                </li>
+              ))}
+            </ul>
+          </div>
+        ))
+      }
+    </section>
+
+    {/* ---------------------------------------------------------------- */}
+    <section class="panel wrap" id="contact" data-panel="contact">
+      <div class="panel__head">
+        <h2 class="panel__title">{copy.contactTitle}</h2>
+        <p class="panel__intro">{copy.contactIntro}</p>
+      </div>
+      <div class="contact-grid">
+        <ContactForm ui={ui} settings={settings} email={supportEmail} />
+        <aside class="aside">
+          <p class="aside__note">{copy.contactNote}</p>
+          {
+            waDigits && copy.whatsappLabel && (
+              <>
+                <a
+                  class="wa"
+                  href={`https://wa.me/${waDigits}`}
+                  target="_blank"
+                  rel="noopener"
+                >
+                  <svg viewBox="0 0 448 512" width="18" height="18" aria-hidden="true" fill="currentColor">
+                    <path d="M380.9 97.1C339 55.1 283.2 32 223.9 32c-122.4 0-222 99.6-222 222 0 39.1 10.2 77.3 29.6 111L0 480l117.7-30.9c32.4 17.7 68.9 27 106.1 27h.1c122.3 0 224.1-99.6 224.1-222 0-59.3-25.2-115-67.1-157zm-157 341.6c-33.2 0-65.7-8.9-94-25.7l-6.7-4-69.8 18.3L72 359.2l-4.4-7c-18.5-29.4-28.2-63.3-28.2-98.2 0-101.7 82.8-184.5 184.6-184.5 49.3 0 95.6 19.2 130.4 54.1 34.8 34.9 56.2 81.2 56.1 130.5 0 101.8-84.9 184.6-186.6 184.6zm101.2-138.2c-5.5-2.8-32.8-16.2-37.9-18-5.1-1.9-8.8-2.8-12.5 2.8-3.7 5.6-14.3 18-17.6 21.8-3.2 3.7-6.5 4.2-12 1.4-32.6-16.3-54-29.1-75.5-66-5.7-9.8 5.7-9.1 16.3-30.3 1.8-3.7.9-6.9-.5-9.7-1.4-2.8-12.5-30.1-17.1-41.2-4.5-10.8-9.1-9.3-12.5-9.5-3.2-.2-6.9-.2-10.6-.2-3.7 0-9.7 1.4-14.8 6.9-5.1 5.6-19.4 19-19.4 46.3 0 27.3 19.9 53.7 22.6 57.4 2.8 3.7 39.1 59.7 94.8 83.8 35.2 15.2 49 16.5 66.6 13.9 10.7-1.6 32.8-13.4 37.4-26.4 4.6-13 4.6-24.1 3.2-26.4-1.3-2.5-5-3.9-10.5-6.6z" />
+                  </svg>
+                  <span>{copy.whatsappLabel}</span>
+                </a>
+                <p class="aside__wanum">{settings.whatsapp}</p>
+                {copy.whatsappNote && <p class="aside__fine">{copy.whatsappNote}</p>}
+              </>
+            )
+          }
+          <p class="aside__mail">
+            <a href={`mailto:${supportEmail}`}>{supportEmail}</a>
+          </p>
+        </aside>
+      </div>
+    </section>
+
+    {/* Inline and parser-blocking on purpose: it runs the moment the panels
+        exist and before first paint, so arriving at /support/#fix never shows
+        a flash of the getting-started panel. Without JS every panel simply
+        stays visible and the tabs behave as ordinary anchors. */}
+    <script is:inline>
+      (function () {
+        var main = document.querySelector('.support');
+        var panels = [].slice.call(main.querySelectorAll('[data-panel]'));
+        var tabs = [].slice.call(main.querySelectorAll('[data-tab]'));
+        var names = panels.map(function (p) {
+          return p.dataset.panel;
+        });
+        function show(name, focus) {
+          if (names.indexOf(name) < 0) name = names[0];
+          panels.forEach(function (p) {
+            p.classList.toggle('is-active', p.dataset.panel === name);
+          });
+          tabs.forEach(function (t) {
+            if (t.dataset.tab === name) t.setAttribute('aria-current', 'true');
+            else t.removeAttribute('aria-current');
+          });
+          if (focus) window.scrollTo({ top: 0, behavior: 'instant' });
+        }
+
+        // A deep link to one article's accordion-era anchor, or to a panel.
+        function fromHash() {
+          var h = location.hash.replace('#', '');
+          show(h || names[0], false);
+        }
+        fromHash();
+        window.addEventListener('hashchange', fromHash);
+
+        tabs.forEach(function (t) {
+          t.addEventListener('click', function (e) {
+            e.preventDefault();
+            var name = t.dataset.tab;
+            history.replaceState(null, '', '#' + name);
+            show(name, true);
+          });
+        });
+      })();
+    </script>
+  </main>
+  <Footer
+    locale={locale}
+    ui={ui}
+    settings={settings}
+    email={supportEmail}
+    contactHref={`${base}#contact`}
+    contactLabel={copy.tabContact}
+  />
+</Base>
+
+<style>
+  .support {
+    padding-bottom: clamp(4rem, 9vw, 7rem);
+  }
+  .support__head {
+    padding-block: clamp(2.5rem, 6vw, 4.5rem) clamp(1.5rem, 3vw, 2.25rem);
+    display: grid;
+    gap: 0.8rem;
+    max-width: 40rem;
+  }
+  .support__title {
+    font-size: clamp(2rem, 4.5vw, 3rem);
+  }
+  .support__intro {
+    color: var(--text-dim);
+  }
+
+  /* --- tabs ------------------------------------------------------- */
+  .support__tabsbar {
+    position: sticky;
+    top: var(--header-h);
+    z-index: 5;
+    background: color-mix(in srgb, var(--bg) 92%, transparent);
+    backdrop-filter: blur(12px);
+    border-block: 1px solid var(--line);
+  }
+  .tabs {
+    display: flex;
+    gap: 0.4rem;
+    overflow-x: auto;
+    scrollbar-width: none;
+  }
+  .tabs::-webkit-scrollbar {
+    display: none;
+  }
+  .tab {
+    flex: none;
+    padding: 0.95rem 0.9rem;
+    font-family: var(--mono);
+    font-size: 0.72rem;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--text-dim);
+    text-decoration: none;
+    border-bottom: 2px solid transparent;
+    transition: color 0.15s ease, border-color 0.15s ease;
+  }
+  .tab:hover {
+    color: var(--text);
+  }
+  .tab[aria-current] {
+    color: var(--accent);
+    border-bottom-color: var(--accent);
+  }
+
+  /* --- panels ----------------------------------------------------- */
+  .panel {
+    padding-top: clamp(2.5rem, 6vw, 4rem);
+  }
+  /* With JS, exactly one panel is on screen. Without it they stack, so each
+     needs a rule off the top of the one before. */
+  :global(html.js) .panel {
+    display: none;
+  }
+  :global(html.js) .panel.is-active {
+    display: block;
+  }
+  :global(html:not(.js)) .panel + .panel {
+    border-top: 1px solid var(--line);
+    margin-top: clamp(2.5rem, 6vw, 4rem);
+  }
+  .panel__head {
+    display: grid;
+    gap: 0.7rem;
+    max-width: 38em;
+    margin-bottom: clamp(1.8rem, 4vw, 2.75rem);
+  }
+  .panel__title {
+    font-size: clamp(1.6rem, 3.2vw, 2.2rem);
+  }
+  .panel__intro {
+    color: var(--text-dim);
+  }
+  .panel__note {
+    margin-top: 2rem;
+    color: var(--text-dim);
+    font-size: 0.9rem;
+    max-width: 42em;
+  }
+  .panel__note a {
+    color: var(--accent);
+  }
+
+  .panel__cta {
+    margin-top: 2rem;
+    padding: clamp(1.3rem, 3vw, 1.8rem);
+    border: 1px solid var(--line);
+    border-radius: 16px;
+    background: linear-gradient(170deg, var(--surface), transparent 85%);
+    display: grid;
+    justify-items: start;
+    gap: 0.9rem;
+    max-width: 46rem;
+  }
+  .panel__cta p {
+    color: var(--text-dim);
+    font-size: 0.95rem;
+    max-width: 40em;
+  }
+
+  /* --- getting started -------------------------------------------- */
+  .steps {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    max-width: 46rem;
+    border-top: 1px solid var(--line);
+  }
+  .step {
+    border-bottom: 1px solid var(--line);
+  }
+  .step__link {
+    display: flex;
+    gap: 1.25rem;
+    align-items: baseline;
+    padding: 1.25rem 0.25rem;
+    text-decoration: none;
+    transition: background 0.15s ease;
+  }
+  .step__link:hover {
+    background: var(--surface);
+  }
+  .step__n {
+    font-family: var(--mono);
+    font-size: 0.78rem;
+    color: var(--accent);
+    letter-spacing: 0.08em;
+    flex: none;
+  }
+  .step__body {
+    display: grid;
+    gap: 0.3rem;
+  }
+  .step__title {
+    font-family: var(--display);
+    font-size: 1.15rem;
+    line-height: 1.25;
+  }
+  .step__link:hover .step__title {
+    color: var(--accent);
+  }
+  .step__summary {
+    color: var(--text-dim);
+    font-size: 0.93rem;
+    line-height: 1.55;
+  }
+
+  /* --- troubleshooting -------------------------------------------- */
+  .group + .group {
+    margin-top: clamp(2rem, 4vw, 3rem);
+  }
+  .group__title {
+    font-family: var(--mono);
+    font-size: 0.72rem;
+    font-weight: 500;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    color: var(--text-dim);
+    padding-bottom: 0.9rem;
+    border-bottom: 1px solid var(--line);
+  }
+  .cards {
+    list-style: none;
+    margin: 1.1rem 0 0;
+    padding: 0;
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(19rem, 1fr));
+    gap: 0.9rem;
+  }
+  .card {
+    display: grid;
+    gap: 0.45rem;
+    height: 100%;
+    padding: 1.15rem 1.25rem 1.05rem;
+    border: 1px solid var(--line);
+    border-radius: 12px;
+    background: linear-gradient(170deg, var(--surface), transparent 85%);
+    text-decoration: none;
+    transition: border-color 0.15s ease, transform 0.15s ease;
+  }
+  .card:hover {
+    border-color: var(--accent);
+    transform: translateY(-2px);
+  }
+  .card__title {
+    font-family: var(--display);
+    font-size: 1.05rem;
+    line-height: 1.3;
+  }
+  .card__summary {
+    color: var(--text-dim);
+    font-size: 0.89rem;
+    line-height: 1.55;
+  }
+  .card__more {
+    margin-top: auto;
+    padding-top: 0.35rem;
+    font-family: var(--mono);
+    font-size: 0.68rem;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--accent);
+  }
+
+  /* --- contact ----------------------------------------------------- */
+  .contact-grid {
+    display: grid;
+    grid-template-columns: minmax(0, 28rem) minmax(0, 1fr);
+    gap: clamp(2rem, 5vw, 4rem);
+    align-items: start;
+  }
+  .aside {
+    display: grid;
+    gap: 0.6rem;
+    padding: 1.4rem 1.5rem;
+    border: 1px solid var(--line);
+    border-radius: 14px;
+    background: var(--surface);
+  }
+  .aside__note {
+    color: var(--text-dim);
+    font-size: 0.92rem;
+  }
+  .wa {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.55rem;
+    justify-self: start;
+    padding: 0.6rem 1.05rem;
+    border: 1px solid var(--accent);
+    border-radius: 999px;
+    color: var(--accent);
+    font-size: 0.9rem;
+    font-weight: 600;
+    text-decoration: none;
+    transition: background 0.15s ease, color 0.15s ease;
+  }
+  .wa:hover {
+    background: var(--accent);
+    color: var(--on-accent);
+  }
+  .wa svg {
+    flex: none;
+  }
+  .aside__wanum {
+    font-family: var(--mono);
+    font-size: 0.85rem;
+    color: var(--text);
+    margin-top: -0.2rem;
+  }
+  .aside__fine {
+    color: var(--text-dim);
+    font-size: 0.82rem;
+    margin-top: -0.25rem;
+  }
+  .aside__mail a {
+    color: var(--accent);
+    font-family: var(--mono);
+    font-size: 0.85rem;
+    text-decoration: none;
+  }
+  @media (max-width: 780px) {
+    .contact-grid {
+      grid-template-columns: 1fr;
+    }
+  }
+</style>

@@ -1,0 +1,15 @@
+---
+import { getCollection } from 'astro:content';
+import SupportArticle from '../../components/SupportArticle.astro';
+
+export async function getStaticPaths() {
+  // Entry ids carry the language directory ('en/pair-a-puk'); the URL does not.
+  return (await getCollection('support'))
+    .filter((entry) => entry.id.startsWith('en/'))
+    .map((entry) => ({ params: { slug: entry.id.slice(3) }, props: { entry } }));
+}
+
+const { entry } = Astro.props;
+---
+
+<SupportArticle locale="en" entry={entry} />

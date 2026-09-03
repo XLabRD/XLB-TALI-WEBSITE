@@ -32,6 +32,14 @@ in code with `TODO(DEC-n)`; find them with `grep -rn "TODO(DEC-" src/ public/ *.
   `src/content.config.ts` (build-time validation) and mirrored in
   `keystatic.config.ts` (admin UI). **Keep them aligned** when adding fields.
   Zod strips unknown keys, so a Keystatic-added `slug` key in JSON is harmless.
+- **Support** (DEC-34): `/support/` + `/es/support/` — a separate, indexed page,
+  not a landing section. Three panels behind a sticky tab bar (Getting started ·
+  Troubleshooting · Contact), shown one at a time via a `js` class set in
+  `<head>`; without JS all three render as one page. Each entry is its own
+  article page at `/support/<slug>/`, from **markdown** in
+  `src/content/support/{en,es}/*.md` — the one collection where the two
+  languages live in separate files, paired by slug. Contact reuses
+  `ContactForm.astro` (split out of `Contact.astro`, which keeps the modal).
 - **Pages**: `src/pages/index.astro` (en) and `src/pages/es/index.astro` (es)
   both render `src/components/Landing.astro` with a `locale` prop; Landing
   loads content and composes Hero → System → ExplodedView → AppShowcase →
@@ -74,6 +82,13 @@ in code with `TODO(DEC-n)`; find them with `grep -rn "TODO(DEC-" src/ public/ *.
 - `DeviceMock.astro` is an unused CSS-drawn device mock, kept as a fallback
   visual (DEC-19).
 - Copy exists in both languages everywhere — when editing copy, edit both
-  `en` and `es`, never one.
+  `en` and `es`, never one. Support articles are the one place this means two
+  *files* (`support/en/<slug>.md` + `support/es/<slug>.md`); keep the slugs
+  identical or the language switcher drops to the support index.
+- Support articles are plain `.md`, not Keystatic's default `.mdoc`
+  (`fields.markdoc({ extension: 'md' })`) — Astro renders markdown with no extra
+  integration. Don't add markdoc tags: they'd print as literal text. Video goes
+  in the `video` frontmatter field, illustrations in `image` or inline
+  markdown images under `public/images/support/`.
 - Deploy is GitHub Actions → GitHub Pages (`.github/workflows/deploy.yml`),
   inactive until a remote exists (DEC-14). `public/CNAME` pins `tali.my`.

@@ -4,16 +4,28 @@ interface Props {
   ui: Record<string, string>;
   altPath: string;
   homePath: string;
+  /** Marks the current page in the nav (support pages set 'support'). */
+  current?: 'support';
 }
-const { ui, altPath, homePath } = Astro.props;
+const { locale, ui, altPath, homePath, current } = Astro.props;
+// The section links are anchors on the landing page and full paths anywhere
+// else (DEC-34) — the same header now sits on top of /support/, where a bare
+// '#system' would point at nothing.
+const onLanding = !current;
+const to = (hash: string) => (onLanding ? hash : `${homePath}${hash}`);
+const supportPath = locale === 'en' ? '/support/' : '/es/support/';
 const nav = [
-  { href: '#system', label: ui.navSystem },
-  { href: '#app', label: ui.navApp },
-  { href: '#features', label: ui.navFeatures },
-  { href: '#edition', label: ui.navEdition },
-  { href: '#shipping', label: ui.navPricing },
-  { href: '#faq', label: ui.navFaq },
-  { href: '#contact', label: ui.navContact },
+  { href: to('#system'), label: ui.navSystem },
+  { href: to('#app'), label: ui.navApp },
+  { href: to('#features'), label: ui.navFeatures },
+  { href: to('#edition'), label: ui.navEdition },
+  { href: to('#shipping'), label: ui.navPricing },
+  { href: to('#faq'), label: ui.navFaq },
+  // Off the landing page 'Contact' means the support page's own contact tab —
+  // bouncing a reader who is already on /support/ back to the landing to write
+  // to us would be perverse.
+  { href: onLanding ? '#contact' : `${supportPath}#contact`, label: ui.navContact },
+  { href: supportPath, label: ui.navSupport, current: current === 'support' },
 ];
 ---
 
@@ -23,11 +35,21 @@ const nav = [
       <img src="/images/tali-logo.png" alt="Tali" height="30" />
     </a>
     <nav class="nav" aria-label="Main">
-      {nav.map((item) => <a href={item.href}>{item.label}</a>)}
+      {
+        nav.map((item) => (
+          <a href={item.href} aria-current={item.current ? 'page' : undefined}>
+            {item.label}
+          </a>
+        ))
+      }
     </nav>
     <div class="header__actions">
-      {/* data-preorder: opens the embedded checkout when configured (Pricing.astro) */}
-      <a class="preorder" href="#edition" data-preorder>{ui.navPreorder}</a>
+      {/* data-preorder: opens the embedded checkout when configured
+          (Pricing.astro). Off the landing page that script isn't on the page,
+          so the button is a plain link back to the edition card. */}
+      <a class="preorder" href={to('#edition')} data-preorder={onLanding ? true : undefined}>
+        {ui.navPreorder}
+      </a>
       <a class="lang" href={altPath}>{ui.langSwitch}</a>
     </div>
   </div>
@@ -75,7 +97,7 @@ const nav = [
   }
   .nav {
     display: flex;
-    gap: 1.6rem;
+    gap: clamp(0.9rem, 1.8vw, 1.6rem);
   }
   .nav a {
     font-size: 0.9rem;
@@ -85,6 +107,9 @@ const nav = [
   }
   .nav a:hover {
     color: var(--text);
+  }
+  .nav a[aria-current='page'] {
+    color: var(--accent);
   }
   .header__actions {
     display: flex;

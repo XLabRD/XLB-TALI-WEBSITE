@@ -183,6 +183,7 @@ const uiLocale = (label: string) =>
       navPricing: fields.text({ label: 'Nav: editions + pricing table' }),
       navFaq: fields.text({ label: 'Nav: FAQ' }),
       navContact: fields.text({ label: 'Nav: contact' }),
+      navSupport: fields.text({ label: 'Nav: support', defaultValue: 'Support' }),
       formName: fields.text({ label: 'Form: name label' }),
       formEmail: fields.text({ label: 'Form: email label' }),
       formMessage: fields.text({ label: 'Form: message label' }),
@@ -251,6 +252,141 @@ const uiLocale = (label: string) =>
     { label }
   );
 
+// Support page chrome (DEC-34) — the article bodies themselves live in the
+// two "Support articles" collections below, one per language.
+const supportLocale = (label: string) =>
+  fields.object(
+    {
+      metaTitle: fields.text({ label: 'Meta title' }),
+      metaDescription: fields.text({ label: 'Meta description', multiline: true }),
+      kicker: fields.text({ label: 'Kicker' }),
+      title: fields.text({ label: 'Page title' }),
+      intro: fields.text({ label: 'Intro', multiline: true }),
+      tabStart: fields.text({ label: 'Tab: getting started' }),
+      tabFix: fields.text({ label: 'Tab: troubleshooting' }),
+      tabContact: fields.text({ label: 'Tab: contact' }),
+      startTitle: fields.text({ label: 'Getting started: title' }),
+      startIntro: fields.text({ label: 'Getting started: intro', multiline: true }),
+      startNote: fields.text({ label: 'Getting started: footnote', multiline: true }),
+      startHelp: fields.text({
+        label: 'Getting started: closing help line',
+        description: 'Shown at the end of the walkthrough with a button to the contact tab.',
+        multiline: true,
+      }),
+      stepLabel: fields.text({ label: 'Getting started: step word', defaultValue: 'Step' }),
+      fixTitle: fields.text({ label: 'Troubleshooting: title' }),
+      fixIntro: fields.text({ label: 'Troubleshooting: intro', multiline: true }),
+      catDevice: fields.text({ label: 'Group heading: the Tali screen' }),
+      catPuk: fields.text({ label: 'Group heading: Puk sensors' }),
+      catApp: fields.text({ label: 'Group heading: app, alerts and account' }),
+      catOrder: fields.text({ label: 'Group heading: orders and delivery' }),
+      readMore: fields.text({ label: 'Card link label' }),
+      contactTitle: fields.text({ label: 'Contact: title' }),
+      contactIntro: fields.text({ label: 'Contact: intro', multiline: true }),
+      contactNote: fields.text({ label: 'Contact: response-time note', multiline: true }),
+      supportEmail: fields.text({
+        label: 'Contact: support address',
+        description:
+          'Announced on the support page, per language (support@ / soporte@). The form still posts to the endpoint in Site settings. Empty = fall back to the site contact email.',
+        defaultValue: '',
+      }),
+      whatsappLabel: fields.text({ label: 'Contact: WhatsApp button label', defaultValue: '' }),
+      whatsappNote: fields.text({
+        label: 'Contact: WhatsApp caveat',
+        description: 'Sits under the button, e.g. that the number takes no calls.',
+        defaultValue: '',
+      }),
+      backToSupport: fields.text({ label: 'Article: back link' }),
+      onThisPage: fields.text({ label: 'Article: contents heading' }),
+      relatedTitle: fields.text({ label: 'Article: related heading' }),
+      articleHelpTitle: fields.text({ label: 'Article: did-this-help title' }),
+      articleHelpText: fields.text({ label: 'Article: did-this-help text', multiline: true }),
+      articleHelpCta: fields.text({ label: 'Article: did-this-help button' }),
+      updatedLabel: fields.text({ label: 'Article: "updated" label' }),
+    },
+    { label }
+  );
+
+// One collection per language, because a markdown file has one body. The two
+// are paired by slug — keep the slugs identical or the language switcher on an
+// article falls back to the support index.
+const supportArticles = (label: string, locale: 'en' | 'es') =>
+  collection({
+    label,
+    path: `src/content/support/${locale}/*`,
+    // Plain .md, not Keystatic's default .mdoc: Astro renders markdown with
+    // no extra integration, so the CMS and the build agree on one format.
+    format: { contentField: 'content' },
+    slugField: 'title',
+    columns: ['title', 'section'],
+    entryLayout: 'content',
+    schema: {
+      title: fields.slug({
+        name: { label: 'Title' },
+        slug: {
+          label: 'Slug',
+          description:
+            'Becomes the URL. Use the SAME slug as the other language so the switcher pairs them.',
+        },
+      }),
+      summary: fields.text({
+        label: 'Summary',
+        description: 'One or two sentences, shown on the support index card.',
+        multiline: true,
+      }),
+      section: fields.select({
+        label: 'Section',
+        options: [
+          { label: 'Getting started', value: 'start' },
+          { label: 'Troubleshooting', value: 'fix' },
+        ],
+        defaultValue: 'fix',
+      }),
+      category: fields.select({
+        label: 'Group',
+        description: 'Use "Setup walkthrough" for Getting started articles.',
+        options: [
+          { label: 'Setup walkthrough', value: 'setup' },
+          { label: 'The Tali screen', value: 'device' },
+          { label: 'Puk sensors', value: 'puk' },
+          { label: 'App, alerts and account', value: 'app' },
+          { label: 'Orders and delivery', value: 'order' },
+        ],
+        defaultValue: 'device',
+      }),
+      order: fields.number({ label: 'Order', defaultValue: 99 }),
+      image: fields.text({
+        label: 'Illustration (optional)',
+        description: 'Path under /public, e.g. /images/support/pair-a-puk.jpg',
+        defaultValue: '',
+      }),
+      imageAlt: fields.text({ label: 'Illustration alt text', defaultValue: '' }),
+      video: fields.text({
+        label: 'Video (optional)',
+        description:
+          'Path under /public, e.g. /videos/pairing.mp4. Shown instead of the illustration, which becomes its poster frame.',
+        defaultValue: '',
+      }),
+      linkHref: fields.text({
+        label: 'Link target (optional)',
+        description: 'e.g. #faq-basic-vs-pro — the locale prefix is added for you.',
+        defaultValue: '',
+      }),
+      linkText: fields.text({ label: 'Link text (optional)', defaultValue: '' }),
+      content: fields.markdoc({
+        label: 'Article',
+        // .md rather than the default .mdoc — see the format note above.
+        extension: 'md',
+        options: {
+          image: {
+            directory: 'public/images/support',
+            publicPath: '/images/support/',
+          },
+        },
+      }),
+    },
+  });
+
 export default config({
   storage: { kind: 'local' },
   ui: { brand: { name: 'Tali' } },
@@ -289,6 +425,12 @@ export default config({
           label: 'Google Play URL (TODO DEC-18)',
           description: 'Android app link for the /hello onboarding page. When set, Android visitors are redirected to it automatically.',
         }),
+        whatsapp: fields.text({
+          label: 'Support WhatsApp number',
+          description:
+            'Shown on the support page as a WhatsApp button. Write it however it should read, e.g. "+52 81 1524 2085" — the link uses the digits. Empty = no button.',
+          defaultValue: '',
+        }),
         instagram: fields.text({ label: 'Instagram URL (TODO DEC-16)' }),
         x: fields.text({ label: 'X URL (TODO DEC-16)' }),
       },
@@ -300,6 +442,15 @@ export default config({
       schema: {
         en: homeLocale('English'),
         es: homeLocale('Español'),
+      },
+    }),
+    supportPage: singleton({
+      label: 'Support page copy',
+      path: 'src/content/site/support',
+      format: { data: 'json' },
+      schema: {
+        en: supportLocale('English'),
+        es: supportLocale('Español'),
       },
     }),
     ui: singleton({
@@ -366,6 +517,8 @@ export default config({
         es: qa('Español'),
       },
     }),
+    supportEn: supportArticles('Support articles (English)', 'en'),
+    supportEs: supportArticles('Support articles (Español)', 'es'),
     plans: collection({
       label: 'Editions (pricing)',
       path: 'src/content/plans/*',

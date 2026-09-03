@@ -63,6 +63,38 @@ const faq = defineCollection({
   }),
 });
 
+// Support articles (DEC-34) — one page per article at /support/<slug>/.
+// Unlike every other collection here, the two languages live in separate
+// *files* rather than side by side in one: the body is markdown, and a
+// markdown file has exactly one body. The slug is what pairs them —
+// `en/pair-a-puk.md` and `es/pair-a-puk.md` are the same article, which is
+// how the language switcher lands on the matching page instead of the index.
+// An article with no counterpart simply doesn't exist in that language.
+const support = defineCollection({
+  loader: glob({ pattern: '*/*.md', base: './src/content/support' }),
+  schema: z.object({
+    title: z.string(),
+    // One or two sentences, shown on the index card. This is what a reader
+    // decides on, so it should answer the question in outline, not tease it.
+    summary: z.string(),
+    // Which tab of /support/ the article belongs to.
+    section: z.enum(['start', 'fix']),
+    // Grouping within the troubleshooting tab; 'setup' is the getting-started
+    // walkthrough, which is ordered rather than grouped.
+    category: z.enum(['setup', 'device', 'puk', 'app', 'order']),
+    order: z.number().default(99),
+    // Optional media above the body. A video wins if both are set; the still
+    // becomes its poster frame, so filling in both is the good case.
+    image: z.string().default(''),
+    imageAlt: z.string().default(''),
+    video: z.string().default(''),
+    // Optional link under the body, into the landing FAQ ('#faq-…', which the
+    // locale prefix is added to) or anywhere else.
+    linkHref: z.string().default(''),
+    linkText: z.string().default(''),
+  }),
+});
+
 const plans = defineCollection({
   loader: glob({ pattern: '**/*.json', base: './src/content/plans' }),
   schema: z.object({
@@ -195,6 +227,7 @@ const localeUi = z.object({
   navPricing: z.string(),
   navFaq: z.string(),
   navContact: z.string(),
+  navSupport: z.string().default('Support'),
   formName: z.string(),
   formEmail: z.string(),
   formMessage: z.string(),
@@ -260,6 +293,49 @@ const localeUi = z.object({
   metaDescription: z.string(),
 });
 
+const localeSupport = z.object({
+  metaTitle: z.string(),
+  metaDescription: z.string(),
+  kicker: z.string(),
+  title: z.string(),
+  intro: z.string(),
+  tabStart: z.string(),
+  tabFix: z.string(),
+  tabContact: z.string(),
+  startTitle: z.string(),
+  startIntro: z.string(),
+  startNote: z.string().default(''),
+  // Closes the walkthrough with a route to a person; renders with a button
+  // to the contact tab. Empty hides the whole block.
+  startHelp: z.string().default(''),
+  stepLabel: z.string().default('Step'),
+  fixTitle: z.string(),
+  fixIntro: z.string(),
+  // Group headings in the troubleshooting index, keyed by the article
+  // `category`. Keep these in step with the enum above.
+  catDevice: z.string(),
+  catPuk: z.string(),
+  catApp: z.string(),
+  catOrder: z.string(),
+  readMore: z.string().default(''),
+  contactTitle: z.string(),
+  contactIntro: z.string(),
+  contactNote: z.string().default(''),
+  // Announced on the support page only, and per locale — the site-wide
+  // contactEmail in settings.json stays hello@tali.my, which is also where
+  // the form posts. Empty falls back to that address.
+  supportEmail: z.string().default(''),
+  whatsappLabel: z.string().default(''),
+  whatsappNote: z.string().default(''),
+  backToSupport: z.string(),
+  onThisPage: z.string().default(''),
+  relatedTitle: z.string().default(''),
+  articleHelpTitle: z.string().default(''),
+  articleHelpText: z.string().default(''),
+  articleHelpCta: z.string().default(''),
+  updatedLabel: z.string().default(''),
+});
+
 const site = defineCollection({
   loader: glob({ pattern: 'settings.json', base: './src/content/site' }),
   schema: z.object({
@@ -276,6 +352,10 @@ const site = defineCollection({
     // TODO(DEC-18): store links for /hello; empty = that platform's badge inert.
     appStoreUrl: z.string().default(''),
     playStoreUrl: z.string().default(''),
+    // Support WhatsApp (DEC-34). Stored as written for display; the wa.me
+    // link strips everything but the digits. Rendered on the support page
+    // only — empty hides the button.
+    whatsapp: z.string().default(''),
     // TODO(DEC-16): real social URLs pending; empty = link hidden.
     instagram: z.string().default(''),
     x: z.string().default(''),
@@ -287,9 +367,14 @@ const home = defineCollection({
   schema: z.object({ en: localeHome, es: localeHome }),
 });
 
+const supportPage = defineCollection({
+  loader: glob({ pattern: 'support.json', base: './src/content/site' }),
+  schema: z.object({ en: localeSupport, es: localeSupport }),
+});
+
 const ui = defineCollection({
   loader: glob({ pattern: 'ui.json', base: './src/content/site' }),
   schema: z.object({ en: localeUi, es: localeUi }),
 });
 
-export const collections = { features, faq, plans, site, home, ui };
+export const collections = { features, faq, plans, support, site, home, supportPage, ui };

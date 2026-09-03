@@ -1,0 +1,162 @@
+---
+// The contact form itself, split out of Contact.astro (DEC-34) so the support
+// page can render it inline while the landing page keeps it inside a modal.
+// One instance per page — the submit handler binds by id.
+interface Props {
+  ui: Record<string, string>;
+  settings: { contactEmail: string; formEndpoint: string };
+  /**
+   * Address for the mailto fallback — used when the endpoint fails or JS is
+   * off. Defaults to the site contact email; the support page passes its own
+   * announced address so the fallback matches what the reader just read.
+   * Where the form POSTs is unaffected: that is settings.formEndpoint.
+   */
+  email?: string;
+}
+const { ui, settings, email = settings.contactEmail } = Astro.props;
+// TODO(DEC-11): formEndpoint is empty until the form backend is created.
+// Two accepted formats:
+//   - a full POST URL (Formspree-style) — posted to as-is, no captcha widget
+//   - a bare Web3Forms access key — posts to api.web3forms.com with their
+//     built-in hCaptcha (verified server-side by Web3Forms)
+// Empty → the form falls back to mailto.
+const raw = settings.formEndpoint;
+const isW3F = Boolean(raw) && !raw.startsWith('http');
+const endpoint = isW3F ? 'https://api.web3forms.com/submit' : raw;
+---
+
+<form
+  id="contact-form"
+  class="form"
+  action={endpoint || `mailto:${email}`}
+  method="POST"
+  data-endpoint={endpoint}
+  data-captcha={isW3F ? 'true' : undefined}
+  novalidate
+>
+  {isW3F && <input type="hidden" name="access_key" value={raw} />}
+  {/* Web3Forms' native honeypot — their server drops submissions that fill it */}
+  {isW3F && <input class="hp" type="checkbox" name="botcheck" tabindex="-1" aria-hidden="true" />}
+  <input class="hp" type="text" name="_gotcha" tabindex="-1" autocomplete="off" aria-hidden="true" />
+  <label>
+    <span>{ui.formName}</span>
+    <input type="text" name="name" required autocomplete="name" />
+  </label>
+  <label>
+    <span>{ui.formEmail}</span>
+    <input type="email" name="email" required autocomplete="email" />
+  </label>
+  <label>
+    <span>{ui.formMessage}</span>
+    <textarea name="message" rows="5" required></textarea>
+  </label>
+  {isW3F && <div class="h-captcha" data-captcha="true"></div>}
+  <button class="btn" type="submit" data-label={ui.formSend} data-sending={ui.formSending}>
+    {ui.formSend}
+  </button>
+  <p class="form__status form__status--ok" hidden>{ui.formSuccess}</p>
+  <p class="form__status form__status--err" hidden>
+    {ui.formError}
+    <a href={`mailto:${email}`}>{ui.formMailto}</a>
+  </p>
+</form>
+
+<script>
+  const form = document.getElementById('contact-form') as HTMLFormElement;
+  const button = form.querySelector('button[type="submit"]') as HTMLButtonElement;
+  const ok = form.querySelector('.form__status--ok') as HTMLElement;
+  const err = form.querySelector('.form__status--err') as HTMLElement;
+  const endpoint = form.dataset.endpoint;
+
+  // The captcha script is only fetched once someone actually reaches the form
+  // — on the landing page that means opening the dialog (Contact.astro fires
+  // this event), on the support page it means arriving with the form on screen.
+  let captchaLoaded = false;
+  const loadCaptcha = () => {
+    if (form.dataset.captcha !== 'true' || captchaLoaded) return;
+    captchaLoaded = true;
+    const s = document.createElement('script');
+    s.src = 'https://web3forms.com/client/script.js';
+    s.async = true;
+    s.defer = true;
+    document.head.appendChild(s);
+  };
+  document.addEventListener('contact-form:shown', loadCaptcha);
+
+  form.addEventListener('submit', async (event) => {
+    if (!endpoint) return; // no endpoint yet — let the mailto action handle it
+    event.preventDefault();
+    ok.hidden = true;
+    err.hidden = true;
+    button.disabled = true;
+    button.textContent = button.dataset.sending!;
+    try {
+      const res = await fetch(endpoint, {
+        method: 'POST',
+        body: new FormData(form),
+        headers: { Accept: 'application/json' },
+      });
+      if (!res.ok) throw new Error(String(res.status));
+      form.reset();
+      (window as any).hcaptcha?.reset();
+      ok.hidden = false;
+    } catch {
+      err.hidden = false;
+    } finally {
+      button.disabled = false;
+      button.textContent = button.dataset.label!;
+    }
+  });
+</script>
+
+<style>
+  .form {
+    display: grid;
+    gap: 1.1rem;
+    justify-items: start;
+  }
+  label {
+    display: grid;
+    gap: 0.4rem;
+    width: 100%;
+  }
+  label span {
+    font-family: var(--mono);
+    font-size: 0.7rem;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--text-dim);
+  }
+  input,
+  textarea {
+    width: 100%;
+    background: var(--bg);
+    border: 1px solid var(--line);
+    border-radius: 8px;
+    color: var(--text);
+    font-family: var(--sans);
+    font-size: 1rem;
+    padding: 0.75rem 0.9rem;
+    transition: border-color 0.15s ease;
+  }
+  input:focus,
+  textarea:focus {
+    outline: none;
+    border-color: var(--accent);
+  }
+  textarea {
+    resize: vertical;
+  }
+  .form__status {
+    font-size: 0.92rem;
+  }
+  .form__status--ok {
+    color: var(--accent);
+  }
+  .form__status--err {
+    color: var(--text-dim);
+  }
+  .form__status--err a {
+    color: var(--accent);
+  }
+</style>

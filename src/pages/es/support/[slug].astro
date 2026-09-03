@@ -1,0 +1,14 @@
+---
+import { getCollection } from 'astro:content';
+import SupportArticle from '../../../components/SupportArticle.astro';
+
+export async function getStaticPaths() {
+  return (await getCollection('support'))
+    .filter((entry) => entry.id.startsWith('es/'))
+    .map((entry) => ({ params: { slug: entry.id.slice(3) }, props: { entry } }));
+}
+
+const { entry } = Astro.props;
+---
+
+<SupportArticle locale="es" entry={entry} />
