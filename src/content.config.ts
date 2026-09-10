@@ -252,7 +252,8 @@ const localeUi = z.object({
   thanksStatusCanceled: z.string().default(''),
   thanksTrack: z.string().default(''),
   thanksBookmark: z.string().default(''),
-  // Founders number + wave on the thanks page (DEC-27). {n} = position.
+  // Edition + wave on the thanks page (DEC-27). The buyer's sequential
+  // number is internal only and never shown.
   thanksWave1: z.string().default(''),
   thanksWave2: z.string().default(''),
   thanksWaveSignature: z.string().default(''),
@@ -283,7 +284,8 @@ const localeUi = z.object({
     .default('This order was canceled. Write to us at {email} if that\'s unexpected.'),
   trackOrderLabel: z.string().default('Order'),
   trackAddressLabel: z.string().default('Delivering to'),
-  trackUnit: z.string().default('{series} #{n}'),
+  // {series} = Founders | Signature. No unit number (DEC-27).
+  trackUnit: z.string().default('{series} Edition'),
   trackHelp: z
     .string()
     .default(

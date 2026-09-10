@@ -163,14 +163,15 @@ const canceled = ui.trackCanceled.split('{email}');
 
         if (s.order_number) fill('order', '.track__order', s.order_number);
         if (s.address) fill('address', '.track__address', s.address);
-        if (s.wave && s.position) {
+        if (s.wave) {
           const unit = main.querySelector<HTMLElement>('.track__unit')!;
           fill(
             'unit',
             '.track__unit',
-            (unit.dataset.template || '')
-              .replace('{series}', s.wave === 'Signature' ? 'Signature' : 'Founders')
-              .replace('{n}', String(s.position))
+            (unit.dataset.template || '').replace(
+              '{series}',
+              s.wave === 'Signature' ? 'Signature' : 'Founders'
+            )
           );
         }
       })

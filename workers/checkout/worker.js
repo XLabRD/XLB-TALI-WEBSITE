@@ -5,7 +5,7 @@
 //
 //   POST /create-checkout-session  { locale: "en" | "es" } → { clientSecret }
 //   GET  /session-status?session_id=cs_… → { status, payment_status, customer_email,
-//                           receipt_url, order_status, tracking_url, position, wave,
+//                           receipt_url, order_status, tracking_url, wave,
 //                           order_number, address }
 //   GET  /price → { unit_amount, currency }   (live price so the site never shows a stale figure)
 //
@@ -146,8 +146,9 @@ async function sessionStatus(url, env, cors) {
   let orderStatus = session.payment_intent?.metadata?.order_status ?? null;
   let trackingUrl = session.payment_intent?.metadata?.tracking_url ?? null;
   // The wave stored at purchase (DEC-27) — authoritative, unlike the pricing
-  // card's forecast, which can shift under a buyer mid-checkout.
-  let position = null;
+  // card's forecast, which can shift under a buyer mid-checkout. The row also
+  // carries the unit's `position`, deliberately left out of this payload: the
+  // buyer is told their edition, never their sequential number.
   let wave = null;
   // For /track/ (DEC-30): the human order number and where the courier is
   // headed. Same trust boundary as customer_email below — an unguessable
@@ -161,7 +162,6 @@ async function sessionStatus(url, env, cors) {
         const order = readOrder(page);
         orderStatus = order.status.toLowerCase() || orderStatus;
         trackingUrl = order.tracking || trackingUrl;
-        position = order.position;
         wave = order.wave;
         orderNumber = order.orderNumber || null;
         address = order.address || null;
@@ -179,7 +179,6 @@ async function sessionStatus(url, env, cors) {
       receipt_url: session.payment_intent?.latest_charge?.receipt_url ?? null,
       order_status: orderStatus,
       tracking_url: trackingUrl,
-      position,
       wave,
       order_number: orderNumber,
       address,

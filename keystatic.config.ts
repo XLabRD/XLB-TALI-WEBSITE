@@ -208,11 +208,11 @@ const uiLocale = (label: string) =>
       thanksStatusCanceled: fields.text({ label: 'Thanks page: status "canceled"', defaultValue: '' }),
       thanksTrack: fields.text({ label: 'Thanks page: tracking link label', defaultValue: '' }),
       thanksBookmark: fields.text({ label: 'Thanks page: bookmark hint', defaultValue: '' }),
-      // {n} is replaced with the buyer's Founders number (DEC-27).
-      thanksWave1: fields.text({ label: 'Thanks page: Wave 1 line ({n} = number)', defaultValue: '' }),
-      thanksWave2: fields.text({ label: 'Thanks page: Wave 2 line ({n} = number)', defaultValue: '' }),
+      // Edition + wave only — the buyer's unit number is never shown (DEC-27).
+      thanksWave1: fields.text({ label: 'Thanks page: Wave 1 line', defaultValue: '' }),
+      thanksWave2: fields.text({ label: 'Thanks page: Wave 2 line', defaultValue: '' }),
       thanksWaveSignature: fields.text({
-        label: 'Thanks page: Signature line ({n} = number)',
+        label: 'Thanks page: Signature line',
         defaultValue: '',
       }),
       footerTagline: fields.text({ label: 'Footer tagline' }),
@@ -239,8 +239,8 @@ const uiLocale = (label: string) =>
       trackOrderLabel: fields.text({ label: 'Track: order-number label' }),
       trackAddressLabel: fields.text({ label: 'Track: address label' }),
       trackUnit: fields.text({
-        label: 'Track: unit line',
-        description: '{series} is Founders or Signature, {n} the unit number.',
+        label: 'Track: edition line',
+        description: '{series} is Founders or Signature.',
       }),
       trackHelp: fields.text({
         label: 'Track: what to do if it never arrives',

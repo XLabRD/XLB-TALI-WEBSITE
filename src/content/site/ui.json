@@ -37,9 +37,9 @@
     "navPreorder": "Buy now",
     "metaTitle": "Tali — the quiet guardian for wine, cigars and delicate collections",
     "metaDescription": "Tali monitors temperature, humidity, vibration and light with laboratory precision. An e-paper display, discreet wireless Puk sensors, and an app — made for serious collections.",
-    "thanksWave1": "You're Founders #{n} — Wave 1, shipping now.",
-    "thanksWave2": "You're Founders #{n} — Wave 2, shipping October–December 2026.",
-    "thanksWaveSignature": "You're Signature #{n} — shipping February–April 2027.",
+    "thanksWave1": "You're on the Founders Edition — Wave 1, shipping now.",
+    "thanksWave2": "You're on the Founders Edition — Wave 2, shipping October–December 2026.",
+    "thanksWaveSignature": "You're on the Signature Edition — shipping February–April 2027.",
     "trackTitle": "GREAT NEWS!",
     "trackSubtitle": "Your order is out for delivery",
     "trackDelivery": "We will be hand delivering this order specially to you today (or tomorrow) before 6pm.",
@@ -50,7 +50,7 @@
     "trackCanceled": "This order was canceled. Write to us at {email} if that's unexpected.",
     "trackOrderLabel": "Order",
     "trackAddressLabel": "Delivering to",
-    "trackUnit": "{series} #{n}",
+    "trackUnit": "{series} Edition",
     "trackHelp": "Not there by the end of the day, or have any questions? Write to us at {email} and we'll chase it."
   },
   "es": {
@@ -91,9 +91,9 @@
     "navPreorder": "Comprar",
     "metaTitle": "Tali — el guardián silencioso para vinos, puros y colecciones delicadas",
     "metaDescription": "Tali monitorea temperatura, humedad, vibración y luz con precisión de laboratorio. Una pantalla de tinta electrónica, sensores inalámbricos Puk y una app — para colecciones serias.",
-    "thanksWave1": "Eres Founders #{n} — Wave 1, se envía ahora.",
-    "thanksWave2": "Eres Founders #{n} — Wave 2, se envía de octubre a diciembre 2026.",
-    "thanksWaveSignature": "Eres Signature #{n} — se envía de febrero a abril 2027.",
+    "thanksWave1": "Tienes la Edición Founders — Wave 1, se envía ahora.",
+    "thanksWave2": "Tienes la Edición Founders — Wave 2, se envía de octubre a diciembre 2026.",
+    "thanksWaveSignature": "Tienes la Edición Signature — se envía de febrero a abril 2027.",
     "trackTitle": "¡EXCELENTE NOTICIA!",
     "trackSubtitle": "Tu pedido va en camino",
     "trackDelivery": "Te lo entregaremos en mano, especialmente para ti, hoy (o mañana) antes de las 6 pm.",
@@ -104,7 +104,7 @@
     "trackCanceled": "Este pedido fue cancelado. Escríbenos a {email} si no lo esperabas.",
     "trackOrderLabel": "Pedido",
     "trackAddressLabel": "Entregando en",
-    "trackUnit": "{series} #{n}",
+    "trackUnit": "Edición {series}",
     "trackHelp": "¿No llegó al final del día, o tienes alguna pregunta? Escríbenos a {email} y lo seguimos."
   }
 }

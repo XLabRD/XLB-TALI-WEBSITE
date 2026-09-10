@@ -29,8 +29,8 @@ const endpoint = (settings.checkoutEndpoint || '').replace(/\/+$/, '');
     <p class="thanks__text" data-state="pending" hidden>{ui.thanksPending}</p>
     <p class="thanks__text" data-state="open" hidden>{ui.thanksIncomplete}</p>
     <a class="thanks__retry" href={`${homePath}#edition`} hidden>{ui.thanksRetry}</a>
-    {/* Founders number + wave, read from the order row — the ship date this
-        buyer was actually promised (DEC-27). {n} = position, {w} = wave. */}
+    {/* Edition + wave, read from the order row — the ship date this buyer was
+        actually promised (DEC-27). {w} = wave; the unit number is internal. */}
     <p
       class="thanks__wave"
       data-wave1={ui.thanksWave1}
@@ -79,7 +79,7 @@ const endpoint = (settings.checkoutEndpoint || '').replace(/\/+$/, '');
           receipt.href = s.receipt_url;
           receipt.hidden = false;
         }
-        // Founders number + wave (DEC-27), stamped on the order at purchase.
+        // Edition + wave (DEC-27), stamped on the order at purchase.
         // Absent for OXXO until the cash is actually paid: only paid orders
         // claim a unit, so no row — and therefore no wave — exists while a
         // voucher is outstanding. The line simply stays hidden, and appears
@@ -94,9 +94,7 @@ const endpoint = (settings.checkoutEndpoint || '').replace(/\/+$/, '');
                 : 'wave1';
           const template = line.dataset[key];
           if (template) {
-            line.textContent = template
-              .replace('{n}', String(s.position ?? ''))
-              .replace('{w}', s.wave);
+            line.textContent = template.replace('{w}', s.wave);
             line.hidden = false;
           }
         }
