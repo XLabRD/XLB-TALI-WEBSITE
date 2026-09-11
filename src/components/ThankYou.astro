@@ -101,6 +101,34 @@ const endpoint = (settings.checkoutEndpoint || '').replace(/\/+$/, '');
         // Order status from payment metadata (set by hand in the Stripe
         // dashboard). Only meaningful once the payment is settled.
         if (s.status === 'complete' && s.payment_status === 'paid') {
+          // Meta Pixel Purchase (DEC-35). This URL doubles as the order's
+          // status page (DEC-24), so it is revisited — count each order once
+          // per browser, and pass the session id as eventID so Meta can
+          // dedupe it against a server-side event if one is ever added. An
+          // OXXO buyer is counted on the first visit after the cash lands.
+          const fbq = (window as any).fbq;
+          if (fbq) {
+            const key = `tali-purchase-${sessionId}`;
+            let seen = false;
+            try {
+              seen = localStorage.getItem(key) !== null;
+              localStorage.setItem(key, '1');
+            } catch {}
+            if (!seen) {
+              fbq(
+                'track',
+                'Purchase',
+                {
+                  content_name: 'Tali Founder Limited Edition',
+                  num_items: 1,
+                  ...(s.amount_total != null && s.currency
+                    ? { value: s.amount_total / 100, currency: s.currency.toUpperCase() }
+                    : {}),
+                },
+                { eventID: sessionId }
+              );
+            }
+          }
           const box = main.querySelector<HTMLElement>('.thanks__status')!;
           // Tolerate both spellings of canceled; anything unknown reads as
           // received so a metadata typo never shows a broken status.

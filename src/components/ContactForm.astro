@@ -12,8 +12,14 @@ interface Props {
    * Where the form POSTs is unaffected: that is settings.formEndpoint.
    */
   email?: string;
+  /**
+   * Meta Pixel event sent on a successful submit (DEC-35). A question on the
+   * landing page is a sales lead; a message from the support page usually
+   * comes from someone who already owns a Tali, so it is only a Contact.
+   */
+  pixelEvent?: 'Lead' | 'Contact';
 }
-const { ui, settings, email = settings.contactEmail } = Astro.props;
+const { ui, settings, email = settings.contactEmail, pixelEvent = 'Lead' } = Astro.props;
 // TODO(DEC-11): formEndpoint is empty until the form backend is created.
 // Two accepted formats:
 //   - a full POST URL (Formspree-style) — posted to as-is, no captcha widget
@@ -32,6 +38,7 @@ const endpoint = isW3F ? 'https://api.web3forms.com/submit' : raw;
   method="POST"
   data-endpoint={endpoint}
   data-captcha={isW3F ? 'true' : undefined}
+  data-pixel-event={pixelEvent}
   novalidate
 >
   {isW3F && <input type="hidden" name="access_key" value={raw} />}
@@ -100,6 +107,7 @@ const endpoint = isW3F ? 'https://api.web3forms.com/submit' : raw;
       form.reset();
       (window as any).hcaptcha?.reset();
       ok.hidden = false;
+      (window as any).fbq?.('track', form.dataset.pixelEvent);
     } catch {
       err.hidden = false;
     } finally {

@@ -361,6 +361,9 @@ const site = defineCollection({
     // TODO(DEC-16): real social URLs pending; empty = link hidden.
     instagram: z.string().default(''),
     x: z.string().default(''),
+    // Meta Pixel (DEC-35): the numeric dataset ID from Events Manager.
+    // Empty = no pixel script on any page.
+    metaPixelId: z.string().default(''),
   }),
 });
 

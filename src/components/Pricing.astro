@@ -154,6 +154,9 @@ const parseInclude = (item: string): Part[] => {
     const error = dialog.querySelector<HTMLElement>('[data-status="error"]')!;
     let stripePromise: Promise<any> | null = null;
     let checkout: { destroy(): void } | null = null;
+    // The figure the card quotes, for the Meta Pixel (DEC-35) — filled in by
+    // the /price fetch below; until then InitiateCheckout goes without one.
+    let quoted: { value: number; currency: string } | null = null;
 
     const loadStripe = () =>
       (stripePromise ??= new Promise((resolve, reject) => {
@@ -176,6 +179,11 @@ const parseInclude = (item: string): Part[] => {
 
     const open = async () => {
       dialog.showModal();
+      (window as any).fbq?.('track', 'InitiateCheckout', {
+        content_name: 'Tali Founder Limited Edition',
+        num_items: 1,
+        ...quoted,
+      });
       loading.hidden = false;
       error.hidden = true;
       try {
@@ -235,6 +243,10 @@ const parseInclude = (item: string): Part[] => {
         const money = (c) => (c / 100).toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g, ',');
         const usd = `$${money(unit_amount)} ${currency.toUpperCase()}`;
         const label = locale === 'es' && mxn ? `$${money(mxn)} MXN` : usd;
+        quoted =
+          locale === 'es' && mxn
+            ? { value: mxn / 100, currency: 'MXN' }
+            : { value: unit_amount / 100, currency: currency.toUpperCase() };
         document
           .querySelectorAll('.plan__price')
           .forEach((el) => (el.textContent = label));

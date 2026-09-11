@@ -174,6 +174,10 @@ async function sessionStatus(url, env, cors) {
     {
       status: session.status,
       payment_status: session.payment_status,
+      // What was actually charged, in the charge currency's minor units —
+      // the value of the Meta Pixel Purchase event on /thanks/ (DEC-35).
+      amount_total: session.amount_total ?? null,
+      currency: session.currency ?? null,
       customer_email: session.customer_details?.email ?? null,
       // Stripe-hosted receipt page — the customer's permanent payment record.
       receipt_url: session.payment_intent?.latest_charge?.receipt_url ?? null,

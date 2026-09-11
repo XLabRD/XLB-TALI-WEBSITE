@@ -4,6 +4,7 @@ import '@fontsource-variable/inter';
 import '@fontsource/ibm-plex-mono/400.css';
 import '@fontsource/ibm-plex-mono/500.css';
 import '../styles/global.css';
+import { getEntry } from 'astro:content';
 
 interface Props {
   locale: 'en' | 'es';
@@ -20,6 +21,9 @@ const { locale, title, description, altPath } = Astro.props;
 // verbatim and the function never runs. That is exactly what happened here:
 // the detector shipped inert, and `/` served English to everyone.
 const localeRedirect = `(function () {
+  /* The flag tells the Meta Pixel (below) not to count a page view for a
+     visitor who is already being sent to /es/ — that page counts its own. */
+  var go = function () { window.taliRedirecting = true; location.replace('/es/'); };
   try {
     /* Only a switcher click is remembered (DEC-4). The old 'tali-lang' key
        also recorded guesses, making a guess indistinguishable from a click.
@@ -27,7 +31,7 @@ const localeRedirect = `(function () {
     localStorage.removeItem('tali-lang');
     var chosen = localStorage.getItem('tali-locale');
     if (chosen === 'en') return;
-    if (chosen === 'es') { location.replace('/es/'); return; }
+    if (chosen === 'es') { go(); return; }
     /* Where you are outranks what your OS is set to (DEC-4, revised): this
        audience is in Mexico on English-configured machines. Timezone is the
        only location signal a static page gets — no network call, no consent
@@ -36,9 +40,9 @@ const localeRedirect = `(function () {
     try { tz = Intl.DateTimeFormat().resolvedOptions().timeZone || ''; } catch (e) {}
     /* No location signal at all → Spanish. Tali ships only to Mexico, so an
        unknown visitor is far likelier to be a customer than a tourist. */
-    if (!tz) { location.replace('/es/'); return; }
+    if (!tz) { go(); return; }
     if (/^(Mexico\\/|America\\/(Mexico_City|Cancun|Merida|Monterrey|Matamoros|Chihuahua|Ciudad_Juarez|Ojinaga|Mazatlan|Bahia_Banderas|Hermosillo|Tijuana|Ensenada|Santa_Isabel)$)/.test(tz)) {
-      location.replace('/es/'); return;
+      go(); return;
     }
     /* Located, and not in Mexico — only here does the browser's language get
        a vote, and only an explicitly English one keeps you on English. */
@@ -48,9 +52,25 @@ const localeRedirect = `(function () {
       if (l.indexOf('en') === 0) return;
       if (l.indexOf('es') === 0) break;
     }
-    location.replace('/es/');
+    go();
   } catch (e) {}
 })();`;
+
+// Meta Pixel (DEC-35) — Meta's standard base code, on every page that uses
+// this layout, only once settings.metaPixelId is set. Page-level events
+// (InitiateCheckout, Purchase, Lead) call `window.fbq?.(…)`, so they are
+// no-ops while the pixel is off. Digits only: the ID lands inside a script.
+const settings = (await getEntry('site', 'settings'))!.data;
+const pixelId = /^\d+$/.test(settings.metaPixelId.trim()) ? settings.metaPixelId.trim() : '';
+const metaPixel = `if (!window.taliRedirecting) {
+  !function(f,b,e,v,n,t,s){if(f.fbq)return;n=f.fbq=function(){n.callMethod?
+  n.callMethod.apply(n,arguments):n.queue.push(arguments)};if(!f._fbq)f._fbq=n;
+  n.push=n;n.loaded=!0;n.version='2.0';n.queue=[];t=b.createElement(e);t.async=!0;
+  t.src=v;s=b.getElementsByTagName(e)[0];s.parentNode.insertBefore(t,s)}(window,
+  document,'script','https://connect.facebook.net/en_US/fbevents.js');
+  fbq('init', '${pixelId}');
+  fbq('track', 'PageView');
+}`;
 
 const site = Astro.site!;
 const canonical = new URL(Astro.url.pathname, site);
@@ -81,6 +101,20 @@ const ogLocale = locale === 'en' ? 'en_US' : 'es_MX';
     {
       locale === 'en' && Astro.url.pathname === '/' && (
         <script is:inline set:html={localeRedirect} />
+      )
+    }
+    {pixelId && <script is:inline set:html={metaPixel} />}
+    {
+      pixelId && (
+        <noscript>
+          <img
+            height="1"
+            width="1"
+            style="display:none"
+            alt=""
+            src={`https://www.facebook.com/tr?id=${pixelId}&ev=PageView&noscript=1`}
+          />
+        </noscript>
       )
     }
     <slot name="head" />

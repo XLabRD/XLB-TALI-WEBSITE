@@ -65,6 +65,10 @@ in code with `TODO(DEC-n)`; find them with `grep -rn "TODO(DEC-" src/ public/ *.
   number. Staff paste the page's URL into the Notion row's `Tracking URL`, which
   already drives the "Track your shipment" button on `/thanks/` and in the
   shipped email. Works bare or with `?session_id=` for a personalized view.
+- **Meta Pixel** (DEC-35): base code in `Base.astro`, on only when
+  `settings.metaPixelId` is set. Events call `window.fbq?.(…)` so they no-op
+  while it's off: `InitiateCheckout` (Pricing), `Purchase` (ThankYou, once per
+  order), `Lead`/`Contact` (ContactForm). Add new events the same way.
 - **Currency** (DEC-32): `/` quotes USD, `/es/` quotes **MXN** — fetched at runtime from the
   worker's `/price` (`currency_options.mxn`, maintained by the daily FX cron). Never commit a
   peso literal: FX moves daily and `npm run set-price` rewrites USD patterns only.

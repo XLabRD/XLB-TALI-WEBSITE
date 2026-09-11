@@ -433,6 +433,12 @@ export default config({
         }),
         instagram: fields.text({ label: 'Instagram URL (TODO DEC-16)' }),
         x: fields.text({ label: 'X URL (TODO DEC-16)' }),
+        metaPixelId: fields.text({
+          label: 'Meta Pixel ID (DEC-35)',
+          description:
+            'The numeric dataset/pixel ID from Meta Events Manager, e.g. 1234567890123456. Empty = no pixel on any page.',
+          defaultValue: '',
+        }),
       },
     }),
     home: singleton({
