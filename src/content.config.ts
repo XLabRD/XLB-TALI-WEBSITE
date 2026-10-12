@@ -212,6 +212,17 @@ const localeHome = z.object({
       remaining: z.string().default(''),
     })
     .default({}),
+  // Spec table above the FAQ: one row per spec, a Tali and a Puk cell.
+  // Empty array = section hidden.
+  specsKicker: z.string().default(''),
+  specsTitle: z.string().default(''),
+  specsTali: z.string().default('Tali'),
+  specsPuk: z.string().default('Puk'),
+  specsRows: z
+    .array(z.object({ label: z.string(), tali: z.string(), puk: z.string() }))
+    .default([]),
+  // Fine print under the table (e.g. the condensation footnote).
+  specsNote: z.string().default(''),
   faqKicker: z.string(),
   faqTitle: z.string(),
   contactKicker: z.string(),

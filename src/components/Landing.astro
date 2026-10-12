@@ -10,6 +10,7 @@ import Features from './Features.astro';
 import Film from './Film.astro';
 import Pricing from './Pricing.astro';
 import ShipSchedule from './ShipSchedule.astro';
+import Specs from './Specs.astro';
 import Faq from './Faq.astro';
 import Contact from './Contact.astro';
 import Footer from './Footer.astro';
@@ -69,6 +70,7 @@ const jsonLd = {
     <Features locale={locale} copy={home} features={features} soonLabel={ui.featureSoon} />
     <Film copy={home} />
     <ShipSchedule copy={home} />
+    <Specs copy={home} />
     <Faq copy={home} items={faqs} ctaLabel={ui.navPreorder} />
     <Contact
       copy={home}

@@ -1,0 +1,114 @@
+---
+interface Props {
+  copy: Record<string, any>;
+}
+const { copy } = Astro.props;
+const rows: Array<{ label: string; tali: string; puk: string }> = copy.specsRows ?? [];
+---
+
+{
+  rows.length > 0 && (
+    <section class="section" id="specs">
+      <div class="wrap">
+        <div class="section__head head--center">
+          <p class="kicker">{copy.specsKicker}</p>
+          <h2 class="section__title">{copy.specsTitle}</h2>
+        </div>
+        <div class="specs">
+          <table>
+            <thead>
+              <tr>
+                <td />
+                <th scope="col">{copy.specsTali}</th>
+                <th scope="col">{copy.specsPuk}</th>
+              </tr>
+            </thead>
+            <tbody>
+              {rows.map((r) => (
+                <tr>
+                  <th scope="row">{r.label}</th>
+                  <td>{r.tali}</td>
+                  <td>{r.puk}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+        {copy.specsNote && <p class="specs__note">{copy.specsNote}</p>}
+      </div>
+    </section>
+  )
+}
+
+<style>
+  .head--center {
+    margin-inline: auto;
+    text-align: center;
+    justify-items: center;
+  }
+  .specs {
+    max-width: 46rem;
+    margin-inline: auto;
+    border: 1px solid var(--line);
+    border-radius: 14px;
+    overflow: hidden;
+    background: linear-gradient(170deg, var(--surface), transparent 80%);
+  }
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    table-layout: fixed;
+  }
+  th,
+  td {
+    padding: 1rem 1.5rem;
+    text-align: left;
+    vertical-align: baseline;
+  }
+  tbody tr {
+    border-top: 1px solid var(--line);
+  }
+  thead th {
+    font-family: var(--display);
+    font-size: 1.25rem;
+    font-weight: 400;
+    color: var(--text);
+  }
+  tbody th {
+    font-family: var(--mono);
+    font-size: 0.72rem;
+    font-weight: 400;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--text-dim);
+  }
+  tbody td {
+    font-size: 0.95rem;
+    color: var(--text);
+    /* a newline in a cell stacks its values */
+    white-space: pre-line;
+  }
+  .specs__note {
+    max-width: 46rem;
+    margin: 0.8rem auto 0;
+    font-size: 0.78rem;
+    color: var(--text-dim);
+    white-space: pre-line;
+  }
+  @media (max-width: 640px) {
+    th,
+    td {
+      padding: 0.85rem 0.75rem;
+    }
+    thead th {
+      font-size: 1.05rem;
+    }
+    tbody th {
+      font-size: 0.62rem;
+      letter-spacing: 0.08em;
+    }
+    tbody td {
+      font-size: 0.85rem;
+    }
+  }
+</style>

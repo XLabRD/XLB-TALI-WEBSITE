@@ -9,13 +9,13 @@
     "heroImageAlt": "The Tali e-paper display standing on a marble table, showing 17.2°C and 67% humidity for a wine cellar",
     "systemKicker": "The system",
     "systemTitle": "One hub for unlimited zones.",
-    "systemIntro": "Discreet wireless sensors live with your collection. A glanceable e-paper display shows what they sense. The app keeps the detailed log wherever you are, and tells you when something needs your attention.\n\nPair one Puk (remote sensor) or many. The display reads its own surroundings too, so it can watch the room while your Puks watch inside — and the gap between them is often the first sign something is changing. Or let it stand as a zone of its own.",
+    "systemIntro": "Discreet wireless sensors live with your collection. A glanceable e-paper display shows what they sense. The app keeps the detailed log wherever you are, and tells you when something needs your attention.\n\nPair one Puk (remote sensor) or many. The display reads its own surroundings too, so it can watch the room while your Puks watch inside — and the gap between them is often the first sign something is changing. Or let it stand as a zone of its own.\n\nTali (the hub) has a backup battery: if the power goes out, it sends a notification to the app and keeps measuring for roughly 12 to 24 hours, depending on factors like the distance to your Wi-Fi router and connectivity conditions.\n\nTo be clear, Tali is designed to stay plugged in. Its battery is only a backup — it is not a wireless device.\n\nPuks, on the other hand, are designed to work 100% wireless and remote, with an estimated battery life of up to 18 months, depending on usage and other variables.",
     "systemLinkAlt": "Four wireless Puk sensors arranged around a single Tali display, each sending its readings in to the hub, which shows 18.0°C and 76% for zone 1 of 4",
     "systemParts": [
       {
         "name": "Tali",
         "role": "The display",
-        "body": "An always-on e-paper screen that sits wherever you are. It shows live readings from every zone you monitor — no glow, no noise, just ink-like clarity that lasts.",
+        "body": "An always-on e-paper screen that sits wherever you are. It shows live readings from every zone you monitor — no glow, no noise, just ink-like clarity that lasts. It stays plugged in; if the power fails, its backup battery keeps watch and alerts you.",
         "image": "/images/tali-display.jpg",
         "imageAlt": "The Tali e-paper display on a marble table, showing 18.0°C and 76% humidity for a wine cellar"
       },
@@ -89,6 +89,63 @@
         "price": "Coming soon"
       }
     ],
+    "specsKicker": "Specifications",
+    "specsTitle": "The details, side by side.",
+    "specsTali": "Tali",
+    "specsPuk": "Puk",
+    "specsRows": [
+      {
+        "label": "Temperature range",
+        "tali": "0 °C to 50 °C",
+        "puk": "−10 °C to 60 °C (battery-limited)"
+      },
+      {
+        "label": "Humidity range",
+        "tali": "0% to 100% RH, non-condensing*",
+        "puk": "0% to 100% RH, non-condensing*"
+      },
+      {
+        "label": "Light range",
+        "tali": "0 to 140,000 lux",
+        "puk": "0 to 140,000 lux"
+      },
+      {
+        "label": "Use",
+        "tali": "Indoors",
+        "puk": "Indoors"
+      },
+      {
+        "label": "Wireless range (Puk → Tali)",
+        "tali": "—",
+        "puk": "Line of sight: 50 m\nIndoors: 15–20 m**"
+      },
+      {
+        "label": "Dimensions (W × H × D)",
+        "tali": "112 × 67 × 10 mm",
+        "puk": "42 × 42 × 15 mm"
+      },
+      {
+        "label": "Materials",
+        "tali": "Anodized aluminium, carbon fiber",
+        "puk": "PET plastic"
+      },
+      {
+        "label": "Power supply",
+        "tali": "110 V, 60 Hz",
+        "puk": "CR2032 battery, user-replaceable"
+      },
+      {
+        "label": "Requires mains power",
+        "tali": "Yes",
+        "puk": "No"
+      },
+      {
+        "label": "Battery life",
+        "tali": "12 hours (backup only)",
+        "puk": "Approx. 18 months"
+      }
+    ],
+    "specsNote": "* If condensation forms, humidity readings won't be accurate until it clears — but the device isn't damaged.\n** Indoor range varies with conditions and building materials.",
     "faqKicker": "Questions",
     "faqTitle": "Asked, answered.",
     "contactKicker": "Contact",
@@ -115,13 +172,13 @@
     "heroImageAlt": "La pantalla Tali de tinta electrónica sobre una mesa de mármol, mostrando 17.2°C y 67% de humedad de una cava",
     "systemKicker": "El sistema",
     "systemTitle": "Un hub para zonas ilimitadas.",
-    "systemIntro": "Sensores inalámbricos discretos viven con tu colección. Una pantalla de tinta electrónica muestra lo que perciben, de un vistazo. La app guarda el registro detallado estés donde estés, y te avisa cuando algo necesita tu atención.\n\nEmpareja un Puk (sensor remoto) o varios. La pantalla también lee su propio entorno, así que puede vigilar la habitación mientras tus Puks vigilan el interior — y la diferencia entre ambos suele ser la primera señal de que algo está cambiando. O déjala funcionar como una zona por sí misma.",
+    "systemIntro": "Sensores inalámbricos discretos viven con tu colección. Una pantalla de tinta electrónica muestra lo que perciben, de un vistazo. La app guarda el registro detallado estés donde estés, y te avisa cuando algo necesita tu atención.\n\nEmpareja un Puk (sensor remoto) o varios. La pantalla también lee su propio entorno, así que puede vigilar la habitación mientras tus Puks vigilan el interior — y la diferencia entre ambos suele ser la primera señal de que algo está cambiando. O déjala funcionar como una zona por sí misma.\n\nTali (el hub) cuenta con una batería de respaldo que, en caso de un corte de energía, envía una notificación a la app y permite continuar con las mediciones durante aproximadamente 12 a 24 horas, dependiendo de factores como la distancia al router Wi-Fi y las condiciones de conectividad.\n\nEs importante aclarar que Tali está diseñado para permanecer conectado a la corriente eléctrica. Su batería funciona únicamente como respaldo, por lo que no es un dispositivo inalámbrico.\n\nEn cambio, los Puk están diseñados para funcionar de manera 100% inalámbrica y remota, con una autonomía estimada de hasta 18 meses, dependiendo de las condiciones de uso y otras variables.",
     "systemLinkAlt": "Cuatro sensores Puk inalámbricos alrededor de una sola pantalla Tali, cada uno enviando sus lecturas al hub, que muestra 18.0°C y 76% de la zona 1 de 4",
     "systemParts": [
       {
         "name": "Tali",
         "role": "La pantalla",
-        "body": "Una pantalla de tinta electrónica siempre encendida que vive donde tú estés. Muestra lecturas en vivo de cada zona que monitoreas — sin brillo, sin ruido, con la claridad de la tinta sobre papel.",
+        "body": "Una pantalla de tinta electrónica siempre encendida que vive donde tú estés. Muestra lecturas en vivo de cada zona que monitoreas — sin brillo, sin ruido, con la claridad de la tinta sobre papel. Vive conectada a la corriente; si se va la luz, su batería de respaldo sigue vigilando y te avisa.",
         "image": "/images/tali-display.jpg",
         "imageAlt": "La pantalla Tali de tinta electrónica sobre una mesa de mármol, mostrando 18.0°C y 76% de humedad de una cava"
       },
@@ -195,6 +252,63 @@
         "price": "Próximamente"
       }
     ],
+    "specsKicker": "Especificaciones",
+    "specsTitle": "Los detalles, lado a lado.",
+    "specsTali": "Tali",
+    "specsPuk": "Puk",
+    "specsRows": [
+      {
+        "label": "Rango de temperatura",
+        "tali": "0 °C a 50 °C",
+        "puk": "−10 °C a 60 °C (limitado por la pila)"
+      },
+      {
+        "label": "Rango de humedad",
+        "tali": "0% a 100% HR, sin condensación*",
+        "puk": "0% a 100% HR, sin condensación*"
+      },
+      {
+        "label": "Rango de luz",
+        "tali": "0 a 140,000 lux",
+        "puk": "0 a 140,000 lux"
+      },
+      {
+        "label": "Uso",
+        "tali": "Interiores",
+        "puk": "Interiores"
+      },
+      {
+        "label": "Alcance inalámbrico (Puk → Tali)",
+        "tali": "—",
+        "puk": "En línea de vista: 50 m\nEn interiores: 15–20 m**"
+      },
+      {
+        "label": "Dimensiones (an × al × gr)",
+        "tali": "112 × 67 × 10 mm",
+        "puk": "42 × 42 × 15 mm"
+      },
+      {
+        "label": "Materiales",
+        "tali": "Aluminio anodizado, fibra de carbono",
+        "puk": "Plástico PET"
+      },
+      {
+        "label": "Suministro eléctrico",
+        "tali": "110 V, 60 Hz",
+        "puk": "Pila CR2032, intercambiable"
+      },
+      {
+        "label": "Requiere corriente eléctrica",
+        "tali": "Sí",
+        "puk": "No"
+      },
+      {
+        "label": "Duración de batería",
+        "tali": "12 horas (solo respaldo)",
+        "puk": "Aprox. 18 meses"
+      }
+    ],
+    "specsNote": "* Si llega a condensarse, las lecturas de humedad no serán precisas mientras dure — pero el equipo no se daña.\n** El alcance en interiores puede variar según las condiciones y los materiales de construcción.",
     "faqKicker": "Preguntas",
     "faqTitle": "Preguntas frecuentes.",
     "contactKicker": "Contacto",

@@ -23,5 +23,7 @@ a second like a phone, it is redrawing when there is something new to say. A
 screen that has not changed in a while is normal. A screen that has not changed
 in hours, with a stale timestamp, is worth a look.
 
-Keep the cable in. Tali is a mains-powered instrument, not a battery one — the
-battery inside covers moves and brief unplugging, not permanent cordless use.
+Keep the cable in. Tali is a mains-powered instrument, not a battery one. The
+battery inside is a backup: if the power fails, it keeps every zone monitored
+and tells the app about the outage, for 12 to 24 hours depending on things like
+the distance to your Wi-Fi router. It is not meant for permanent cordless use.

@@ -164,6 +164,24 @@ const homeLocale = (label: string) =>
         },
         { label: 'Wave labels' }
       ),
+      specsKicker: fields.text({ label: 'Specs kicker', defaultValue: '' }),
+      specsTitle: fields.text({ label: 'Specs title', defaultValue: '' }),
+      specsTali: fields.text({ label: 'Specs column: Tali', defaultValue: 'Tali' }),
+      specsPuk: fields.text({ label: 'Specs column: Puk', defaultValue: 'Puk' }),
+      specsRows: fields.array(
+        fields.object({
+          label: fields.text({ label: 'Spec' }),
+          tali: fields.text({ label: 'Tali' }),
+          puk: fields.text({ label: 'Puk' }),
+        }),
+        { label: 'Specs (rows)', itemLabel: (props) => props.fields.label.value ?? 'Spec' }
+      ),
+      specsNote: fields.text({
+        label: 'Specs footnote',
+        description: 'Fine print under the table. Empty = hidden.',
+        multiline: true,
+        defaultValue: '',
+      }),
       faqKicker: fields.text({ label: 'FAQ kicker' }),
       faqTitle: fields.text({ label: 'FAQ title' }),
       contactKicker: fields.text({ label: 'Contact kicker' }),

@@ -24,6 +24,8 @@ veces por segundo como un teléfono, se redibuja cuando hay algo nuevo que decir
 Una pantalla que no ha cambiado en un rato es normal. Una que no ha cambiado en
 horas, con una hora vieja, sí merece revisión.
 
-Deja el cable puesto. Tali es un instrumento de corriente, no de batería — la
-pila interna cubre traslados y desconexiones breves, no un uso permanente sin
-cable.
+Deja el cable puesto. Tali es un instrumento de corriente, no de batería. La
+batería interna es de respaldo: si se va la luz, mantiene monitoreadas todas tus
+zonas y avisa a la app de la falla de energía, de 12 a 24 horas según variables
+como la distancia a tu router de Wi-Fi. No está pensada para un uso permanente
+sin cable.

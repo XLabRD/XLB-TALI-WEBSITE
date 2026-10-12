@@ -1,0 +1,11 @@
+{
+  "order": 5,
+  "en": {
+    "question": "Does Tali need to stay plugged in?",
+    "answer": "Yes — Tali is designed to live connected to power. Its backup battery is for outages: it keeps monitoring every zone and notifies the app that the power has failed. It lasts between 12 and 24 hours, depending on variables like the distance to your Wi-Fi router."
+  },
+  "es": {
+    "question": "¿Tali tiene que estar siempre conectado?",
+    "answer": "Sí — Tali está diseñado para vivir conectado a la corriente. Su batería de respaldo es para los apagones: sigue monitoreando todas tus zonas y avisa a la app que falló la energía. Dura entre 12 y 24 horas, según variables como la distancia a tu router de Wi-Fi."
+  }
+}
