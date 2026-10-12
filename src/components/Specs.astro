@@ -11,7 +11,7 @@ const rows: Array<{ label: string; tali: string; puk: string }> = copy.specsRows
     <section class="section" id="specs">
       <div class="wrap">
         <div class="section__head head--center">
-          <p class="kicker">{copy.specsKicker}</p>
+          {copy.specsKicker && <p class="kicker">{copy.specsKicker}</p>}
           <h2 class="section__title">{copy.specsTitle}</h2>
         </div>
         <div class="specs">

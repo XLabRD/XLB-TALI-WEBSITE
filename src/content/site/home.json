@@ -89,8 +89,8 @@
         "price": "Coming soon"
       }
     ],
-    "specsKicker": "Specifications",
-    "specsTitle": "The details, side by side.",
+    "specsKicker": "",
+    "specsTitle": "Specifications.",
     "specsTali": "Tali",
     "specsPuk": "Puk",
     "specsRows": [
@@ -252,8 +252,8 @@
         "price": "Próximamente"
       }
     ],
-    "specsKicker": "Especificaciones",
-    "specsTitle": "Los detalles, lado a lado.",
+    "specsKicker": "",
+    "specsTitle": "Especificaciones.",
     "specsTali": "Tali",
     "specsPuk": "Puk",
     "specsRows": [
