@@ -120,6 +120,11 @@
         "puk": "Line of sight: 50 m\nIndoors: 15–20 m**"
       },
       {
+        "label": "Wi-Fi",
+        "tali": "2.4 GHz only",
+        "puk": "N/A"
+      },
+      {
         "label": "Dimensions (W × H × D)",
         "tali": "112 × 67 × 10 mm",
         "puk": "42 × 42 × 15 mm"
@@ -281,6 +286,11 @@
         "label": "Alcance inalámbrico (Puk → Tali)",
         "tali": "—",
         "puk": "En línea de vista: 50 m\nEn interiores: 15–20 m**"
+      },
+      {
+        "label": "Wi-Fi",
+        "tali": "Solo 2.4 GHz",
+        "puk": "N/A"
       },
       {
         "label": "Dimensiones (an × al × gr)",
