@@ -69,7 +69,7 @@ const endpoint = (settings.checkoutEndpoint || '').replace(/\/+$/, '');
           <div class="stats__tile">
             <span class="stats__tile-label">Orders</span>
             <span class="stats__tile-value" data-tile="orders">—</span>
-            <span class="stats__tile-note">all-time, from the order ledger</span>
+            <span class="stats__tile-note" data-tile="kits">all-time, from the order ledger</span>
           </div>
         </div>
 
@@ -106,8 +106,9 @@ const endpoint = (settings.checkoutEndpoint || '').replace(/\/+$/, '');
             press counts even if checkout then fails, because the intent was real.
           </p>
           <p>
-            <strong>Orders</strong> is the all-time claimed count from the order
-            ledger, the same figure the sales cap uses. It is not restricted to the
+            <strong>Orders</strong> is the all-time count of paid orders still held
+            (not canceled), from the order ledger. The <strong>kits</strong> under it
+            is what the sales cap counts — an order can hold up to four. It is not restricted to the
             window above, and it may include orders placed before counting began —
             so don't read it as a conversion of the views shown here.
           </p>
@@ -231,6 +232,10 @@ const endpoint = (settings.checkoutEndpoint || '').replace(/\/+$/, '');
         set('views', nf.format(data.total.views));
         set('clicks', nf.format(data.total.clicks));
         set('orders', data.orders === null ? '—' : nf.format(data.orders));
+        // Kits ≠ orders since multi-kit (DEC-36); older workers send no `kits`.
+        if (data.kits != null) {
+          set('kits', `${nf.format(data.kits)} kit${data.kits === 1 ? '' : 's'} · all-time`);
+        }
         set('rate', rate);
         set(
           'since',

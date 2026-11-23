@@ -110,6 +110,9 @@ const plans = defineCollection({
       // Fine print under the buy button. Per-locale: it used to be one
       // shared field holding Spanish, which the bilingual rule forbids.
       priceNote: z.string().default(''),
+      // Multi-kit line under the price (DEC-36). Names the per-order max,
+      // which lives in the worker's MAX_PER_ORDER — change both together.
+      quantityNote: z.string().default(''),
     }),
     es: z.object({
       name: z.string(),
@@ -117,6 +120,7 @@ const plans = defineCollection({
       includes: z.array(z.string()).default([]),
       cta: z.string(),
       priceNote: z.string().default(''),
+      quantityNote: z.string().default(''),
     }),
   }),
 });
@@ -268,6 +272,8 @@ const localeUi = z.object({
   thanksWave1: z.string().default(''),
   thanksWave2: z.string().default(''),
   thanksWaveSignature: z.string().default(''),
+  // Shown only when the order has more than one kit (DEC-36). {n} = kits.
+  thanksKits: z.string().default(''),
   footerTagline: z.string(),
   langSwitch: z.string(),
   navPreorder: z.string().default('Buy now'),
@@ -297,6 +303,8 @@ const localeUi = z.object({
   trackAddressLabel: z.string().default('Delivering to'),
   // {series} = Founders | Signature. No unit number (DEC-27).
   trackUnit: z.string().default('{series} Edition'),
+  // Same line for a multi-kit order (DEC-36). {n} = kits.
+  trackUnitMany: z.string().default('{n} × {series} Edition'),
   trackHelp: z
     .string()
     .default(

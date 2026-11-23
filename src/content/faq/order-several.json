@@ -1,0 +1,11 @@
+{
+  "order": 10,
+  "en": {
+    "question": "Can I order more than one?",
+    "answer": "Yes — up to 4 per order. Choose the quantity at checkout. Each one is a complete Founders Edition (Tali + Puk) with its own 24 months of Cloud Pro, and the whole order ships together in one box, with shipping within Mexico included. If your order spans two waves, it all ships with the later one. Need more than 4? Write to us and we'll sort it out."
+  },
+  "es": {
+    "question": "¿Puedo pedir más de uno?",
+    "answer": "Sí — hasta 4 por pedido. Elige la cantidad al pagar. Cada uno es una Founders Edition completa (Tali + Puk) con sus propios 24 meses de Cloud Pro, y todo el pedido se envía junto, en una sola caja, con el envío dentro de México incluido. Si tu pedido abarca dos waves, todo se envía con la más tardía. ¿Necesitas más de 4? Escríbenos y lo resolvemos."
+  }
+}

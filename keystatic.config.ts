@@ -50,6 +50,10 @@ const planLocale = (label: string) =>
       }),
       cta: fields.text({ label: 'Button label' }),
       priceNote: fields.text({ label: 'Fine print under the button' }),
+      quantityNote: fields.text({
+        label: 'Multi-kit line under the price',
+        description: 'States the per-order max — keep it equal to MAX_PER_ORDER in the worker (DEC-36).',
+      }),
     },
     { label }
   );
@@ -233,6 +237,11 @@ const uiLocale = (label: string) =>
         label: 'Thanks page: Signature line',
         defaultValue: '',
       }),
+      thanksKits: fields.text({
+        label: 'Thanks page: multi-kit line',
+        description: 'Only shown for orders of 2+ kits. {n} = number of kits.',
+        defaultValue: '',
+      }),
       footerTagline: fields.text({ label: 'Footer tagline' }),
       langSwitch: fields.text({ label: 'Language switch label' }),
       navPreorder: fields.text({ label: 'Nav: buy button' }),
@@ -259,6 +268,10 @@ const uiLocale = (label: string) =>
       trackUnit: fields.text({
         label: 'Track: edition line',
         description: '{series} is Founders or Signature.',
+      }),
+      trackUnitMany: fields.text({
+        label: 'Track: edition line, multi-kit order',
+        description: '{n} = number of kits, {series} = Founders or Signature.',
       }),
       trackHelp: fields.text({
         label: 'Track: what to do if it never arrives',

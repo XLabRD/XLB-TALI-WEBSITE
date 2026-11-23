@@ -38,6 +38,8 @@ const endpoint = (settings.checkoutEndpoint || '').replace(/\/+$/, '');
       data-signature={ui.thanksWaveSignature}
       hidden
     />
+    {/* Multi-kit orders only (DEC-36): how many, and that they travel together. */}
+    <p class="thanks__kits" data-template={ui.thanksKits} hidden />
     <div
       class="thanks__status"
       data-received={ui.thanksStatusReceived}
@@ -98,6 +100,16 @@ const endpoint = (settings.checkoutEndpoint || '').replace(/\/+$/, '');
             line.hidden = false;
           }
         }
+        // Kits in the order (DEC-36) — from Stripe, so it shows even while an
+        // OXXO voucher is unpaid. Single-kit orders read as they always have.
+        if (s.quantity > 1) {
+          const kits = main.querySelector<HTMLElement>('.thanks__kits')!;
+          const template = kits.dataset.template;
+          if (template) {
+            kits.textContent = template.replace('{n}', String(s.quantity));
+            kits.hidden = false;
+          }
+        }
         // Order status from payment metadata (set by hand in the Stripe
         // dashboard). Only meaningful once the payment is settled.
         if (s.status === 'complete' && s.payment_status === 'paid') {
@@ -120,7 +132,7 @@ const endpoint = (settings.checkoutEndpoint || '').replace(/\/+$/, '');
                 'Purchase',
                 {
                   content_name: 'Tali Founder Limited Edition',
-                  num_items: 1,
+                  num_items: s.quantity || 1,
                   ...(s.amount_total != null && s.currency
                     ? { value: s.amount_total / 100, currency: s.currency.toUpperCase() }
                     : {}),

@@ -16,7 +16,8 @@
       "[30-day money-back guarantee](#faq-money-back)"
     ],
     "cta": "Buy now",
-    "priceNote": "* Shipping and taxes within Mexico included"
+    "priceNote": "* Shipping and taxes within Mexico included",
+    "quantityNote": "Need more than one? Choose up to 4 at checkout."
   },
   "es": {
     "name": "Founders Limited Edition",
@@ -31,6 +32,7 @@
       "[Garantía de devolución de 30 días](#faq-money-back)"
     ],
     "cta": "Compra ahora",
-    "priceNote": "* Envío e impuestos en México incluidos"
+    "priceNote": "* Envío e impuestos en México incluidos",
+    "quantityNote": "¿Más de uno? Elige hasta 4 al pagar."
   }
 }

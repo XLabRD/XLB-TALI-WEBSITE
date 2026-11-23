@@ -100,7 +100,11 @@ const canceled = ui.trackCanceled.split('{email}');
       </div>
       <div class="track__row" data-row="unit" hidden>
         <dt>Tali</dt>
-        <dd class="track__unit" data-template={ui.trackUnit}></dd>
+        <dd
+          class="track__unit"
+          data-template={ui.trackUnit}
+          data-template-many={ui.trackUnitMany}
+        ></dd>
       </div>
       <div class="track__row" data-row="address" hidden>
         <dt>{ui.trackAddressLabel}</dt>
@@ -165,13 +169,14 @@ const canceled = ui.trackCanceled.split('{email}');
         if (s.address) fill('address', '.track__address', s.address);
         if (s.wave) {
           const unit = main.querySelector<HTMLElement>('.track__unit')!;
+          // "2 × Founders Edition" for a multi-kit order (DEC-36).
+          const many = s.quantity > 1 && unit.dataset.templateMany;
           fill(
             'unit',
             '.track__unit',
-            (unit.dataset.template || '').replace(
-              '{series}',
-              s.wave === 'Signature' ? 'Signature' : 'Founders'
-            )
+            ((many ? unit.dataset.templateMany : unit.dataset.template) || '')
+              .replace('{n}', String(s.quantity))
+              .replace('{series}', s.wave === 'Signature' ? 'Signature' : 'Founders')
           );
         }
       })

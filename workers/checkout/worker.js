@@ -35,6 +35,7 @@ import {
   findPagesByPaymentIntent,
   findPagesBySessionId,
   kitIndex,
+  countClaimed,
   setStatus,
   setOrderNumber,
   getPage,
@@ -794,16 +795,19 @@ async function inventory(env, cors) {
  */
 async function handleStats(url, env, cors) {
   const data = await readStats(env, url.searchParams.get('days'));
+  // Orders and kits differ since multi-kit (DEC-36). Uncached: this page is
+  // private and rarely loaded, and the 60s cache only holds the kit count.
   let orders = null;
+  let kits = null;
   if (env.NOTION_TOKEN && env.NOTION_DATABASE_ID) {
     try {
-      orders = await claimedCount(env);
+      ({ orders, kits } = await countClaimed(env));
     } catch (err) {
       // A Notion outage costs the funnel's last stage, not the whole page.
       console.error('stats: order count unavailable:', err.message);
     }
   }
-  return json({ ...data, orders }, 200, { ...cors, 'Cache-Control': 'no-store' });
+  return json({ ...data, orders, kits }, 200, { ...cors, 'Cache-Control': 'no-store' });
 }
 
 async function price(env, cors) {

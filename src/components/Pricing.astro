@@ -11,6 +11,7 @@ interface Props {
     includes: string[];
     cta: string;
     priceNote?: string;
+    quantityNote?: string;
   }>;
   settings: {
     orderUrl?: string;
@@ -65,6 +66,9 @@ const parseInclude = (item: string): Part[] => {
                   count, and a stale wave is worse than none. */}
               <p class="plan__wave" hidden />
               <p class="plan__remaining" hidden />
+              {/* Multi-kit (DEC-36): the quantity itself is picked inside
+                  Stripe's checkout; this only tells buyers it can be. */}
+              {plan.quantityNote && <p class="plan__qty">{plan.quantityNote}</p>}
               {embedded ? (
                 <>
                   <button class="btn plan__buy" type="button">
@@ -202,9 +206,10 @@ const parseInclude = (item: string): Part[] => {
       document.documentElement.classList.add('checkout-open');
       document.addEventListener('keydown', onKey);
       dialog.querySelector<HTMLElement>('.checkout-dialog__close')?.focus();
+      // No num_items: the quantity (DEC-36) is chosen inside Stripe after
+      // this fires, so any figure here would be a guess. Purchase reports it.
       (window as any).fbq?.('track', 'InitiateCheckout', {
         content_name: 'Tali Founder Limited Edition',
-        num_items: 1,
         ...quoted,
       });
       loading.hidden = false;
@@ -420,6 +425,12 @@ const parseInclude = (item: string): Part[] => {
 
   /* Non-modal dialog (see the script): centered and layered by hand, below
      Stripe's pop-up overlay (z-index 2147483647) and above the site header. */
+  .plan__qty {
+    color: var(--text-dim);
+    font-size: 0.9rem;
+    margin-top: -0.25rem;
+  }
+
   .checkout-dialog {
     position: fixed;
     inset: 0;

@@ -33,13 +33,24 @@ const text = (s) => ({ rich_text: [{ text: { content: s || '' } }] });
  * (DEC-25). It costs one API call per cache miss.
  */
 export async function countClaimedOrders(env) {
+  return (await countClaimed(env)).kits;
+}
+
+/**
+ * Claimed kits AND the orders they belong to. Since DEC-36 a row is a kit,
+ * so the two differ once someone buys more than one; orders are the
+ * distinct Payment Intents among the claimed rows (a row without one —
+ * hand-entered — counts as its own order).
+ */
+export async function countClaimed(env) {
   const filter = {
     or: [
       { property: 'Status', select: { equals: 'Received' } },
       { property: 'Status', select: { equals: 'Shipped' } },
     ],
   };
-  let count = 0;
+  let kits = 0;
+  const orders = new Set();
   let cursor;
   do {
     const page = await notionRequest(env, 'POST', `/databases/${env.NOTION_DATABASE_ID}/query`, {
@@ -47,10 +58,14 @@ export async function countClaimedOrders(env) {
       page_size: 100,
       ...(cursor ? { start_cursor: cursor } : {}),
     });
-    count += page.results.length;
+    kits += page.results.length;
+    for (const r of page.results) {
+      const pi = (r.properties?.['Payment Intent']?.rich_text ?? []).map((t) => t.plain_text).join('');
+      orders.add(pi || r.id);
+    }
     cursor = page.has_more ? page.next_cursor : null;
   } while (cursor);
-  return count;
+  return { kits, orders: orders.size };
 }
 
 export function createOrderPage(env, o) {
