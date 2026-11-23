@@ -337,6 +337,19 @@ const supportLocale = (label: string) =>
         description: 'Shown at the end of the walkthrough with a button to the contact tab.',
         multiline: true,
       }),
+      startVideo: fields.text({
+        label: 'Getting started: setup video',
+        description: 'Path under public/, e.g. /videos/tali-setup.mp4. Shown above the steps; link to it with /support/#video. Empty = hidden.',
+      }),
+      startVideoPoster: fields.text({
+        label: 'Getting started: video poster image',
+        description: 'Path under public/, e.g. /images/support/tali-setup-poster.jpg',
+      }),
+      startVideoTitle: fields.text({ label: 'Getting started: video title' }),
+      startVideoNote: fields.text({
+        label: 'Getting started: video note',
+        description: 'Small line under the title — e.g. that the video is in Spanish.',
+      }),
       stepLabel: fields.text({ label: 'Getting started: step word', defaultValue: 'Step' }),
       fixTitle: fields.text({ label: 'Troubleshooting: title' }),
       fixIntro: fields.text({ label: 'Troubleshooting: intro', multiline: true }),

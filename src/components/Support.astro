@@ -98,6 +98,28 @@ const tabs = [
         <h2 class="panel__title">{copy.startTitle}</h2>
         <p class="panel__intro">{copy.startIntro}</p>
       </div>
+      {/* Setup video. id="video" makes /support/#video a shareable link: the
+          tab script maps any unknown hash to this first panel. */}
+      {
+        copy.startVideo && (
+          <figure class="start-video" id="video">
+            <figcaption class="start-video__cap">
+              <span class="start-video__title">{copy.startVideoTitle}</span>
+              {copy.startVideoNote && (
+                <span class="start-video__note">{copy.startVideoNote}</span>
+              )}
+            </figcaption>
+            <video
+              src={copy.startVideo}
+              poster={copy.startVideoPoster || undefined}
+              controls
+              preload="none"
+              playsinline
+              aria-label={copy.startVideoTitle}
+            />
+          </figure>
+        )
+      }
       <ol class="steps">
         {
           steps.map((a, i) => (
@@ -360,6 +382,38 @@ const tabs = [
   }
 
   /* --- getting started -------------------------------------------- */
+  /* Portrait video: capped by height so it never fills a desktop screen. */
+  .start-video {
+    margin: 0 0 clamp(2rem, 5vw, 3rem);
+    max-width: 46rem;
+    display: grid;
+    gap: 0.9rem;
+    scroll-margin-top: calc(var(--header-h) + 1rem);
+  }
+  .start-video__cap {
+    display: grid;
+    gap: 0.25rem;
+  }
+  .start-video__title {
+    font-family: var(--display);
+    font-size: 1.3rem;
+    font-weight: 600;
+    color: var(--text);
+  }
+  .start-video__note {
+    color: var(--text-dim);
+    font-size: 0.92rem;
+  }
+  .start-video video {
+    display: block;
+    width: auto;
+    max-width: 100%;
+    height: min(72vh, 40rem);
+    aspect-ratio: 9 / 16;
+    border-radius: 14px;
+    border: 1px solid var(--line);
+    background: var(--epaper-ink);
+  }
   .steps {
     list-style: none;
     margin: 0;

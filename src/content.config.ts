@@ -346,6 +346,13 @@ const localeSupport = z.object({
   // Closes the walkthrough with a route to a person; renders with a button
   // to the contact tab. Empty hides the whole block.
   startHelp: z.string().default(''),
+  // Setup video at the top of Getting started, deep-linkable as
+  // /support/#video. Per locale so an English cut can replace the Spanish
+  // one later; startVideoNote flags the language meanwhile. Empty = hidden.
+  startVideo: z.string().default(''),
+  startVideoPoster: z.string().default(''),
+  startVideoTitle: z.string().default(''),
+  startVideoNote: z.string().default(''),
   stepLabel: z.string().default('Step'),
   fixTitle: z.string(),
   fixIntro: z.string(),
