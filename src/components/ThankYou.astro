@@ -36,6 +36,9 @@ const endpoint = (settings.checkoutEndpoint || '').replace(/\/+$/, '');
       data-wave1={ui.thanksWave1}
       data-wave2={ui.thanksWave2}
       data-signature={ui.thanksWaveSignature}
+      data-wave1-many={ui.thanksWave1Many}
+      data-wave2-many={ui.thanksWave2Many}
+      data-signature-many={ui.thanksWaveSignatureMany}
       hidden
     />
     {/* Multi-kit orders only (DEC-36): how many, and that they travel together. */}
@@ -43,6 +46,7 @@ const endpoint = (settings.checkoutEndpoint || '').replace(/\/+$/, '');
     <div
       class="thanks__status"
       data-received={ui.thanksStatusReceived}
+      data-received-many={ui.thanksStatusReceivedMany}
       data-shipped={ui.thanksStatusShipped}
       data-canceled={ui.thanksStatusCanceled}
       hidden
@@ -94,9 +98,11 @@ const endpoint = (settings.checkoutEndpoint || '').replace(/\/+$/, '');
               : s.wave === 'Wave 2'
                 ? 'wave2'
                 : 'wave1';
-          const template = line.dataset[key];
+          // Plural twin for multi-kit orders (DEC-36), {n} = kits.
+          const template =
+            (s.quantity > 1 && line.dataset[`${key}Many`]) || line.dataset[key];
           if (template) {
-            line.textContent = template.replace('{w}', s.wave);
+            line.textContent = template.replace('{w}', s.wave).replace('{n}', String(s.quantity));
             line.hidden = false;
           }
         }
@@ -148,7 +154,10 @@ const endpoint = (settings.checkoutEndpoint || '').replace(/\/+$/, '');
             ? box.dataset.canceled!
             : s.order_status === 'shipped'
               ? box.dataset.shipped!
-              : box.dataset.received!;
+              : ((s.quantity > 1 && box.dataset.receivedMany) || box.dataset.received!).replace(
+                  '{n}',
+                  String(s.quantity)
+                );
           box.querySelector('.thanks__status-value')!.textContent = state;
           box.hidden = false;
           main.querySelector<HTMLElement>('.thanks__bookmark')!.hidden = false;

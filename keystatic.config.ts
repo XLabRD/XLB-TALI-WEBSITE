@@ -242,6 +242,26 @@ const uiLocale = (label: string) =>
         description: 'Only shown for orders of 2+ kits. {n} = number of kits.',
         defaultValue: '',
       }),
+      thanksWave1Many: fields.text({
+        label: 'Thanks page: Wave 1 line, 2+ kits',
+        description: '{n} = number of kits. Empty = singular line.',
+        defaultValue: '',
+      }),
+      thanksWave2Many: fields.text({
+        label: 'Thanks page: Wave 2 line, 2+ kits',
+        description: '{n} = number of kits. Empty = singular line.',
+        defaultValue: '',
+      }),
+      thanksWaveSignatureMany: fields.text({
+        label: 'Thanks page: Signature line, 2+ kits',
+        description: '{n} = number of kits. Empty = singular line.',
+        defaultValue: '',
+      }),
+      thanksStatusReceivedMany: fields.text({
+        label: 'Thanks page: status "received", 2+ kits',
+        description: '{n} = number of kits. Empty = singular line.',
+        defaultValue: '',
+      }),
       footerTagline: fields.text({ label: 'Footer tagline' }),
       langSwitch: fields.text({ label: 'Language switch label' }),
       navPreorder: fields.text({ label: 'Nav: buy button' }),

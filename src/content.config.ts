@@ -274,6 +274,12 @@ const localeUi = z.object({
   thanksWaveSignature: z.string().default(''),
   // Shown only when the order has more than one kit (DEC-36). {n} = kits.
   thanksKits: z.string().default(''),
+  // Plural twins of the wave + "received" lines for multi-kit orders
+  // (DEC-36). {n} = kits. Empty = fall back to the singular line.
+  thanksWave1Many: z.string().default(''),
+  thanksWave2Many: z.string().default(''),
+  thanksWaveSignatureMany: z.string().default(''),
+  thanksStatusReceivedMany: z.string().default(''),
   footerTagline: z.string(),
   langSwitch: z.string(),
   navPreorder: z.string().default('Buy now'),
