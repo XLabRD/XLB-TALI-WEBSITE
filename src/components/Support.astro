@@ -382,7 +382,7 @@ const tabs = [
   }
 
   /* --- getting started -------------------------------------------- */
-  /* Portrait video: capped by height so it never fills a desktop screen. */
+  /* 16:9 video (cropped from a portrait export, 2026-11-23). */
   .start-video {
     margin: 0 0 clamp(2rem, 5vw, 3rem);
     max-width: 46rem;
@@ -406,10 +406,9 @@ const tabs = [
   }
   .start-video video {
     display: block;
-    width: auto;
-    max-width: 100%;
-    height: min(72vh, 40rem);
-    aspect-ratio: 9 / 16;
+    width: 100%;
+    height: auto;
+    aspect-ratio: 16 / 9;
     border-radius: 14px;
     border: 1px solid var(--line);
     background: var(--epaper-ink);
