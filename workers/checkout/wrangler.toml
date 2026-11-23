@@ -29,9 +29,10 @@ WAVE_SIZE = "50"
 WAVE_COUNTDOWN_AT = "15"
 # Multi-kit orders (DEC-36): the most kits one checkout may buy. "1" is the
 # original single-kit checkout — the master switch, so turning multi-kit off
-# is this one line plus a deploy. Planned live value: "10". The worker also
-# never offers more Founders than are left.
-MAX_PER_ORDER = "10"
+# is this one line plus a deploy. "4" since 2026-11-23: OXXO caps a payment
+# at 10,000 MXN, which fits 4 kits at today's price, and Stripe still offers
+# OXXO above it. Re-check if the price changes. Never more than Founders left.
+MAX_PER_ORDER = "4"
 SITE = "https://tali.my"
 # Origins allowed to call this worker (CORS). Localhost is for `npm run dev`.
 ALLOWED_ORIGINS = "https://tali.my,http://localhost:4321"
