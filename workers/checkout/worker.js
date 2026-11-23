@@ -6,15 +6,16 @@
 //   POST /create-checkout-session  { locale: "en" | "es" } → { clientSecret }
 //   GET  /session-status?session_id=cs_… → { status, payment_status, customer_email,
 //                           receipt_url, order_status, tracking_url, wave,
-//                           order_number, address }
+//                           quantity, order_number, address }
 //   GET  /price → { unit_amount, currency }   (live price so the site never shows a stale figure)
 //
 // Deploy: see README.md in this directory. No npm dependencies — talks to the
 // Stripe REST API directly with fetch.
 
 // Order-ops routes (DEC-25):
-//   POST /stripe-webhook  — Stripe events: paid checkout → Notion row + welcome
-//                           email; refund/dispute → Notion status "Canceled"
+//   POST /stripe-webhook  — Stripe events: paid checkout → one Notion row PER
+//                           KIT + welcome email; refund/dispute → those kits'
+//                           rows "Canceled" (partial refund = some kits, DEC-36)
 //   POST /notion-webhook?key=… — Notion automation on Status change → customer
 //                           email (shipped / canceled), deduped via KV
 //
@@ -30,8 +31,10 @@
 // Stripe's job. Schedule in wrangler.toml.
 import {
   createOrderPage,
-  findPageByPaymentIntent,
   findPageBySessionId,
+  findPagesByPaymentIntent,
+  findPagesBySessionId,
+  kitIndex,
   setStatus,
   setOrderNumber,
   getPage,
@@ -85,6 +88,39 @@ async function stripeRequest(env, method, path, params) {
   return data;
 }
 
+// --- Multi-kit helpers (DEC-36) --------------------------------------------
+
+const num = (v, fallback) => {
+  const n = Number(v);
+  return Number.isFinite(n) && n > 0 ? n : fallback;
+};
+
+/** Kits one checkout may buy. Unset or invalid = 1, the single-kit checkout. */
+const maxPerOrder = (env) => Math.floor(num(env.MAX_PER_ORDER, 1));
+
+/** "$405.00 USD" from minor units — the format the Amount column has always used. */
+const formatAmount = (cents, currency) =>
+  `$${(cents / 100).toFixed(2)} ${String(currency || '').toUpperCase()}`;
+
+/**
+ * How many kits a Checkout Session bought. Line items are never included in
+ * webhook payloads, so they're fetched. Falls back to 1 — the only quantity
+ * that existed before DEC-36 — rather than failing the order over it.
+ */
+async function sessionQuantity(env, sessionId) {
+  try {
+    const r = await stripeRequest(env, 'GET', `/checkout/sessions/${sessionId}/line_items?limit=10`);
+    const q = (r.data ?? []).reduce((sum, li) => sum + (li.quantity || 0), 0);
+    return q > 0 ? q : 1;
+  } catch (err) {
+    console.error('line items lookup failed, assuming 1 kit:', err.message);
+    return 1;
+  }
+}
+
+/** Rows that still hold a unit — the same rule as countClaimedOrders. */
+const isActive = (o) => o.status === 'Received' || o.status === 'Shipped';
+
 async function createSession(request, env, cors) {
   const { locale } = await request.json().catch(() => ({}));
   const es = locale === 'es';
@@ -95,12 +131,24 @@ async function createSession(request, env, cors) {
   // fresh — a 60s-stale count is fine for a label, not for the last unit.
   // Never blocks on a Notion outage: an unreachable count fails OPEN, because
   // losing a sale is worse than overselling one unit we can refund.
+  // Multi-kit (DEC-36): the buyer picks 1…maxKits inside Stripe's checkout.
+  // MAX_PER_ORDER is the master switch — 1 (the default) is exactly the
+  // single-kit checkout this site launched with, so turning the feature off
+  // is a config change, not a code revert.
+  let maxKits = maxPerOrder(env);
   if (env.NOTION_TOKEN && env.NOTION_DATABASE_ID) {
     try {
       const sold = await claimedCount(env, { fresh: true });
       const inv = resolveInventory(env, sold);
       if (inv.soldOut && !env.SIGNATURE_PRICE_ID) {
         return json({ error: 'sold_out' }, 409, cors);
+      }
+      // Never offer more Founders than are left while there's no Signature
+      // price to sell beyond the cap. Two buyers can still race for the last
+      // few; the webhook flags any kit past the cap for staff.
+      if (!inv.soldOut && !env.SIGNATURE_PRICE_ID) {
+        const left = num(env.FOUNDERS_CAP, 100) - sold;
+        maxKits = Math.max(1, Math.min(maxKits, left));
       }
     } catch (err) {
       console.error('cap check failed, allowing checkout:', err.message);
@@ -113,6 +161,13 @@ async function createSession(request, env, cors) {
     locale: es ? 'es-419' : 'en',
     'line_items[0][price]': env.STRIPE_PRICE_ID,
     'line_items[0][quantity]': '1',
+    ...(maxKits > 1
+      ? {
+          'line_items[0][adjustable_quantity][enabled]': 'true',
+          'line_items[0][adjustable_quantity][minimum]': '1',
+          'line_items[0][adjustable_quantity][maximum]': String(maxKits),
+        }
+      : {}),
     // Shipping address + phone, needed to fulfill the physical Founder
     // Edition; countries come from SHIP_COUNTRIES in wrangler.toml.
     'phone_number_collection[enabled]': 'true',
@@ -137,8 +192,12 @@ async function sessionStatus(url, env, cors) {
   const session = await stripeRequest(
     env,
     'GET',
-    `/checkout/sessions/${id}?expand[]=payment_intent.latest_charge`
+    `/checkout/sessions/${id}?expand[]=payment_intent.latest_charge&expand[]=line_items`
   );
+  // Kits bought (DEC-36). From Stripe, not Notion, so it's known before the
+  // row exists — e.g. an OXXO voucher that hasn't been paid yet.
+  const quantity =
+    (session.line_items?.data ?? []).reduce((sum, li) => sum + (li.quantity || 0), 0) || 1;
   // Fulfillment status comes from the Notion orders row (DEC-25) — the one
   // place staff edit. Legacy Stripe metadata is the fallback for orders that
   // predate the Notion pipeline. Notion statuses are capitalized selects
@@ -157,12 +216,22 @@ async function sessionStatus(url, env, cors) {
   let address = null;
   if (env.NOTION_TOKEN && env.NOTION_DATABASE_ID) {
     try {
-      const page = await findPageBySessionId(env, session.id);
-      if (page) {
-        const order = readOrder(page);
-        orderStatus = order.status.toLowerCase() || orderStatus;
-        trackingUrl = order.tracking || trackingUrl;
-        wave = order.wave;
+      // One row per kit (DEC-36); the buyer sees ONE order status. Canceled
+      // only once every kit is; Shipped once every kit still held is — the
+      // order ships together, in one box.
+      const rows = (await findPagesBySessionId(env, session.id))
+        .map(readOrder)
+        .filter((o) => o.status !== 'Abandoned');
+      if (rows.length) {
+        const order = rows[0];
+        const active = rows.filter(isActive);
+        orderStatus = !active.length
+          ? 'canceled'
+          : active.every((o) => o.status === 'Shipped')
+            ? 'shipped'
+            : 'received';
+        trackingUrl = (active[0] || order).tracking || trackingUrl;
+        wave = (active[0] || order).wave;
         orderNumber = order.orderNumber || null;
         address = order.address || null;
       }
@@ -184,6 +253,7 @@ async function sessionStatus(url, env, cors) {
       order_status: orderStatus,
       tracking_url: trackingUrl,
       wave,
+      quantity,
       order_number: orderNumber,
       address,
     },
@@ -236,7 +306,7 @@ function formatAddress(details) {
 // viewed — usually moments AFTER checkout.session.completed. This runs after
 // the webhook response (ctx.waitUntil): "view" the receipt to force minting,
 // then poll briefly and write the number to the Notion row.
-async function backfillOrderNumber(env, pageId, paymentIntent, receiptUrl) {
+async function backfillOrderNumber(env, pageIds, paymentIntent, receiptUrl) {
   try {
     if (receiptUrl) await fetch(receiptUrl);
     for (const delay of [2000, 5000, 10000]) {
@@ -248,7 +318,8 @@ async function backfillOrderNumber(env, pageId, paymentIntent, receiptUrl) {
       );
       const n = pi.latest_charge?.receipt_number;
       if (n) {
-        await setOrderNumber(env, pageId, n);
+        // Every kit row of the order carries the same order number (DEC-36).
+        for (const id of pageIds) await setOrderNumber(env, id, n);
         return;
       }
     }
@@ -256,6 +327,19 @@ async function backfillOrderNumber(env, pageId, paymentIntent, receiptUrl) {
   } catch (err) {
     console.error('order number backfill failed:', err.message);
   }
+}
+
+/**
+ * True if `key` was already claimed; otherwise claims it and returns false.
+ * For notifications that must go out once per ORDER while a multi-kit order
+ * (DEC-36) produces one webhook per row. Claimed before sending: a staff
+ * heads-up lost to a Resend error beats the same heads-up ten times.
+ */
+async function alreadyDone(env, key) {
+  if (!env.ORDERS) return false;
+  if (await env.ORDERS.get(key)) return true;
+  await env.ORDERS.put(key, new Date().toISOString());
+  return false;
 }
 
 /**
@@ -295,10 +379,16 @@ async function handleStripeWebhook(request, env, cors, ctx) {
     const session = event.data.object;
     // Voucher methods (OXXO) complete later via async_payment_succeeded.
     if (session.payment_status !== 'paid') return json({ ignored: 'unpaid' }, 200, cors);
-    // Stripe retries deliveries — creating twice would duplicate the row.
-    if (await findPageByPaymentIntent(env, session.payment_intent)) {
-      return json({ ignored: 'duplicate' }, 200, cors);
-    }
+    // One row per kit (DEC-36). Stripe retries deliveries, and a 10-kit
+    // order is 10 Notion writes that can be cut short — so dedupe per KIT,
+    // not per order: a replay creates only the rows still missing.
+    const quantity = await sessionQuantity(env, session.id);
+    const existing = await findPagesByPaymentIntent(env, session.payment_intent);
+    const have = new Set(existing.map(kitIndex));
+    const missing = [];
+    for (let k = 1; k <= quantity; k++) if (!have.has(k)) missing.push(k);
+    if (!missing.length) return json({ ignored: 'duplicate' }, 200, cors);
+
     const pi = await stripeRequest(
       env,
       'GET',
@@ -310,61 +400,114 @@ async function handleStripeWebhook(request, env, cors, ctx) {
       email: session.customer_details?.email ?? '',
       phone: session.customer_details?.phone ?? '',
       address: formatAddress(shipping),
-      amount: `$${(session.amount_total / 100).toFixed(2)} ${session.currency.toUpperCase()}`,
+      // The ORDER total — what emails quote. Each row stores its kit's share.
+      amount: formatAmount(session.amount_total, session.currency),
+      quantity,
       locale: session.locale?.startsWith('es') ? 'es' : 'en',
       sessionId: session.id,
       paymentIntent: session.payment_intent,
       receiptUrl: pi.latest_charge?.receipt_url ?? null,
       receiptNumber: pi.latest_charge?.receipt_number ?? '',
       paidAt: new Date(event.created * 1000).toISOString(),
+      // One label per order, not per kit — every row links the same one.
       labelUrl: `${new URL(request.url).origin}/label?session_id=${session.id}&key=${env.NOTION_WEBHOOK_KEY}`,
     };
     order.orderNumber = order.receiptNumber;
     order.tracking = trackUrl(env, order.locale, session.id);
+    // Each kit's share of the total, so summing the Amount column still adds
+    // up to what was charged.
+    const kitAmount = formatAmount(Math.round(session.amount_total / quantity), session.currency);
+
     // Sequence + wave, fixed now and never recomputed (DEC-27). Counted
-    // BEFORE this row exists, so this order is the next unit. Best-effort:
-    // a Notion hiccup here must not cost us the order row itself.
+    // BEFORE these rows exist, so they are the next units. Best-effort: a
+    // Notion hiccup here must not cost us the order rows themselves.
+    //
+    // The order ships together in one box (DEC-36), so every Founders kit
+    // gets the wave of the order's LAST Founders kit — a 4-kit order
+    // straddling units 49–52 is all Wave 2. Kits past the cap are Signature.
+    const cap = num(env.FOUNDERS_CAP, 100);
+    const positions = {};
+    let orderWave = existing.length ? readOrder(existing[0]).wave : null;
+    let overflow = [];
     try {
-      order.position = (await claimedCount(env, { fresh: true })) + 1;
-      order.wave = waveLabel(env, order.position);
+      const sold = await claimedCount(env, { fresh: true });
+      missing.forEach((k, j) => (positions[k] = sold + 1 + j));
+      const last = sold + missing.length;
+      orderWave ??= sold >= cap ? 'Signature' : waveLabel(env, Math.min(last, cap));
+      // Two buyers raced for the last Founders units. The kit still gets its
+      // row — losing a paid order is worse — but a human decides what next.
+      if (!env.SIGNATURE_PRICE_ID) {
+        overflow = missing.filter((k) => positions[k] > cap);
+      }
     } catch (err) {
       console.error('wave assignment failed:', err.message);
     }
+
     // Row and confirmation are independent duties. A schema mismatch or a
     // Notion outage used to throw straight past both emails, leaving a
     // charged buyer with nothing — order #1 was lost exactly that way.
-    let page = null;
+    const created = [];
     let notionError = null;
-    try {
-      page = await createOrderPage(env, order);
+    for (const k of missing) {
+      try {
+        const position = positions[k];
+        created.push(
+          await createOrderPage(env, {
+            ...order,
+            amount: kitAmount,
+            kit: `${k}/${quantity}`,
+            position,
+            wave: position > cap ? 'Signature' : orderWave,
+          })
+        );
+      } catch (err) {
+        notionError = err.message;
+        console.error('notion order row failed:', err.message, order.paymentIntent, `kit ${k}/${quantity}`);
+        break; // the rest would fail the same way; Stripe's retry resumes here
+      }
+    }
+    if (created.length) {
       // The count moved — drop the cache so the pricing card updates now
       // rather than up to a minute from now.
       await invalidateCount(env);
-    } catch (err) {
-      notionError = err.message;
-      console.error('notion order row failed:', err.message, order.paymentIntent);
     }
-    if (page && !order.receiptNumber) {
+    if (created.length && !order.receiptNumber) {
       ctx.waitUntil(
-        backfillOrderNumber(env, page.id, session.payment_intent, pi.latest_charge?.receipt_url)
+        backfillOrderNumber(
+          env,
+          created.map((p) => p.id),
+          session.payment_intent,
+          pi.latest_charge?.receipt_url
+        )
       );
     }
-    // Goes out whether or not the row landed; KV keeps it to exactly once.
+    // Goes out whether or not the rows landed; KV keeps it to exactly once.
     const emailError = await sendWelcomeOnce(env, order);
     if (env.STAFF_EMAIL && env.RESEND_API_KEY) {
       try {
-        if (page) {
-          await sendStaffEmail(env, 'new-order', order, page.url);
-        } else {
-          // Louder than a log line nobody reads: a paid order with no row is
-          // the one case that needs a human the same day.
-          await sendAlertEmail(env, `Tali — pedido pagado SIN fila en Notion (${order.email})`, [
-            `Se cobró un pedido pero <b>no</b> se pudo crear su fila en Notion.`,
+        const firstPage = existing[0] ?? created[0];
+        if (notionError) {
+          // Louder than a log line nobody reads: a paid order with missing
+          // rows is the one case that needs a human the same day.
+          await sendAlertEmail(env, `Tali — pedido pagado con filas FALTANTES en Notion (${order.email})`, [
+            `Se cobró un pedido de <b>${quantity} kit(s)</b> pero no se pudieron crear todas sus filas en Notion.`,
+            `Filas creadas: ${existing.length + created.length} de ${quantity}.`,
             `Error de Notion: ${notionError}`,
             `Cliente: ${order.name || order.email} — ${order.amount}`,
             `Payment Intent: ${order.paymentIntent}`,
             `El cliente <b>sí</b> recibió su correo de confirmación.`,
-            `Stripe reintentará solo; corrige la base y la fila entra sin tocar nada.`,
+            `Stripe reintentará solo y creará únicamente las filas que faltan.`,
+          ]);
+        } else if (firstPage && !(await alreadyDone(env, `staffed:${order.paymentIntent}`))) {
+          await sendStaffEmail(env, 'new-order', order, firstPage.url);
+        }
+        if (overflow.length) {
+          await sendAlertEmail(env, `Tali — pedido rebasó el cupo Founders (${order.email})`, [
+            `Dos compras simultáneas tomaron las últimas unidades Founders.`,
+            `Kits fuera del cupo (${cap}): ${overflow.map((k) => `${k}/${quantity}`).join(', ')} — marcados como <b>Signature</b>.`,
+            `Cliente: ${order.name || order.email} — ${order.amount}`,
+            `Payment Intent: ${order.paymentIntent}`,
+            `Decide: reembolsar esos kits o respetarlos como Founders (y corregir Wave en Notion).`,
           ]);
         }
       } catch (err) {
@@ -372,11 +515,11 @@ async function handleStripeWebhook(request, env, cors, ctx) {
       }
     }
     if (notionError) {
-      // 5xx so Stripe keeps retrying until the row exists. Safe to replay:
-      // the row is deduped by Payment Intent, the email by KV.
+      // 5xx so Stripe keeps retrying until every row exists. Safe to replay:
+      // rows are deduped per kit, the emails by KV.
       return json({ error: 'notion row failed', notionError, emailError }, 500, cors);
     }
-    return json({ created: true, emailError }, 200, cors);
+    return json({ created: created.length, quantity, emailError }, 200, cors);
   }
 
   if (event.type === 'checkout.session.expired') {
@@ -397,9 +540,10 @@ async function handleStripeWebhook(request, env, cors, ctx) {
       email,
       phone: session.customer_details?.phone ?? '',
       address: formatAddress(shipping),
-      amount: session.amount_total
-        ? `$${(session.amount_total / 100).toFixed(2)} ${session.currency.toUpperCase()}`
-        : '',
+      amount: session.amount_total ? formatAmount(session.amount_total, session.currency) : '',
+      // What they were about to buy (DEC-36). One row whatever the quantity:
+      // an abandoned cart never claimed a unit, so there are no kits to split.
+      quantity: await sessionQuantity(env, session.id),
       locale: session.locale?.startsWith('es') ? 'es' : 'en',
       sessionId: session.id,
       paymentIntent: session.payment_intent ?? '',
@@ -420,17 +564,68 @@ async function handleStripeWebhook(request, env, cors, ctx) {
   }
 
   if (event.type === 'charge.refunded' || event.type === 'charge.dispute.created') {
-    const paymentIntent = event.data.object.payment_intent;
-    const page = paymentIntent && (await findPageByPaymentIntent(env, paymentIntent));
-    // The status write triggers the Notion automation, which sends the
-    // customer's cancellation email through /notion-webhook.
-    if (page) {
-      await setStatus(env, page.id, 'Canceled');
-      // The unit is released — drop the cached count so the pricing card
-      // reflects it now rather than up to a minute from now.
-      await invalidateCount(env);
+    // Both events carry the Charge (refunded) or the Dispute (disputed) —
+    // each has payment_intent and amount.
+    const obj = event.data.object;
+    const paymentIntent = obj.payment_intent;
+    const rows = paymentIntent
+      ? (await findPagesByPaymentIntent(env, paymentIntent))
+          .map(readOrder)
+          .filter((o) => o.status !== 'Abandoned')
+      : [];
+    if (!rows.length) return json({ canceled: 0 }, 200, cors);
+    const active = rows.filter(isActive);
+
+    // A dispute or a full refund cancels the whole order. A partial refund
+    // (DEC-36) cancels as many kits as the refunded amount covers: the
+    // un-shipped ones first, highest kit number first. amount_refunded is
+    // cumulative, so kits already canceled are subtracted.
+    const full = event.type === 'charge.dispute.created' || obj.refunded === true;
+    let cancel = active;
+    let refundedKits = null;
+    if (!full) {
+      const quantity = Math.max(rows[0].quantity || 1, rows.length);
+      const perKit = obj.amount / quantity;
+      // +1 cent of slack: the per-kit share is rounded.
+      refundedKits = Math.floor((obj.amount_refunded + 1) / perKit);
+      const n = Math.max(0, Math.min(active.length, refundedKits - (rows.length - active.length)));
+      cancel = [...active]
+        .sort(
+          (a, b) =>
+            (a.status === 'Shipped') - (b.status === 'Shipped') ||
+            parseInt(b.kit || '1', 10) - parseInt(a.kit || '1', 10)
+        )
+        .slice(0, n);
     }
-    return json({ canceled: Boolean(page) }, 200, cors);
+    // Each status write triggers the Notion automation → /notion-webhook,
+    // which emails the customer only once EVERY kit is canceled. A partial
+    // cancellation sends nothing automatic — staff write that one by hand.
+    for (const o of cancel) await setStatus(env, o.pageId, 'Canceled');
+    // The units are released — drop the cached count so the pricing card
+    // reflects it now rather than up to a minute from now.
+    if (cancel.length) await invalidateCount(env);
+
+    const left = active.length - cancel.length;
+    if (!full && env.STAFF_EMAIL && env.RESEND_API_KEY) {
+      const o = rows[0];
+      const money = formatAmount(obj.amount_refunded, obj.currency);
+      try {
+        await sendAlertEmail(env, `Tali — reembolso parcial ${o.orderNumber || ''} (${o.email})`, [
+          cancel.length
+            ? `Reembolso parcial de <b>${money}</b>: se marcaron como Canceled ${cancel.length} kit(s) — ${cancel.map((c) => c.kit || '1/1').join(', ')}.`
+            : `Reembolso parcial de <b>${money}</b> que <b>no</b> cubre un kit completo: no se canceló ningún kit. Ajusta Notion a mano si hace falta.`,
+          `Kits que siguen activos: ${left} de ${rows.length}.`,
+          left
+            ? `El cliente <b>no</b> recibió correo automático — escríbele tú.`
+            : `Ya no quedan kits activos: el cliente recibió el correo de pedido cancelado.`,
+          `Cliente: ${o.name || o.email}`,
+          `Payment Intent: ${paymentIntent}`,
+        ]);
+      } catch (err) {
+        console.error('staff email failed:', err.message);
+      }
+    }
+    return json({ canceled: cancel.length, active: left, full, refundedKits }, 200, cors);
   }
 
   return json({ ignored: event.type }, 200, cors);
@@ -468,7 +663,7 @@ body{margin:0;padding:2rem;display:grid;justify-content:center;background:#fff;f
   <img src="https://tali.my/images/tali-logo.png" alt="Tali">
   <p class="name">${order.name}</p>
   <p class="addr">${lines.join('<br>')}</p>
-  <p class="ref">PEDIDO ${ref}</p>
+  <p class="ref">PEDIDO ${ref}${order.boxCount > 1 ? ` · ${order.boxCount} × TALI + PUK` : ''}</p>
 </div>
 <p class="hint">⌘P to print — cut along the border.</p>
 </div>
@@ -480,9 +675,14 @@ async function handleLabel(url, env, cors) {
     return json({ error: 'unauthorized' }, 401, cors);
   }
   const sessionId = url.searchParams.get('session_id') || '';
-  const page = sessionId && (await findPageBySessionId(env, sessionId));
-  if (!page) return json({ error: 'order not found' }, 404, cors);
+  const rows = sessionId ? await findPagesBySessionId(env, sessionId) : [];
+  if (!rows.length) return json({ error: 'order not found' }, 404, cors);
+  const page = rows[0];
   const order = readOrder(page);
+  // One label per order (DEC-36), naming how many kits go in the box —
+  // canceled kits don't.
+  const held = rows.map(readOrder).filter(isActive).length;
+  order.boxCount = held || order.quantity || 1;
   // Stripe assigns the receipt number moments after payment; if the webhook
   // caught the row before it existed, backfill it at print time.
   if (!order.orderNumber && order.paymentIntent && env.STRIPE_SECRET_KEY) {
@@ -504,7 +704,7 @@ async function handleLabel(url, env, cors) {
       }
       if (pi.latest_charge?.receipt_number) {
         order.orderNumber = pi.latest_charge.receipt_number;
-        await setOrderNumber(env, page.id, order.orderNumber);
+        for (const r of rows) await setOrderNumber(env, r.id, order.orderNumber);
       }
     } catch (err) {
       console.error('receipt number backfill failed:', err.message);
@@ -536,13 +736,42 @@ async function handleNotionWebhook(request, url, env, cors) {
     order.status === 'Shipped' ? 'shipped' : order.status === 'Canceled' ? 'canceled' : null;
   if (!kind || !order.email) return json({ skipped: order.status }, 200, cors);
 
-  // Dedupe: repeated saves / back-and-forth edits must not re-email.
-  const kvKey = `emailed:${pageId}`;
-  if ((await env.ORDERS.get(kvKey)) === order.status) {
+  // One email per ORDER, not per row (DEC-36): a 3-kit order is 3 rows, and
+  // marking them Shipped fires this webhook 3 times. Whichever call finds
+  // the whole order in the new state sends; the rest are deduped below.
+  //   Shipped  — once every kit still held is Shipped (one box).
+  //   Canceled — once every kit is Canceled. A partial cancellation sends
+  //              nothing automatic; staff write that one by hand.
+  const rows = order.paymentIntent
+    ? (await findPagesByPaymentIntent(env, order.paymentIntent))
+        .map(readOrder)
+        .filter((o) => o.status !== 'Abandoned')
+    : [order];
+  const active = rows.filter(isActive);
+  if (kind === 'shipped' && !active.every((o) => o.status === 'Shipped')) {
+    return json({ skipped: 'other kits not shipped yet' }, 200, cors);
+  }
+  if (kind === 'canceled' && active.length) {
+    return json({ skipped: 'partial cancellation — staff email by hand' }, 200, cors);
+  }
+
+  // Dedupe: repeated saves / back-and-forth edits must not re-email. Keyed
+  // by order now; the per-row key is still honored so orders emailed before
+  // DEC-36 are never emailed twice.
+  const rowKey = `emailed:${pageId}`;
+  const orderKey = order.paymentIntent ? `emailed:${order.paymentIntent}` : rowKey;
+  if (
+    (await env.ORDERS.get(orderKey)) === order.status ||
+    (await env.ORDERS.get(rowKey)) === order.status
+  ) {
     return json({ skipped: 'already emailed' }, 200, cors);
   }
-  await sendOrderEmail(env, kind, order);
-  await env.ORDERS.put(kvKey, order.status);
+  // Quantity in the email = kits this news is about.
+  await sendOrderEmail(env, kind, {
+    ...order,
+    quantity: kind === 'shipped' ? active.length : rows.length,
+  });
+  await env.ORDERS.put(orderKey, order.status);
   return json({ sent: kind }, 200, cors);
 }
 

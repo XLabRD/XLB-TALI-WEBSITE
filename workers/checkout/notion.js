@@ -64,6 +64,14 @@ export function createOrderPage(env, o) {
       Amount: text(o.amount),
       // Stripe's receipt number (e.g. 1911-2504) — the human order number.
       'Order #': text(o.receiptNumber),
+      // Multi-kit orders (DEC-36): ONE ROW PER KIT, so each kit carries its
+      // own Serial No, Position and status, and the claimed count above keeps
+      // counting rows. Rows of one order share Payment Intent, Session ID and
+      // Order #. Quantity is the order's total kit count (same on every row);
+      // Kit is this row's place in it, e.g. "2/3". Abandoned rows carry the
+      // quantity they were about to buy and no Kit.
+      ...(o.quantity ? { Quantity: { number: o.quantity } } : {}),
+      ...(o.kit ? { Kit: text(o.kit) } : {}),
       Status: { select: { name: o.status || 'Received' } },
       // Sequence + wave, fixed at purchase and never recomputed (DEC-27) —
       // this is the ship date the buyer was promised. Omitted for abandoned
@@ -105,6 +113,32 @@ export async function findPageByPaymentIntent(env, paymentIntent) {
   return r.results[0] ?? null;
 }
 
+/**
+ * Every row of one order (DEC-36: one row per kit). A paid order's identity
+ * is its Payment Intent; the max is 10 kits, so one page of results is
+ * always enough. Sorted by kit number so callers can rely on the order.
+ */
+async function findPages(env, property, value) {
+  const r = await notionRequest(env, 'POST', `/databases/${env.NOTION_DATABASE_ID}/query`, {
+    filter: { property, rich_text: { equals: value } },
+    page_size: 100,
+  });
+  return r.results.sort((a, b) => kitIndex(a) - kitIndex(b));
+}
+
+export const findPagesByPaymentIntent = (env, paymentIntent) =>
+  findPages(env, 'Payment Intent', paymentIntent);
+
+export const findPagesBySessionId = (env, sessionId) =>
+  findPages(env, 'Session ID', sessionId);
+
+/** "2/3" → 2. Rows from before DEC-36 have no Kit and are kit 1 of 1. */
+export function kitIndex(page) {
+  const kit = (page.properties?.Kit?.rich_text ?? []).map((t) => t.plain_text).join('');
+  const n = parseInt(kit, 10);
+  return Number.isFinite(n) && n > 0 ? n : 1;
+}
+
 export function setStatus(env, pageId, status) {
   return notionRequest(env, 'PATCH', `/pages/${pageId}`, {
     properties: { Status: { select: { name: status } } },
@@ -140,5 +174,9 @@ export function readOrder(page) {
     // DEC-27 — null on rows created before waves existed.
     position: p.Position?.number ?? null,
     wave: p.Wave?.select?.name ?? null,
+    // DEC-36 — empty on rows from before multi-kit, which were 1 of 1.
+    pageId: page.id,
+    quantity: p.Quantity?.number ?? 1,
+    kit: plain(p.Kit),
   };
 }

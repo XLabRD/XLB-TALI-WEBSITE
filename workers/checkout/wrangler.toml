@@ -10,7 +10,7 @@ compatibility_date = "2026-07-01"
 crons = ["30 16 * * *"]
 
 [vars]
-# Live-mode Founder Edition price ($125 introductory; the $185 launch price
+# Live-mode Founder Edition price ($135 introductory; the $185 launch price
 # price_1TypWV2QQj9hlFmfJYXOVDNE is archived).
 STRIPE_PRICE_ID = "price_1U5xPL2QQj9hlFmfYtSkOK1o"
 # Margin added on top of the spot rate when computing the MXN currency_option,
@@ -27,6 +27,11 @@ WAVE_SIZE = "50"
 # The pricing card withholds the remaining count until a wave is this close to
 # gone. Set it to 50 to always show a countdown, 0 to never.
 WAVE_COUNTDOWN_AT = "15"
+# Multi-kit orders (DEC-36): the most kits one checkout may buy. "1" is the
+# original single-kit checkout — the master switch, so turning multi-kit off
+# is this one line plus a deploy. Planned live value: "10". The worker also
+# never offers more Founders than are left.
+MAX_PER_ORDER = "1"
 SITE = "https://tali.my"
 # Origins allowed to call this worker (CORS). Localhost is for `npm run dev`.
 ALLOWED_ORIGINS = "https://tali.my,http://localhost:4321"

@@ -33,23 +33,34 @@ const FONT_CSS = `@font-face{font-family:'Fraunces';font-style:normal;font-weigh
 const statusLink = (locale, sessionId) =>
   `https://tali.my${locale === 'es' ? '/es' : ''}/thanks/?session_id=${encodeURIComponent(sessionId)}`;
 
+// Multi-kit orders (DEC-36): copy goes plural only above one kit, so a
+// single-kit order reads exactly as it always has.
+const many = (o) => (o.quantity || 1) > 1;
+
+// Copy fields may be strings or (order) => string.
+const val = (v, o) => (typeof v === 'function' ? v(o) : v);
+
 const COPY = {
   welcome: {
     en: {
       kicker: 'Order confirmed',
       title: (o) => `Thank you${o.name ? `, ${o.name.split(' ')[0]}` : ''}.`,
-      preheader: 'Your Founder Edition order is confirmed.',
-      body: `We've received your payment and your Founder Edition is now being prepared. You can follow your order anytime — the button below always shows its latest status.`,
-      item: 'Tali Founders Edition + Puk',
+      preheader: (o) =>
+        many(o) ? `Your order of ${o.quantity} Founder Editions is confirmed.` : 'Your Founder Edition order is confirmed.',
+      body: (o) =>
+        `We've received your payment and ${many(o) ? `your ${o.quantity} Founder Editions are` : 'your Founder Edition is'} now being prepared. You can follow your order anytime — the button below always shows its latest status.`,
+      item: (o) => `${many(o) ? `${o.quantity} × ` : ''}Tali Founders Edition + Puk`,
       cta: 'View your order status',
       outro: `We'll email you again the moment it ships.`,
     },
     es: {
       kicker: 'Pedido confirmado',
       title: (o) => `Gracias${o.name ? `, ${o.name.split(' ')[0]}` : ''}.`,
-      preheader: 'Tu pedido de la Edición Founder está confirmado.',
-      body: `Recibimos tu pago y tu Edición Founder ya está en preparación. Puedes seguir tu pedido cuando quieras — el botón de abajo siempre muestra su estado más reciente.`,
-      item: 'Tali Edición Founders + Puk',
+      preheader: (o) =>
+        many(o) ? `Tu pedido de ${o.quantity} Ediciones Founder está confirmado.` : 'Tu pedido de la Edición Founder está confirmado.',
+      body: (o) =>
+        `Recibimos tu pago y ${many(o) ? `tus ${o.quantity} Ediciones Founder ya están` : 'tu Edición Founder ya está'} en preparación. Puedes seguir tu pedido cuando quieras — el botón de abajo siempre muestra su estado más reciente.`,
+      item: (o) => `${many(o) ? `${o.quantity} × ` : ''}Tali Edición Founders + Puk`,
       cta: 'Ver el estado de tu pedido',
       outro: `Te escribiremos de nuevo en cuanto lo enviemos.`,
     },
@@ -57,18 +68,26 @@ const COPY = {
   shipped: {
     en: {
       kicker: 'On its way',
-      title: () => `Your Tali has shipped.`,
-      preheader: 'Your Founder Edition is on its way.',
-      body: `Good news — your Founder Edition just left our hands and is on its way to you.`,
+      title: (o) => (many(o) ? `Your ${o.quantity} Talis have shipped.` : `Your Tali has shipped.`),
+      preheader: (o) =>
+        many(o) ? `Your ${o.quantity} Founder Editions are on their way.` : 'Your Founder Edition is on its way.',
+      body: (o) =>
+        many(o)
+          ? `Good news — your ${o.quantity} Founder Editions just left our hands and are on their way to you, together in one box.`
+          : `Good news — your Founder Edition just left our hands and is on its way to you.`,
       cta: 'Track your shipment',
       cta2: 'View your order status',
       outro: `Thank you for being a founder.`,
     },
     es: {
       kicker: 'En camino',
-      title: () => `Tu Tali ya fue enviado.`,
-      preheader: 'Tu Edición Founder va en camino.',
-      body: `Buenas noticias — tu Edición Founder acaba de salir y va en camino hacia ti.`,
+      title: (o) => (many(o) ? `Tus ${o.quantity} Tali ya fueron enviados.` : `Tu Tali ya fue enviado.`),
+      preheader: (o) =>
+        many(o) ? `Tus ${o.quantity} Ediciones Founder van en camino.` : 'Tu Edición Founder va en camino.',
+      body: (o) =>
+        many(o)
+          ? `Buenas noticias — tus ${o.quantity} Ediciones Founder acaban de salir y van en camino hacia ti, juntas en una sola caja.`
+          : `Buenas noticias — tu Edición Founder acaba de salir y va en camino hacia ti.`,
       cta: 'Rastrear tu envío',
       cta2: 'Ver el estado de tu pedido',
       outro: `Gracias por ser founder.`,
@@ -110,13 +129,13 @@ function render(kind, order) {
   const blocks = [
     `<p style="margin:0 0 10px;font-family:${MONO};font-size:11px;letter-spacing:2px;text-transform:uppercase;color:${C.accent};">${t.kicker}</p>`,
     `<h1 style="margin:0 0 18px;font-family:${SERIF};font-size:28px;line-height:1.2;font-weight:600;color:${C.text};">${t.title(order)}</h1>`,
-    `<p style="margin:0 0 22px;font-family:${SANS};font-size:15px;line-height:1.65;color:${C.text};">${t.body}</p>`,
+    `<p style="margin:0 0 22px;font-family:${SANS};font-size:15px;line-height:1.65;color:${C.text};">${val(t.body, order)}</p>`,
   ];
 
   if (kind === 'welcome' && order.amount) {
     blocks.push(
       `<table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="margin:0 0 24px;background:${C.surface2};border-radius:10px;"><tr>
-      <td style="padding:14px 18px;font-family:${SANS};font-size:14px;color:${C.text};">${t.item}</td>
+      <td style="padding:14px 18px;font-family:${SANS};font-size:14px;color:${C.text};">${val(t.item, order)}</td>
       <td align="right" style="padding:14px 18px;font-family:${MONO};font-size:14px;color:${C.text};white-space:nowrap;">${order.amount}</td>
       </tr></table>`
     );
@@ -141,7 +160,7 @@ function render(kind, order) {
 
   const html = `<!doctype html><html lang="${locale}"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="color-scheme" content="light"><style>${FONT_CSS}</style></head>
 <body style="margin:0;padding:0;background:${C.bg};">
-<div style="display:none;max-height:0;overflow:hidden;mso-hide:all;">${t.preheader}</div>
+<div style="display:none;max-height:0;overflow:hidden;mso-hide:all;">${val(t.preheader, order)}</div>
 <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="background:${C.bg};">
 <tr><td align="center" style="padding:36px 16px 44px;">
   <table role="presentation" width="560" cellpadding="0" cellspacing="0" style="width:560px;max-width:100%;">
@@ -176,8 +195,8 @@ const SUBJECTS = {
 export async function sendStaffEmail(env, kind, order, notionUrl) {
   const isOrder = kind === 'new-order';
   const subject = isOrder
-    ? `Nuevo pedido ${order.orderNumber || ''} — ${order.name || order.email} (${order.amount})`
-    : `Carrito abandonado — ${order.email} (${order.amount})`;
+    ? `Nuevo pedido ${order.orderNumber || ''}${many(order) ? ` ×${order.quantity}` : ''} — ${order.name || order.email} (${order.amount})`
+    : `Carrito abandonado${many(order) ? ` ×${order.quantity}` : ''} — ${order.email} (${order.amount})`;
   const intro = isOrder
     ? `Entró un pedido pagado. Procesarlo en Notion (etiqueta, envío, estado):`
     : `Alguien dejó el checkout a medias con su correo capturado — posible venta si le damos seguimiento:`;
@@ -187,6 +206,7 @@ export async function sendStaffEmail(env, kind, order, notionUrl) {
     `Correo: ${order.email}`,
     order.phone && `Tel: ${order.phone}`,
     order.address && `Dirección: ${order.address}`,
+    `Cantidad: ${order.quantity || 1} kit${many(order) ? 's' : ''}`,
     `Monto: ${order.amount}`,
   ].filter(Boolean);
   const html = `<div style="font-family:${SANS};font-size:15px;line-height:1.6;color:${C.text};max-width:520px;margin:0 auto;padding:24px;">
