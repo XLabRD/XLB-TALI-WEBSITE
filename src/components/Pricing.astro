@@ -116,6 +116,11 @@ const parseInclude = (item: string): Part[] => {
 
 {
   embedded && (
+    <div class="checkout-backdrop" hidden />
+  )
+}
+{
+  embedded && (
     <dialog
       class="checkout-dialog"
       aria-label={copy.pricingTitle}
@@ -177,8 +182,26 @@ const parseInclude = (item: string): Part[] => {
       return (await res.json()).clientSecret;
     };
 
+    // NON-modal on purpose (2026-11-23). Stripe renders its own pop-ups —
+    // the quantity picker (DEC-36), Link, address search — in a separate
+    // full-screen iframe appended to <body>. showModal() puts this dialog in
+    // the browser's top layer and makes the rest of the page inert, so those
+    // pop-ups opened invisibly BEHIND it: "Cant. 1" did nothing. show() keeps
+    // the dialog in the normal stacking order, under Stripe's max z-index
+    // overlay; the backdrop, Escape and the scroll lock that showModal gave
+    // for free are rebuilt below.
+    const backdrop = document.querySelector<HTMLElement>('.checkout-backdrop')!;
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') dialog.close();
+    };
+
     const open = async () => {
-      dialog.showModal();
+      if (dialog.open) return;
+      dialog.show();
+      backdrop.hidden = false;
+      document.documentElement.classList.add('checkout-open');
+      document.addEventListener('keydown', onKey);
+      dialog.querySelector<HTMLElement>('.checkout-dialog__close')?.focus();
       (window as any).fbq?.('track', 'InitiateCheckout', {
         content_name: 'Tali Founder Limited Edition',
         num_items: 1,
@@ -202,6 +225,9 @@ const parseInclude = (item: string): Part[] => {
 
     // fires on ✕, backdrop click and Escape alike
     dialog.addEventListener('close', () => {
+      backdrop.hidden = true;
+      document.documentElement.classList.remove('checkout-open');
+      document.removeEventListener('keydown', onKey);
       checkout?.destroy();
       checkout = null;
       mount.innerHTML = '';
@@ -216,14 +242,8 @@ const parseInclude = (item: string): Part[] => {
     dialog
       .querySelector('.checkout-dialog__close')
       ?.addEventListener('click', () => dialog.close());
-    // Backdrop click closes — but clicks on the dialog's own padding also
-    // report the dialog as target, so test coordinates, not the target.
-    dialog.addEventListener('click', (e) => {
-      const r = dialog.getBoundingClientRect();
-      const inside =
-        e.clientX >= r.left && e.clientX <= r.right && e.clientY >= r.top && e.clientY <= r.bottom;
-      if (e.target === dialog && !inside) dialog.close();
-    });
+    // Backdrop click closes — the backdrop is its own element now.
+    backdrop.addEventListener('click', () => dialog.close());
 
     // The Founder card shows Stripe's live price (the amount checkout will
     // actually charge); the static content price is the no-JS fallback.
@@ -398,7 +418,14 @@ const parseInclude = (item: string): Part[] => {
     }
   }
 
+  /* Non-modal dialog (see the script): centered and layered by hand, below
+     Stripe's pop-up overlay (z-index 2147483647) and above the site header. */
   .checkout-dialog {
+    position: fixed;
+    inset: 0;
+    margin: auto;
+    height: fit-content;
+    z-index: 1001;
     width: min(30rem, calc(100vw - 2rem));
     max-height: min(46rem, calc(100vh - 2rem));
     border: 1px solid var(--line);
@@ -409,9 +436,18 @@ const parseInclude = (item: string): Part[] => {
     padding-top: 2.6rem;
     box-shadow: 0 30px 70px -30px rgba(58, 42, 24, 0.45);
   }
-  .checkout-dialog::backdrop {
+  .checkout-backdrop {
+    position: fixed;
+    inset: 0;
+    z-index: 1000;
     background: color-mix(in srgb, var(--text) 35%, transparent);
     backdrop-filter: blur(3px);
+  }
+  .checkout-backdrop[hidden] {
+    display: none;
+  }
+  :global(html.checkout-open) {
+    overflow: hidden;
   }
   .checkout-dialog__close {
     position: absolute;
