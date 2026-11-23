@@ -31,7 +31,7 @@ WAVE_COUNTDOWN_AT = "15"
 # original single-kit checkout — the master switch, so turning multi-kit off
 # is this one line plus a deploy. Planned live value: "10". The worker also
 # never offers more Founders than are left.
-MAX_PER_ORDER = "1"
+MAX_PER_ORDER = "10"
 SITE = "https://tali.my"
 # Origins allowed to call this worker (CORS). Localhost is for `npm run dev`.
 ALLOWED_ORIGINS = "https://tali.my,http://localhost:4321"
