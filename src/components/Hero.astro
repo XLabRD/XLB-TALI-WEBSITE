@@ -4,8 +4,10 @@ interface Props {
   copy: Record<string, any>;
   /** The plan's static USD price — no-JS fallback for the offer line. */
   price?: string;
+  /** Struck-through original price, this locale's currency. */
+  compareAt?: string;
 }
-const { copy, price } = Astro.props;
+const { copy, price, compareAt } = Astro.props;
 ---
 
 <section class="hero">
@@ -23,7 +25,10 @@ const { copy, price } = Astro.props;
         copy.heroOffer && (
           <p class="hero__offer">
             <span class="hero__offer-tag">{copy.heroOffer}</span>
-            {price && <span class="hero__offer-price plan__price">{price}</span>}
+            <span class="hero__offer-figures">
+              {compareAt && <s class="hero__offer-was">{compareAt}</s>}
+              {price && <span class="hero__offer-price plan__price">{price}</span>}
+            </span>
           </p>
         )
       }
@@ -135,6 +140,15 @@ const { copy, price } = Astro.props;
     border: 1px solid color-mix(in srgb, var(--accent) 28%, transparent);
     border-radius: 999px;
     padding: 0.32rem 0.75rem;
+  }
+  .hero__offer-figures {
+    display: inline-flex;
+    align-items: baseline;
+    gap: 0.6rem;
+  }
+  .hero__offer-was {
+    font-size: 1rem;
+    color: var(--text-dim);
   }
   .hero__offer-price {
     font-family: var(--display);

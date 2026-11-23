@@ -13,6 +13,7 @@ interface Props {
     priceNote?: string;
     quantityNote?: string;
     priceBadge?: string;
+    compareAt?: string;
   }>;
   settings: {
     orderUrl?: string;
@@ -62,6 +63,7 @@ const parseInclude = (item: string): Part[] => {
               <p class="plan__tagline">{plan.tagline}</p>
               {/* TODO(DEC-17): placeholder pricing until figures are decided */}
               {plan.priceBadge && <p class="plan__badge">{plan.priceBadge}</p>}
+              {plan.compareAt && <s class="plan__was">{plan.compareAt}</s>}
               <p class="plan__price">{plan.price}</p>
               {/* Wave + ship window, filled in from the worker's /inventory
                   (DEC-27). Hidden until then: with no JS there is no live
@@ -441,6 +443,11 @@ const parseInclude = (item: string): Part[] => {
     border-radius: 999px;
     padding: 0.3rem 0.7rem;
     margin-bottom: -0.35rem;
+  }
+  .plan__was {
+    color: var(--text-dim);
+    font-size: 1.05rem;
+    margin-bottom: -0.6rem;
   }
   .plan__qty {
     color: var(--text-dim);

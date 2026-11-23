@@ -115,6 +115,10 @@ const plans = defineCollection({
       quantityNote: z.string().default(''),
       // Tag above the price ("Special introductory price"). Empty = hidden.
       priceBadge: z.string().default(''),
+      // Struck-through reference price beside the live one, in this locale's
+      // currency ($185 USD / $3,200 MXN). A fixed marketing figure, unlike the
+      // live price — which is why it may be a peso literal. Empty = hidden.
+      compareAt: z.string().default(''),
     }),
     es: z.object({
       name: z.string(),
@@ -124,6 +128,7 @@ const plans = defineCollection({
       priceNote: z.string().default(''),
       quantityNote: z.string().default(''),
       priceBadge: z.string().default(''),
+      compareAt: z.string().default(''),
     }),
   }),
 });

@@ -54,6 +54,10 @@ const planLocale = (label: string) =>
         label: 'Tag above the price',
         description: 'e.g. "Special introductory price". Empty = hidden.',
       }),
+      compareAt: fields.text({
+        label: 'Struck-through original price',
+        description: 'Shown crossed out beside the live price, in this language\'s currency (e.g. "$185 USD" / "$3,200 MXN"). Must be a real price (PROFECO). Empty = hidden.',
+      }),
       quantityNote: fields.text({
         label: 'Multi-kit line under the price',
         description: 'States the per-order max — keep it equal to MAX_PER_ORDER in the worker (DEC-36).',
