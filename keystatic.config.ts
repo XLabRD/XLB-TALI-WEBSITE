@@ -50,6 +50,10 @@ const planLocale = (label: string) =>
       }),
       cta: fields.text({ label: 'Button label' }),
       priceNote: fields.text({ label: 'Fine print under the button' }),
+      priceBadge: fields.text({
+        label: 'Tag above the price',
+        description: 'e.g. "Special introductory price". Empty = hidden.',
+      }),
       quantityNote: fields.text({
         label: 'Multi-kit line under the price',
         description: 'States the per-order max — keep it equal to MAX_PER_ORDER in the worker (DEC-36).',
@@ -74,6 +78,11 @@ const homeLocale = (label: string) =>
       heroTrust: fields.text({
         label: 'Hero trust line',
         description: 'Social-proof sentence under the hero buttons. Empty = hidden.',
+        defaultValue: '',
+      }),
+      heroOffer: fields.text({
+        label: 'Hero offer tag',
+        description: 'Tag above the buy button, shown next to the live price (e.g. "Special introductory price"). Empty = hidden.',
         defaultValue: '',
       }),
       heroImageAlt: fields.text({ label: 'Hero image alt text' }),

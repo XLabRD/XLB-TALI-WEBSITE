@@ -2,8 +2,10 @@
 interface Props {
   locale: 'en' | 'es';
   copy: Record<string, any>;
+  /** The plan's static USD price — no-JS fallback for the offer line. */
+  price?: string;
 }
-const { copy } = Astro.props;
+const { copy, price } = Astro.props;
 ---
 
 <section class="hero">
@@ -14,6 +16,17 @@ const { copy } = Astro.props;
       <p class="hero__sub">{copy.heroSubtitle}</p>
       {/* One button on the first screen. Three CTAs read as none, so only the
           buy is a button — "how it works" and the film stay as quiet links. */}
+      {/* Launch offer. The figure carries .plan__price so Pricing.astro's
+          /price fetch rewrites it with the live amount (MXN on /es/, DEC-32)
+          — never a committed peso literal. */}
+      {
+        copy.heroOffer && (
+          <p class="hero__offer">
+            <span class="hero__offer-tag">{copy.heroOffer}</span>
+            {price && <span class="hero__offer-price plan__price">{price}</span>}
+          </p>
+        )
+      }
       <div class="hero__ctas">
         {/* data-preorder: opens the embedded checkout when configured (Pricing.astro) */}
         <a class="btn" href="#edition" data-preorder>{copy.heroCtaPrimary}</a>
@@ -103,6 +116,31 @@ const { copy } = Astro.props;
   .hero__link:hover {
     color: var(--text);
     border-color: var(--accent);
+  }
+  .hero__offer {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 0.55rem 0.8rem;
+    margin: 0.2rem 0 1.1rem;
+  }
+  .hero__offer-tag {
+    font-family: var(--mono);
+    font-size: 0.72rem;
+    font-weight: 500;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--accent);
+    background: color-mix(in srgb, var(--accent) 11%, transparent);
+    border: 1px solid color-mix(in srgb, var(--accent) 28%, transparent);
+    border-radius: 999px;
+    padding: 0.32rem 0.75rem;
+  }
+  .hero__offer-price {
+    font-family: var(--display);
+    font-size: 1.35rem;
+    font-weight: 600;
+    color: var(--text);
   }
   .hero__trust {
     margin-top: 1.1rem;

@@ -12,6 +12,7 @@ interface Props {
     cta: string;
     priceNote?: string;
     quantityNote?: string;
+    priceBadge?: string;
   }>;
   settings: {
     orderUrl?: string;
@@ -60,6 +61,7 @@ const parseInclude = (item: string): Part[] => {
               <h3 class="plan__name">{plan.name}</h3>
               <p class="plan__tagline">{plan.tagline}</p>
               {/* TODO(DEC-17): placeholder pricing until figures are decided */}
+              {plan.priceBadge && <p class="plan__badge">{plan.priceBadge}</p>}
               <p class="plan__price">{plan.price}</p>
               {/* Wave + ship window, filled in from the worker's /inventory
                   (DEC-27). Hidden until then: with no JS there is no live
@@ -425,6 +427,21 @@ const parseInclude = (item: string): Part[] => {
 
   /* Non-modal dialog (see the script): centered and layered by hand, below
      Stripe's pop-up overlay (z-index 2147483647) and above the site header. */
+  .plan__badge {
+    justify-self: start;
+    width: fit-content;
+    font-family: var(--mono);
+    font-size: 0.7rem;
+    font-weight: 500;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--accent);
+    background: color-mix(in srgb, var(--accent) 11%, transparent);
+    border: 1px solid color-mix(in srgb, var(--accent) 28%, transparent);
+    border-radius: 999px;
+    padding: 0.3rem 0.7rem;
+    margin-bottom: -0.35rem;
+  }
   .plan__qty {
     color: var(--text-dim);
     font-size: 0.9rem;

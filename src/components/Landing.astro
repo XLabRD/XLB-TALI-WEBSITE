@@ -58,7 +58,7 @@ const jsonLd = {
   <script type="application/ld+json" set:html={JSON.stringify(jsonLd)} slot="head" />
   <Header locale={locale} ui={ui} altPath={altPath} homePath={homePath} />
   <main>
-    <Hero locale={locale} copy={home} />
+    <Hero locale={locale} copy={home} price={plans[0]?.price} />
     <System copy={home} />
     {/* The edition sits high on purpose: this audience arrives warm, already
         knowing what Tali is, so the ask comes right after the one-hub pitch

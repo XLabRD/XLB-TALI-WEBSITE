@@ -113,6 +113,8 @@ const plans = defineCollection({
       // Multi-kit line under the price (DEC-36). Names the per-order max,
       // which lives in the worker's MAX_PER_ORDER — change both together.
       quantityNote: z.string().default(''),
+      // Tag above the price ("Special introductory price"). Empty = hidden.
+      priceBadge: z.string().default(''),
     }),
     es: z.object({
       name: z.string(),
@@ -121,6 +123,7 @@ const plans = defineCollection({
       cta: z.string(),
       priceNote: z.string().default(''),
       quantityNote: z.string().default(''),
+      priceBadge: z.string().default(''),
     }),
   }),
 });
@@ -134,6 +137,9 @@ const localeHome = z.object({
   heroCtaFilm: z.string().default(''),
   // Social-proof line under the hero CTAs; empty = hidden.
   heroTrust: z.string().default(''),
+  // Launch-offer tag above the hero buy button, shown with the live price.
+  // Empty = hidden. Retire it (and plans' priceBadge) when the intro price ends.
+  heroOffer: z.string().default(''),
   heroImageAlt: z.string(),
   systemKicker: z.string(),
   systemTitle: z.string(),

@@ -17,7 +17,8 @@
     ],
     "cta": "Buy now",
     "priceNote": "* Shipping and taxes within Mexico included",
-    "quantityNote": "Need more than one? Choose up to 4 at checkout."
+    "quantityNote": "Need more than one? Choose up to 4 at checkout.",
+    "priceBadge": "Special introductory price"
   },
   "es": {
     "name": "Founders Limited Edition",
@@ -33,6 +34,7 @@
     ],
     "cta": "Compra ahora",
     "priceNote": "* Envío e impuestos en México incluidos",
-    "quantityNote": "¿Más de uno? Elige hasta 4 al pagar."
+    "quantityNote": "¿Más de uno? Elige hasta 4 al pagar.",
+    "priceBadge": "Precio especial de introducción"
   }
 }

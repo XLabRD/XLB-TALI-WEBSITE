@@ -160,6 +160,7 @@
     "shipNoteHref": "#faq-where-available",
     "shipFinePrint": "*Orders are shipped in the order they are received.\nAll prices include 16% IVA and shipping within Mexico.\nIntroductory launch pricing — subject to change.",
     "heroTrust": "",
+    "heroOffer": "Special introductory price",
     "waves": {
       "wave1": "Wave 1 — available now, first come, first served",
       "wave2": "Wave 2 — ships October–December 2026",
@@ -328,6 +329,7 @@
     "shipNoteHref": "#faq-where-available",
     "shipFinePrint": "*Los pedidos se envían en el orden en que se reciben.\nTodos los precios incluyen 16% de IVA y envío dentro de México.\nPrecio introductorio de lanzamiento — sujeto a cambio.",
     "heroTrust": "",
+    "heroOffer": "Precio especial de introducción",
     "waves": {
       "wave1": "Wave 1 — disponible ahora, por orden de llegada",
       "wave2": "Wave 2 — se envía de octubre a diciembre 2026",
