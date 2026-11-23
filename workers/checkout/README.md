@@ -61,8 +61,7 @@ Notion → customer gets the shipped/canceled email; Stripe refunds/disputes
 | `Paid at` | Date | set by the worker |
 | `Label` | URL | set by the worker — print-ready shipping label (`/label` route, key-gated) |
 | `Order #` | Text | Stripe's receipt number (e.g. `1911-2504`) — the human order number, captured at creation or backfilled when the label is first opened |
-| `Quantity` | Number | kits in the whole order, same on every row of it (DEC-36); empty on pre-DEC-36 rows = 1 |
-| `Kit` | Text | this row's kit within the order, e.g. `2/3` — **one row per kit** (DEC-36). Abandoned rows leave it empty |
+| `Kit` | Text | this row's kit within the order **and** the order's size, e.g. `2/3` = kit 2 of 3 — **one row per kit** (DEC-36). Abandoned rows leave it empty |
 
 Order identity comes from Stripe (author's call, 2026-07-27): `Order #` holds
 the human receipt number shown on Stripe receipts and printed on the label;

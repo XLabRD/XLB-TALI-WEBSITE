@@ -67,10 +67,11 @@ export function createOrderPage(env, o) {
       // Multi-kit orders (DEC-36): ONE ROW PER KIT, so each kit carries its
       // own Serial No, Position and status, and the claimed count above keeps
       // counting rows. Rows of one order share Payment Intent, Session ID and
-      // Order #. Quantity is the order's total kit count (same on every row);
-      // Kit is this row's place in it, e.g. "2/3". Abandoned rows carry the
-      // quantity they were about to buy and no Kit.
-      ...(o.quantity ? { Quantity: { number: o.quantity } } : {}),
+      // Order #. Kit is this row's place in the order AND the order's size:
+      // "2/3" = kit 2 of 3. (A separate Quantity column showing 3 on each of
+      // three rows read as nine kits — removed 2026-11-23.) Abandoned rows
+      // have no Kit; what they were about to buy is in Amount and the staff
+      // email.
       ...(o.kit ? { Kit: text(o.kit) } : {}),
       Status: { select: { name: o.status || 'Received' } },
       // Sequence + wave, fixed at purchase and never recomputed (DEC-27) —
@@ -132,6 +133,12 @@ export const findPagesByPaymentIntent = (env, paymentIntent) =>
 export const findPagesBySessionId = (env, sessionId) =>
   findPages(env, 'Session ID', sessionId);
 
+/** "2/3" → 3, the order's kit count. No Kit (pre-DEC-36, abandoned) → 1. */
+export function kitTotal(kit) {
+  const n = parseInt(String(kit || '').split('/')[1], 10);
+  return Number.isFinite(n) && n > 0 ? n : 1;
+}
+
 /** "2/3" → 2. Rows from before DEC-36 have no Kit and are kit 1 of 1. */
 export function kitIndex(page) {
   const kit = (page.properties?.Kit?.rich_text ?? []).map((t) => t.plain_text).join('');
@@ -176,7 +183,7 @@ export function readOrder(page) {
     wave: p.Wave?.select?.name ?? null,
     // DEC-36 — empty on rows from before multi-kit, which were 1 of 1.
     pageId: page.id,
-    quantity: p.Quantity?.number ?? 1,
+    quantity: kitTotal(plain(p.Kit)),
     kit: plain(p.Kit),
   };
 }
