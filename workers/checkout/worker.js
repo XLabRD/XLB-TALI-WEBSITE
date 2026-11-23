@@ -119,6 +119,15 @@ async function sessionQuantity(env, sessionId) {
   }
 }
 
+/**
+ * Email language for an order. The embedded checkout always passes 'en' or
+ * 'es-419'; a Payment Link session (the fallback, `orderUrl`) carries no
+ * locale at all, and since Tali ships only to Mexico, Spanish is the safer
+ * guess there.
+ */
+const sessionLocale = (session) =>
+  session.locale === 'en' || session.locale?.startsWith('en-') ? 'en' : 'es';
+
 /** Rows that still hold a unit — the same rule as countClaimedOrders. */
 const isActive = (o) => o.status === 'Received' || o.status === 'Shipped';
 
@@ -404,7 +413,7 @@ async function handleStripeWebhook(request, env, cors, ctx) {
       // The ORDER total — what emails quote. Each row stores its kit's share.
       amount: formatAmount(session.amount_total, session.currency),
       quantity,
-      locale: session.locale?.startsWith('es') ? 'es' : 'en',
+      locale: sessionLocale(session),
       sessionId: session.id,
       paymentIntent: session.payment_intent,
       receiptUrl: pi.latest_charge?.receipt_url ?? null,
@@ -545,7 +554,7 @@ async function handleStripeWebhook(request, env, cors, ctx) {
       // What they were about to buy (DEC-36). One row whatever the quantity:
       // an abandoned cart never claimed a unit, so there are no kits to split.
       quantity: await sessionQuantity(env, session.id),
-      locale: session.locale?.startsWith('es') ? 'es' : 'en',
+      locale: sessionLocale(session),
       sessionId: session.id,
       paymentIntent: session.payment_intent ?? '',
       receiptUrl: null,
